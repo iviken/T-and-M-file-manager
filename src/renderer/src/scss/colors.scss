@@ -1,0 +1,293 @@
+:root{
+    --white: rgba(175,175,175,1);
+    --pure-white: white;
+    --red: rgba(215,75,186,1);
+    --green: rgba(62,133,47,1);
+    --yellow: rgba(175,168,62,1);
+    --ocean: rgba(115,208,212,1);
+    --blue: rgba(46,51,200,1);
+    --orange: rgba(205,133,40,1);
+    --pale-white: #92acd418;
+    --pale-white2: #b6d7ffbe;
+    
+    --ini: rgba(62,133,47,1);
+    --vue: rgb(0, 160, 99);
+    --js: rgba(175,168,62,1);
+    --json: rgb(246, 239, 134);
+    --scss: rgb(175, 62, 90);
+    --css: rgb(213, 118, 142);
+    --md: rgb(118, 109, 244);
+    --bat: rgb(255, 255, 255);
+
+    --red-mark-legend: #e55ce0ff;
+    // --red-mark-legend: #e55ce0cb;
+    // --red-mark-legend-hover: #e55ce0ff;
+
+    --text: #999999ff;
+    --head-name: rgba(0,0,0,0);
+    
+    --head-btn-bgcolor-close-hover: rgba(34,34,41,1);
+    --head-btn-bgcolor-hover: rgba(34,34,41,.63);
+    --head-btn-color: rgba(34,34,41,1);
+    --head-btn-color2: rgba(255,255,255,.5);
+    --head-btn-color-hover: black;
+    --head-btn-color-hover2: white;
+
+    --shadow: 0 -15px 21px 0 #000;
+
+    --grad-fieldset-red: linear-gradient(90deg, rgba(37, 44, 58, 0) 0%, rgba(212, 37, 179, 0) 4.99%, #d425b30c 45.53%, rgba(0, 0, 0, 0) 100%);
+
+    --grad-text-file-selected: linear-gradient(90deg, rgba(146, 192, 255, 0) 0%, rgba(146, 192, 255, 0.18) 51.84%, rgba(146, 192, 255, 0.05) 100%);
+
+    --grad-project-hover: linear-gradient(90deg, rgba(34, 36, 41, 0) 0%, #222429 48.96%, rgba(34, 36, 41, 0) 100%);
+
+    --grad-border-fieldset-green: linear-gradient(90deg, rgba(49,173,49,1) 0%, rgba(49,173,49,0) 12%, rgba(49,173,49,0) 100%); 
+    
+    --head-grad: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
+    --grad-center: linear-gradient(168deg, #232229ff 5%, #131313ff 120%);
+    --grad-text-files-and-tasks: linear-gradient(154deg, rgba(22, 22, 22, 0) 15.28%, rgba(108, 108, 154, 0.06) 39.78%, rgba(100, 107, 136, 0) 100%);
+    --grad-left: linear-gradient(167deg, rgba(35,34,41,0) -15%, rgba(35,34,41,.5) 83%, rgba(19,19,19,.5) 91%);
+    --grad-left-focus: linear-gradient(356deg, rgba(35,34,41,0) -15%, rgba(35,34,41,1) 13%, rgba(19,19,19,1) 91%);
+
+    --grad-select-file: linear-gradient(90deg, rgba(255,255,255,.53) 0%, rgba(255,255,255,0.2) 100%);
+    --grad-red: linear-gradient(90deg, rgba(215,75,186,.53) 0%, rgba(215,75,186,0.2) 100%);
+    --grad-green: linear-gradient(90deg, rgba(62,133,47,.53) 0%, rgba(62,133,47,0.2) 100%);
+    --grad-yellow: linear-gradient(90deg, rgba(175,168,62,.53) 0%, rgba(175,168,62,0.2) 100%);
+    
+    --grad-field-red: linear-gradient(-90deg, rgba(215,75,186,.34) 0%, rgba(215,75,186,0) 100%);
+    --grad-field-green: linear-gradient(-90deg, rgba(62,133,47,.34) 0%, rgba(62,133,47,0) 100%);
+    --grad-field-yellow: linear-gradient(-90deg, rgba(175,168,62,.34) 0%, rgba(175,168,62,0) 100%);
+
+    --grad-field-red--close: linear-gradient(-90deg, rgba(215,75,186,.54) 0%, rgba(215,75,186,0) 10%);
+    --grad-field-green--close: linear-gradient(-90deg, rgba(62,133,47,.54) 0%, rgba(62,133,47,0) 10%);
+    --grad-field-yellow--close: linear-gradient(-90deg, rgba(175,168,62,.54) 0%, rgba(175,168,62,0) 10%);
+
+    --font-color--file-name: rgba(255,255,255,.43);
+    --font-color--file-format--green: rgba(150,222,171,1);
+}
+/* #### */
+
+/* BORDER */
+.white-border-2{
+    border: solid 2px var(--white);
+}
+.red-border-2{
+    border: solid 2px var(--red);
+}
+.green-border-2{
+    border: solid 2px var(--green);
+}
+.yellow-border-2{
+    border: solid 2px var(--yellow);
+}
+.ocean-border-2{
+    border: solid 2px var(--ocean);
+}
+.blue-border-2{
+    border: solid 2px var(--blue);
+}
+.orange-border-2{
+    border: solid 2px var(--orange);
+}
+
+/* BACKGROUND */
+.white-back{
+    background-color: var(--white);
+}
+.red-back{
+    background-color: var(--red);
+}
+.green-back{
+    background-color: var(--green);
+}
+.yellow-back{
+    background-color: var(--yellow);
+}
+.ocean-back{
+    background-color: var(--ocean);
+}
+.blue-back{
+    background-color: var(--blue);
+}
+.orange-back{
+    background-color: var(--orange);
+}
+.transparent-back{
+    background-color: transparent;
+}
+.default-color-back{
+    background-color: var(--pale-white);
+}
+
+.white-back-hover:hover{
+    background-color: var(--white);
+}
+.red-back-hover:hover{
+    background-color: var(--red);
+}
+.green-back-hover:hover{
+    background-color: var(--green);
+}
+.yellow-back-hover:hover{
+    background-color: var(--yellow);
+}
+.ocean-back-hover:hover{
+    background-color: var(--ocean);
+}
+.blue-back-hover:hover{
+    background-color: var(--blue);
+}
+.orange-back-hover:hover{
+    background-color: var(--orange);
+}
+
+/* BACKGROUND HOVER */
+.white-back-hover:hover{
+    background-color: white;
+}
+.red-back-hover:hover{
+    background-color: var(--red);
+}
+.green-back-hover:hover{
+    background-color: var(--green);
+}
+.yellow-back-hover:hover{
+    background-color: var(--yellow);
+}
+.ocean-back-hover:hover{
+    background-color: var(--ocean);
+}
+.blue-back-hover:hover{
+    background-color: var(--blue);
+}
+.orange-back-hover:hover{
+    background-color: var(--orange);
+}
+
+.red-fielfset{
+    background: var( --grad-fieldset-red);
+}
+
+/* TEXT */
+.red-text{
+    color: var(--red);
+}
+.green-text{
+    color: var(--green);
+}
+.yellow-text{
+    color: var(--yellow);
+}
+.white-text{
+    color: var(--white);
+}
+.ocean-text{
+    color: var(--ocean);
+}
+.blue-text{
+    color: var(--blue);
+}
+.orange-text{
+    color: var(--orange);
+}
+.transparent-text{
+    color: var(--white);
+}
+.default-color-text{
+    color: var(--pale-white2);
+}
+
+.border-right--red{
+    /* border-right: solid 2px var(--red); */
+}
+.border-right--green{
+    /* border-right: solid 2px var(--green); */
+}
+.border-right--yellow{
+    /* border-right: solid 2px var(--yellow); */
+}
+
+/* CONTENT > LEFT FIELD */
+.field--red{
+    background: var(--grad-field-red--close);
+}
+.field--green{
+    background: var(--grad-field-green--close);
+}
+.field--yellow{
+    background: var(--grad-field-yellow--close);
+}
+.field--red:hover{
+    background: var(--grad-field-red);
+}
+.field--green:hover{
+    background: var(--grad-field-green);
+}
+.field--yellow:hover{
+    background: var(--grad-field-yellow);
+}
+
+.field--red__rev{
+    background: var(--grad-field-red--close);
+    transform: rotate(180deg);
+}
+.field--green__rev{
+    background: var(--grad-field-green--close);
+    transform: rotate(180deg);
+}
+.field--yellow__rev{
+    background: var(--grad-field-yellow--close);
+}
+.field--red__rev:hover{
+    background: var(--grad-field-red);
+}
+.field--green__rev:hover{
+    background: var(--grad-field-green);
+    transform: rotate(180deg);
+}
+.field--yellow__rev:hover{
+    background: var(--grad-field-yellow);
+    transform: rotate(180deg);
+}
+
+/* FAKE SELECTED */
+.-fake-mark--red{
+    background: var(--grad-red);
+}
+.-fake-mark--green{
+    background: var(--grad-green);
+}
+.-fake-mark--yellow{
+    background: var(--grad-yellow);
+}
+
+/* FONTS */
+.file-name{
+    color: var(--font-color--file-name)
+}
+
+// FORMATS
+.ini{
+    color: var(--ini)
+}
+.js{
+    color: var(--js)
+}
+.json{
+    color: var(--json)
+}
+.bat{
+    color: var(--bat)
+}
+.vue{
+    color: var(--vue)
+}
+.css{
+    color: var(--css)
+}
+.scss{
+    color: var(--scss)
+}
+.md{
+    color: var(--md)
+}

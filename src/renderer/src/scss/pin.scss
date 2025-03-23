@@ -1,0 +1,21 @@
+$accordion-items-indent: 20px;
+
+.accordion-item{
+    width: 100%;
+    height: fit-content;
+    margin-bottom: $accordion-items-indent;
+}
+
+.left-field{
+    width: 47px;
+}
+
+.logo{
+    opacity: .7;
+    width: 14px;
+    height: 14px;
+    transform: translate(16px);
+}
+// .logo:hover{
+//     opacity: 1;
+// }

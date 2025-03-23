@@ -1,0 +1,14 @@
+// :root{
+//     --header-height: 100px;
+//     --bar-height: 45px;
+// }
+
+.header-component{
+    height: 100px;
+}
+
+.content-component{
+    box-shadow: var(--shadow);
+    height: 950px;
+    min-height: 950px;
+}

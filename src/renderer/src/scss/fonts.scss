@@ -1,0 +1,30 @@
+:root {
+    --font-family: "Calibri", sans-serif;
+    --second-family: "Corbel", sans-serif;
+    --third-family: "Carlito", sans-serif;
+}
+body{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+// TEXT FILES
+.t-legend {
+    font-size: 10pt;
+    letter-spacing: .54px;
+}
+// .t-legend:hover {
+//     font-weight: bolder;
+// }
+.t-text-file {
+    color: var(--text);
+    letter-spacing: 2.67pt;
+    font-weight: 700;
+    font-size: 14px;
+}
+.t-text-file:hover {
+    color: var(--pure-white);
+}
+.header{
+    color: black;
+    font-weight: bold;
+    font-size: 18px;
+}

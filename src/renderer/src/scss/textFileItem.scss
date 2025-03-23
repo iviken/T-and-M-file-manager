@@ -1,0 +1,21 @@
+$between-items-indent: 10px;
+$item-left-indent: 30px;
+
+.item{
+    padding-left: $item-left-indent;
+    padding-top: calc($between-items-indent / 2);
+    padding-bottom: calc($between-items-indent / 2);
+}
+.item span{
+    visibility: hidden;
+}
+.item:hover span{
+    visibility: visible;
+}
+.format{
+    opacity: .4;
+}
+
+.selected{
+    background: var(--grad-text-file-selected);
+}
