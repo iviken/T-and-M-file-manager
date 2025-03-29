@@ -18,6 +18,10 @@ export default {
         type: Object,
         required: true
     },
+    inputSettings:{
+        type: Object,
+        required: true
+    },
     viewMode:{    //text or imgs
         type: String,
         required: true
@@ -26,9 +30,14 @@ export default {
   methods: {
     foldMark: function(mark_ID){
       this.marks[mark_ID].isFolded[this.viewMode] = !this.marks[mark_ID].isFolded[this.viewMode]
+      //
+      // document.querySelector('#'+mark_ID).style.height = '80pt'
     },
     clickToFile: function(file_ID){
-      this.state.setCmd( {cmd: 'clickToFile', fileID: file_ID} )
+      //
+      this.state.setCmd( {cmd: 'select file', fileID: file_ID} )
+      //
+      this.state.setCmd( {cmd: 'count the number of selected files'} )
     },
     hideOthersMarksAndFiles: function(mark_ID){
       //
@@ -40,6 +49,8 @@ export default {
     },
     unselectAllFiles:function(){
       this.state.setCmd( {cmd: 'unselectAllFiles'} )
+      //
+      this.state.setCmd( {cmd: 'count the number of selected files'} )
     },
     enter:function(){
       console.log('ENTER')
@@ -47,9 +58,11 @@ export default {
     deleteFile:function(){
       console.log('DELETE FILE')
     },
-    refreshFiles:function(){
-      console.log('REFRESH FILE')
-    },
+    // refreshFiles:function(){
+    //   // console.log('REFRESH FILES in: ' + this.state.pathsOfOpenedFolders)
+    //   //
+    //   // console.log( window.api.getFilenames(this.state.pathsOfOpenedFolders[0]) )
+    // },
     renameFile:function(){
       this.state.setCmd( {cmd: 'startRenameSelectedFiles'} )
     },
@@ -62,9 +75,10 @@ export default {
     pasteFilesFromBuffer:function(){
       console.log('PASTE FILES')
     },
-    // pinThisFolder:function(){
-    //   console.log('PIN FOLDER')
-    // },
+    pinThisFiles:function(){
+      this.state.setCmd( {cmd: 'pinFiles', allFiles: this.files} )
+      // console.log('PIN FOLDER')
+    },
     showOneMarkMode:function(dat){  //  marks
       // console.log("FILTER")
       // this.displayedMarks.text = []
@@ -87,7 +101,7 @@ export default {
     filterMark:function(mark){
       let _mark = {text: false, imgs: false}
 
-      //    Sorted by files type: images or others amd extract marks
+      //    Sorted by files type: images or others and extract marks
       this.files.forEach(element => {
 
         if( this.fileImgMask.includes(element.format) ){
@@ -112,13 +126,74 @@ export default {
       return _mark[this.viewMode]
     },
     readMetadata:function(dat){
-      this.state.metadata = dat.meta
+      this.state.onFocusFile.metadata = dat.meta
       this.state.onFocusFile.name = dat.name
       this.state.onFocusFile.format = dat.format
     },
     openFile:function(file){
       console.log('OPEN FILE')
-    }
+    },
+    selectAllFilesInGroupMark:function(mark_ID){
+      //
+      this.state.setCmd( 
+        {
+          cmd: 'select files in group-mark', 
+          markID: mark_ID, 
+          files: this.viewMode == 'imgs' ? 
+            this.files.filter(file=>this.fileImgMask.includes(file.format)) : 
+            this.files.filter(file=>!this.fileImgMask.includes(file.format))
+        } 
+      )
+      //
+      this.state.setCmd( {cmd: 'count the number of selected files'} )
+    },
+    countUnpinBlockHeight:function(){
+      this.unpinHeightBlock = document.querySelector('._component').clientHeight - document.querySelector('._left-field').clientHeight
+    },
+    foldPin:function(){
+      this.inputSettings.pinFilesIsFolded[this.viewMode] = !this.inputSettings.pinFilesIsFolded[this.viewMode]
+      //
+      if( this.inputSettings.pinFilesIsFolded[this.viewMode] ){
+        //  Reset pinned files selection
+        this.files.forEach(file => {
+          //
+          if( file.isPinned ){
+            //  imgs
+            if( (this.viewMode == 'imgs') && (this.fileImgMask.includes(file.format)) ){
+              this.state.setCmd( {cmd: 'unselect file', fileID: file.id} )
+            }
+            //  text
+            if( (this.viewMode == 'text') && (!this.fileImgMask.includes(file.format)) ){
+              this.state.setCmd( {cmd: 'unselect file', fileID: file.id} )
+            }
+          }
+        })
+        //
+        this.state.setCmd( {cmd: 'count the number of selected files'} )
+      }
+    },
+    // getCountFiles:function(){
+    //   this.countFiles = {text: {pin: 0, unpin: 0}, imgs: {pin: 0, unpin: 0}}
+
+    //   this.files.forEach(element => {
+
+    //     if( this.fileImgMask.includes(element.format) ){
+    //         if(!element.isPinned){
+    //           this.countFiles.imgs.unpin ++
+    //         }else{
+    //           this.countFiles.imgs.pin ++
+    //         }
+    //     }
+    //     if( !this.fileImgMask.includes(element.format) ){
+    //         if(!element.isPinned){
+    //           this.countFiles.text.unpin ++
+    //         }else{
+    //           this.countFiles.text.pin ++
+    //         }
+    //     }
+
+    //   })
+    // },
     // watch(){
 
     //     deep: true,
@@ -127,81 +202,105 @@ export default {
   },
   data(){
     return{
-        displayedMarks: {text:[], imgs:[]},
-        fileImgMask: ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'svg'],
-        singleDisplayMarkMode: {isEnabled: false, mark_id: ''},
+      displayedMarks: {text:[], imgs:[]},
+      fileImgMask: ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'svg'],
+      singleDisplayMarkMode: {isEnabled: false, mark_id: ''},
+      countFiles: {text: {pin: 0, unpin: 0}, imgs: {pin: 0, unpin: 0}},
+      // settings:{
+      //   textFileBtnHeight_px: 5,
+      // },
+      unpinHeightBlock: 600,
     }
-  }
+  },
+  beforeUpdate(){
+    //
+    // this.refreshFiles()
+    //
+    // this.getCountFiles()
+    //
+    // this.unpinHeightBlock = document.querySelector('._component').clientHeight - 50 - this.countFiles[this.viewMode].pin * this.settings.textFileBtnHeight_px - 200
+    this.countUnpinBlockHeight()
+  },
+  beforeMount(){
+    //
+    // this.countUnpinBlockHeight()
+  },
 }
 </script>
 
 <template>
 
   <div 
-    class="h100 focus" 
+    class="h100 focus _component" 
     tabindex="0" 
     @keyup.esc="unselectAllFiles()" 
     @keyup.enter="enter()" 
     @keyup.f2="renameFile()" 
-    @keyup.f5="refreshFiles()"
     @keyup.delete="deleteFile()"
     @keyup.ctrl.c="copyFilesToBuffer()"
     @keyup.ctrl.v="pasteFilesFromBuffer()"
     @keyup.ctrl.x="cutFilesToBuffer()"
-    @keyup.ctrl.d="pinThisFolder()"
+    @keyup.ctrl.d="pinThisFiles()"
   >
 
     <div class="on-row">
-      <div class="left-field"></div>
-      <div :class="`${viewMode}`">
-       <div v-for="fileItem in files">
-         <div v-if="fileItem.isPinned" @click="clickToFile(fileItem.id)" @mouseenter.ctrl="readMetadata(fileItem)" @dblclick="openFile(fileItem)">
-           <FileComponent :file="fileItem" :viewMode="viewMode" :state="state" :pixHeight="200" />
-           <!-- <FileComponent :file="fileItem" :viewMode="viewMode" :folderPath="'data.thisFolder.path'" :state="state" :pixHeight="200" /> -->
-         </div>
-       </div>
+      <div @click="foldPin()" class="left-field _left-field">
+        <div :class="{pinActive: inputSettings.pinFilesIsFolded[viewMode]}">Pin</div>
+      </div>
+      <div v-if="!inputSettings.pinFilesIsFolded[viewMode]">
+        <div :class="`${viewMode}`">
+          <div v-for="fileItem in files">
+            <div v-if="fileItem.isPinned" @click="clickToFile(fileItem.id)" @mouseenter.ctrl="readMetadata(fileItem)" @dblclick="openFile(fileItem)">
+              <FileComponent :file="fileItem" :viewMode="viewMode" :state="state" :pixHeight="inputSettings.imagesHeight" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     
-     <!-- <div v-for="markItem in marks"> -->
-     <div v-for="markItem in showOneMarkMode(marks)">
-    
-       <div v-if="markItem.show">
+     <div class="scrollY unpin-block" :style="`height: ${unpinHeightBlock}px;`">
 
-        <div v-if="filterMark(markItem)" class="on-row" :id="`${markItem.id}`">
-        <!-- <div v-if="displayedMarks[viewMode].includes(markItem.id)" class="on-row" :id="`${markItem.id}`"> -->
-        
-          <div :class="`${markItem.color}-back`" class="left-field" @click="foldMark(markItem.id)"></div>
-        
-          <div class="on-col">
-        
-            <div @click="foldMark(markItem.id)" @dblclick="hideOthersMarksAndFiles(markItem.id)">
-              <span :class="`${markItem.color}-text`">
-                {{ markItem.descr }}
-              </span>
-            </div>
-          
-            <div :class="`${viewMode}`">
-             <div v-for="fileItem in files" v-if="markItem.isFolded[viewMode]">
-               <div v-if="!fileItem.isPinned && (fileItem.markID == markItem.id)">
-                 <div @click="clickToFile(fileItem.id)" @mouseenter.ctrl="readMetadata(fileItem)" @dblclick="openFile(fileItem)">
-                   <FileComponent 
-                     :file="fileItem" 
-                     :state="state"
-                     :viewMode="viewMode" 
-                     :pixHeight="200"
-                     />
-                 </div>
-               </div>
+      <div v-for="markItem in showOneMarkMode(marks)">
+      
+        <div v-if="markItem.show">
+      
+         <div v-if="filterMark(markItem)" class="on-row" :id="`${markItem.id}`">
+         
+           <div :class="`${markItem.color}-back`" class="left-field" @click="foldMark(markItem.id)"></div>
+         
+           <div class="on-col">
+         
+             <div @click="foldMark(markItem.id)" @dblclick="hideOthersMarksAndFiles(markItem.id)">
+               <span :class="`${markItem.color}-text`">
+                 {{ markItem.descr }}
+               </span>
              </div>
-            </div>
-        
-          </div>
-        
+           
+             <div @keyup.ctrl.a="selectAllFilesInGroupMark(markItem.id)" :class="`${viewMode}`" tabindex="0" class="focus">
+              <div v-for="fileItem in files" v-if="markItem.isFolded[viewMode]">
+                <div v-if="!fileItem.isPinned && (fileItem.markID == markItem.id)">
+                  <div @click="clickToFile(fileItem.id)" @mouseenter.shift="readMetadata(fileItem)" @dblclick="openFile(fileItem)">
+                    <FileComponent 
+                      :file="fileItem" 
+                      :state="state"
+                      :viewMode="viewMode" 
+                      :pixHeight="inputSettings.imagesHeight"
+                      />
+                  </div>
+                </div>
+              </div>
+             </div>
+         
+           </div>
+         
+         </div>
+      
         </div>
+      
+      </div>
 
-       </div>
-    
+      <div class="empty-block"></div>
+
      </div>
 
   </div>
@@ -213,12 +312,25 @@ export default {
   .focus:focus{
     outline: none;
   }
-  .left-field:hover{
-    opacity: .6;
-  }
   .left-field{
     width: 50px;
     opacity: .4;
+  }
+  .left-field:hover{
+    opacity: .6;
+  }
+
+  .pinActive{
+    color:aquamarine;   //
+  }
+  // .pin-block{
+  //   height: fit-content;
+  // }
+  .unpin-block{
+    // max-height: 65vh;
+    // height: 50vh;
+    // height: fit-content;
+    // display: inline-block;
   }
 
   .item{
@@ -235,5 +347,10 @@ export default {
   .imgs{
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .empty-block{
+    height: 200px;
   }
 </style>

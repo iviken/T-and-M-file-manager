@@ -19,33 +19,32 @@ export default {
         switch (stateConst){
             case 'CLOSE_PROJ':
                 this.state.active = 'BROWSER'
-                // this.state.projectIsOpened = false
+
+                this.state.atLeastOneProjectOpen = false
 
                 window.api.closeProject()
                 // this.$router.push({name: 'ProjectsList'})
             break
-            case 'GO_PROJ':    
-                this.state.active = 'PROJECTS'
+            case 'GO_BROWS/PROJ':    
                 //
-                let atLeastOneProjectOpen = false
-                for (const key in this.fullData) {
-                    if( this.fullData[key].meta.status == 'opened' ){
-                        atLeastOneProjectOpen = true
-                        break
+                if(this.state.active == 'PROJECTS'){
+                    this.$router.push({name: 'Browser-session' })
+                }
+                //
+                if(this.state.active == 'BROWSER'){
+                    //
+                    this.checkIfAtLeastOneProjectOpen()
+                    //
+                    if(this.state.atLeastOneProjectOpen){
+                        this.$router.push({name: 'Browser-projects' })
+                    }else{
+                        this.$router.push({name: 'ProjectsList' })
                     }
                 }
-                if(atLeastOneProjectOpen){
-                    this.$router.push({name: 'Browser-projects' })
-                }else{
-                    this.$router.push({name: 'ProjectsList' })
-                }
-            break
-            case 'GO_BROWS':    
-                this.state.active = 'BROWSER'
-                this.$router.push({name: 'Browser-session' })
-            break
+                this.state.active = this.state.active == 'BROWSER' ? 'PROJECTS' : 'BROWSER'
+            break   
         }
-        console.log(this.$route.name)
+        // console.log(this.$route.name)
     },
     closeApp() {
         window.api.close()
@@ -57,21 +56,34 @@ export default {
         window.api.maximize()
     },
     getActualProjectName(){
-        console.log('this.fullData[key].meta.name')
         for (const key in this.fullData) {
             if(this.fullData[key].meta.status == 'opened'){
-                console.log(this.fullData[key].meta.name)
+                // console.log(this.fullData[key].meta.name)
                 return this.fullData[key].meta.name
+            }
+        }
+    },
+    checkIfAtLeastOneProjectOpen(){
+        for (const key in this.fullData) {
+            if( this.fullData[key].meta.status == 'opened' ){
+                this.state.atLeastOneProjectOpen = true
+                break
             }
         }
     },
   },
   beforeMount() {
     this.fullData = window.api.getData()
+    //
     this.projectName =  this.getActualProjectName()
+    //
+    this.checkIfAtLeastOneProjectOpen()
   },
   beforeUpdate() {
+    //
     this.projectName =  this.getActualProjectName()
+    //
+    this.checkIfAtLeastOneProjectOpen()
   },
   mounted(){
     this.$nextTick(function () {
@@ -93,6 +105,7 @@ export default {
         state: {
             active: 'BROWSER',
             windowIsMaximized: true,
+            atLeastOneProjectOpen: true,
         },
         projectName: 'project Name',
         fullData: null,
@@ -111,13 +124,11 @@ export default {
     <div class="header w100 drag">
         <div class="header__box w100 h100">
             <div class="header__btns w100 on-row">
+
                 <div class="header__btns-left on-row no-drag">
-                    <!-- <RouterLink v-if="state.active == 'PROJECTS'" :to="{name: $route.name}" active-class=""> -->
-                        <button v-if="state.active == 'PROJECTS'" class="btn-logo btn-logo1 header__btn bold" @click="changeState('GO_BROWS')">M&T</button>
-                    <!-- </RouterLink> -->
-                    <!-- <RouterLink v-if="state.active == 'BROWSER'" :to="{name: $route.name}" active-class=""> -->
-                        <button v-if="state.active == 'BROWSER'" class="btn-logo btn-logo2 header__btn" @click="changeState('GO_PROJ')">M&T</button>
-                    <!-- </RouterLink> -->
+
+                    <button class="btn-logo btn-logo1 header__btn bold" @click="changeState('GO_BROWS/PROJ')">M&T</button>
+
                     <RouterLink v-if="state.active == 'PROJECTS'" :to="{name: 'ProjectsList'}" active-class="">
                         <button class="header__btn header__btns-close-project" @click="changeState('CLOSE_PROJ')">
                             <title>Close project</title>
@@ -128,9 +139,11 @@ export default {
                             </svg>
                         </button>
                     </RouterLink>
+
                     <RouterLink :to="{name: 'Help'}" active-class="">
                         <button class="header__btns-go-help header__btn bold">F1</button>
                     </RouterLink>
+
                     <RouterLink :to="{name: 'Unsplash'}" active-class="">
                         <button class="header__btn-unsplash header__btn">
                             <svg fill="#000000" width="18px" height="18px" viewBox="0 0 24 24" role="img"
@@ -140,7 +153,9 @@ export default {
                             </svg>
                         </button>
                     </RouterLink>
+
                 </div>
+
                 <div class="header__name w100 text-center on-center">
                     <div class="no-drag">
                         <span v-if="state.active == 'PROJECTS'">
@@ -153,6 +168,7 @@ export default {
                         <!-- <input type="text" v-model="projectName" class="text-center header__name-input"> -->
                     </div>
                 </div>
+
                 <div class="header__btns-right on-row no-drag">
                     <button class="header__btns-minimize header__btn" @click="minimizeApp()">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18px" height="18px">
@@ -200,6 +216,7 @@ export default {
                         </svg>
                     </button>
                 </div>
+
             </div>
         </div>
     </div>

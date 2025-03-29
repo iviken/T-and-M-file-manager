@@ -1,17 +1,109 @@
 import { ipcRenderer, contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import {projects, freeBrowse, fakeData_tree} from '../renderer/src/assets/fakedata.js'
 
-let projectsData = null
-let browserData = null
+let path = require('path')
+const fs = require('fs')
+
+const sessionProjectsFilePath = () => path.join(__dirname, '..', 'JSON', 'sessionProjects.json')
+const sessionBrowserFilePath = () => path.join(__dirname, '..', 'JSON', 'sessionBrowser.json')
+
+const projectsData = {dataType: 'PROJECT' ,data: {}, state: 'not opened' }
+const browserData = {dataType: 'BROWSER' ,data: {}, state: 'not opened' }
 
 function getActiveData(typeSession){
-  if(typeSession == 'PROJECT'){projectsData = {dataType: 'PROJECT' ,data: projects}}
-  if(typeSession == 'BROWSER'){browserData = {dataType: 'BROWSER' ,data: freeBrowse}}
+  //
+  if(typeSession == 'PROJECT'){
+    if(projectsData.state == 'not opened'){
+      projectsData.data = JSON.parse( fs.readFileSync( sessionProjectsFilePath(), 'utf8' ) )
+      projectsData.state = 'opened'
+    }
+  }
+  //
+  if(typeSession == 'BROWSER'){
+    if(browserData.state == 'not opened'){
+      browserData.data = JSON.parse( fs.readFileSync( sessionBrowserFilePath(), 'utf8' ) )
+      browserData.state = 'opened'
+    }
+  }
 }
-
 // Custom APIs for renderer
 const api = {
+
+  getFileFullnames:(InPath)=>{
+    return fs.readdirSync(path.resolve(InPath), { withFileTypes: true })
+    .filter(d => d.isFile())
+    .map(d => d.name);
+    // let files = fs.readdirSync( path.resolve(InPath) )
+    // return files
+  },
+
+  getFilenames:(InPath)=>{
+    let files = fs.readdirSync( path.resolve(InPath) )
+    let result = []
+    //
+    files.forEach(element => {
+      result.push({
+        name: path.extname(path.join( InPath, element) ),
+        format: path.basename(path.join( InPath, element) , path.extname(path.join( InPath, element) ))
+      })
+    })
+    return result
+  },
+
+  getFolderNames:(folderPath)=>{
+    return fs.readdirSync(path.resolve(folderPath), { withFileTypes: true })
+    .filter(d => d.isDirectory())
+    .map(d => d.name);
+  },
+
+  createFolder:(InPath)=>{
+    fs.mkdir(path.resolve( path.join( InPath, 'new folder' ) ), (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('Directory created successfully.');
+      }
+    })
+  },
+
+  renameFolder:(InPath, previousName, newName)=>{
+    fs.rename( path.resolve( path.join( InPath, previousName ) ), path.resolve( path.join( InPath, newName ) ), err => {
+      if (err) {
+        console.error(err);
+      }
+      // done
+    })
+  },
+
+  getFileMeta:(InPath, fileFullname)=>{
+    //
+    let fileStats = {
+      created: null, 
+      createdMS: null, 
+      lastEdited: null, 
+      lastEditedMS: null, 
+      size: null
+    }
+    //
+    fs.stat( path.resolve( InPath, fileFullname ), (error, stats) => {  
+      if (error){
+        return
+      }else{
+        //
+        if(stats.isFile()){
+          fileStats.created = stats.atime
+          fileStats.createdMs = stats.atimeMs
+          fileStats.lastEdited = stats.mtime
+          fileStats.lastEditedMS = stats.mtimeMs
+          fileStats.size = stats.size
+        }
+        //
+        if(stats.isDirectory()) return
+      }
+    })
+
+    return fileStats
+  },
 
   getData:()=>{
     getActiveData('PROJECT')
@@ -24,30 +116,19 @@ const api = {
   },
 
   closeProject:function(){
-    // if(activeData.dataType == 'PROJECT'){
-      for (const key in projectsData.data) {
-        if(projectsData.data[key].meta.status == 'opened'){
-          projectsData.data[key].meta.lastModified = Date.now()
-          projectsData.data[key].meta.lastOpened = Date.now()
-          // console.log(Date.now())
-          projectsData.data[key].meta.status = 'closed'
-        }
+    for (const key in projectsData.data) {
+      if(projectsData.data[key].meta.status == 'opened'){
+        //
+        projectsData.data[key].meta.lastModified = Date.now()
+        projectsData.data[key].meta.lastOpened = Date.now()
+        projectsData.data[key].meta.status = 'closed'
       }
-    // }
+    }
   },
 
   openProject:function(proj_id){
     projectsData.data[proj_id].meta.status = 'opened'
   },
-  
-  // getProjectName:function(){
-  //   // if(activeData.dataType == 'PROJECT'){
-  //     console.log('name is: '+projectsData.data.meta.name)
-  //     return projectsData.data.meta.name
-  //   // }
-  // },
-
-  getTree:()=>{return fakeData_tree},
 
   close: () => ipcRenderer.send('app/close'),
   minimize: () => ipcRenderer.send('app/minimize'),

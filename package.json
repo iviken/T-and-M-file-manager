@@ -20,6 +20,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^4.0.0",
+    "fs": "^0.0.1-security",
     "router-view": "^1.1.7",
     "sass": "^1.85.1",
     "vue-router": "^4.5.0"

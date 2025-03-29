@@ -23,6 +23,9 @@
 .swap-all-childrens * {
     flex-direction: row-reverse;
 }
+.wrap{
+    flex-wrap: wrap;
+}
 /* SIZES */
 .w100{
     width: 100%;
@@ -100,3 +103,14 @@
 .no-user-select{
     user-select: none;
 }
+.scrollY{
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    /* scroll-snap-type: y proximity;
+    scroll-snap-stop: always */
+}
+/* .scrollY> div{
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+} */

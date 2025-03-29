@@ -1,7 +1,5 @@
 <script>
-
 export default {
-  components:{},
   methods: {
     openProject:function(proj_id){
         window.api.openProject(proj_id)
@@ -15,9 +13,10 @@ export default {
         this.fullData[proj_id].meta.isPinned = !this.fullData[proj_id].meta.isPinned
     },
     createNewProjectFromOpenedFolders(){
-        //  Copy opened fokders session in to projects bd
+        //  Copy opened folders session in to projects bd from browser session
         let newProjectId = 'proj_' + Math.floor(Math.random()*10000000)
-        this.fullData[newProjectId] = structuredClone( window.api.getSessionData() )
+        this.fullData[newProjectId] = structuredClone( window.api.getSessionData().proj_default )
+        // console.log(this.fullData[newProjectId])
         //  Assign a metadata
         this.fullData[newProjectId].id = newProjectId
         this.fullData[newProjectId].meta.name = this.nameOfNewProject
@@ -34,9 +33,10 @@ export default {
         this.fullData[newProjectId].marks = {
             mark_unmarked: {id: 'mark_unmarked', color: 'default-color', descr: '--unmarked--', isFolded: {text: false, imgs: false}, show: true }
         }
-        //  Clear folders in session
-        let session = window.api.getSessionData()
-        session.folders = []
+        //  Clear folders in browser session
+        let session = window.api.getSessionData().proj_default       //  Browser session
+        //
+        // session.folders = []        //      TO DO
     },
     renameProject:function(dat){
         if(dat.state == 'input-start'){
@@ -178,18 +178,20 @@ export default {
      <div class="on-row">
     
          <div class="left">
-             <div v-if="hoverOnCreateNewProject" class="projects-list__description text-left">
+             <div v-if="hoverOnCreateNewProject" class="text-left">
                  <span class="project-description capitalize">Create new project from opened folders. Your marks and tasks will remain.</span>
              </div>
          </div>
     
-         <div class="projects-list__box w100">
-             <div @mouseleave="hoverOnCreateNewProject = false" @mouseenter="hoverOnCreateNewProject = true" class="projects-list__item w100 on-row">
-                 <div class="new-proj-logo"><img src="../assets/plus.svg" class="logo"></div>
-                 <div class="create w100 text-left" @click="createNewProjectFromOpenedFolders()">
-                     <span class="project-name uppercase">Create new project</span>
-                 </div>
-             </div>
+         <div class="projects-list w100 h100 right">
+            <div class="projects-list__box w100">
+                <div @mouseleave="hoverOnCreateNewProject = false" @mouseenter="hoverOnCreateNewProject = true" class="projects-list__item w100 on-row">
+                    <div class="new-proj-logo"><img src="../assets/plus.svg" class="logo"></div>
+                    <div class="create w100 text-left" @click="createNewProjectFromOpenedFolders()">
+                        <span class="project-name uppercase">Create new project</span>
+                    </div>
+                </div>
+            </div>
          </div>
     
      </div>

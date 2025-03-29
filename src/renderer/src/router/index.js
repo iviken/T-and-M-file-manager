@@ -26,7 +26,8 @@ const router = createRouter({
       component: HelpView,
     },
     {
-      path: '/ProjectsListView',
+      path: '/',
+      // path: '/ProjectsListView',
       name: 'ProjectsList',
       component: ProjectsListView,
     },

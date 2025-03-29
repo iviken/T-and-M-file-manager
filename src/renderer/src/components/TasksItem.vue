@@ -1,7 +1,5 @@
 <script>
 export default {
-  components:{
-  },
   props:{
     data:{
         type: Object,
@@ -28,9 +26,21 @@ export default {
     },
     checkToTask: function(id){
         this.data[id].status = this.data[id].status == 'done' ? 'undone' : 'done'
+        //  Checks all sub-tasks status 'done'. If all sub-tasks are 'done', assign the task status 'done'
+        //          TO  DO
+        if(this.data[id].subtasksAvailability){
+            let allSubtasksIsDone = true
+            for (const key in this.data[id].subtasks) {
+                if(this.data[id].subtasks[key].status != 'done') allSubtasksIsDone = false
+            }
+            //
+            if(allSubtasksIsDone) this.data[id].status = 'done'
+        }
     },
     pinTask:function(id){
-        this.data[id].isPinned = !this.data[id].isPinned
+        if(this.data[id].status == 'active'){
+            this.data[id].isPinned = !this.data[id].isPinned
+        }
     },
     deleteTask:function(id){
         delete this.data[id]
@@ -71,7 +81,7 @@ export default {
   data(){
     return{
         isRemaned: false,
-        renamedValue: ''
+        renamedValue: '',
     }
   }
 }
@@ -79,7 +89,7 @@ export default {
 
 <template>
 
-        <div v-if="!isRemaned" class="task w100 on-row" :class="`${task.status}`">
+        <div v-if="!isRemaned" class="task w100 on-row focus" @keyup.ctrl.d="pinTask(task.id)" :class="`${task.status}`" tabindex="0">
 
             <div class="btn check-box" @click="checkToTask(task.id)" v-if="!task.subtasksAvailability"><div class="check"></div></div>
             <div class="btn fold-box" @click="foldTask(task.id)" v-if="task.subtasksAvailability"><div>V</div></div>
@@ -87,7 +97,7 @@ export default {
             <div class="w100 on-row">
 
                 <div @click="selectTask(task.id)" @dblclick="renameTask({state: 'input-start', name: task.name})"><span>{{ task.name }}</span></div>
-                <div class="btn up-dawn" v-if="task.status!='active'">**</div>
+                <!-- <div class="btn up-dawn" v-if="task.status!='active'">**</div> -->
                 <div class="btn pin" v-if="(task.status=='active')&&(task.id.indexOf('sub')!=0)" @click="pinTask(task.id)">pin</div>
                 <div class="btn delete" v-if="task.status=='done'" @click="deleteTask(task.id)">x</div>
 
@@ -100,7 +110,7 @@ export default {
         </div>
 
         <div v-else>
-            <input type="text" v-model="renamedValue" :id="`${task.id}`" class="rename" @keyup.enter="renameTask({state: 'input-done', id: task.id})"></input>
+            <input type="text" v-model="renamedValue" :id="`${task.id}`" class="rename" @keyup.esc="isRemaned = false" @keyup.enter="renameTask({state: 'input-done', id: task.id})"></input>
         </div>
 
 </template>
@@ -140,5 +150,9 @@ export default {
     .rename{
         background-color: antiquewhite;
         padding-left: 20px;
+    }
+
+    .focus:focus{
+        outline: none;
     }
 </style>

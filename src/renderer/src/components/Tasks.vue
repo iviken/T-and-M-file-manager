@@ -57,47 +57,77 @@ export default {
 </script>
 
 <template>
-<div class="on-col this">
-
-    <div class="pin-block on-col">
-        <div v-for="task in data">
-            <div v-if="task.isPinned">
-
-                <TaskItem :task="task" :data="data" />
-                <div v-for="subtask in task.subtasks" class="sub" v-if="!task.isFolded">
-                    <TaskItem :task="subtask" :data="task.subtasks" />
+    <div class="task-component">
+        <div class="section on-col">
+        
+            <div class="pin-block scrollY on-col">
+                <div v-for="task in data">
+                    <div v-if="task.isPinned">
+        
+                        <TaskItem :task="task" :data="data" />
+        
+                        <div v-for="subtask in task.subtasks" class="sub" v-if="!task.isFolded">
+                            <TaskItem :task="subtask" :data="task.subtasks" />
+                        </div>
+        
+                    </div>
                 </div>
-
             </div>
-        </div>
-    </div>
 
-    <div v-for="task in data">
-        <div v-if="!task.isPinned">
-
-            <TaskItem :task="task" :data="data" />
-            <div v-for="subtask in task.subtasks" class="sub" v-if="!task.isFolded">
-                <TaskItem :task="subtask" :data="task.subtasks" />
+            <div class="empty1"></div>
+        
+            <div class="block scrollY">
+                <div v-for="task in data">
+                    <div v-if="!task.isPinned">
+                
+                        <TaskItem :task="task" :data="data" />
+                        
+                        <div v-for="subtask in task.subtasks" class="sub" v-if="!task.isFolded">
+                            <TaskItem :task="subtask" :data="task.subtasks" />
+                        </div>
+                        
+                    </div>
+                </div>
+                
             </div>
             
+            <div class="empty1"></div>
+            
+            <div>
+                <input type="text" v-model="newTaskValue" class="rename" @keyup.enter="createNewTask()"></input>
+            </div>
+
         </div>
     </div>
-
-    <div>
-        <input type="text" v-model="newTaskValue" class="rename" @keyup.enter="createNewTask()"></input>
-    </div>
-
-</div>
 </template>
 
 <style scoped lang="scss">
     // @use '../scss/tasks.scss' as *;
-    .this{
-        padding-top: var(--top-indent);
+    // .task-component{
+    //     padding-bottom: 210px;
+    //     height: auto;
+    // }
+    .task-component{
+        // -webkit-mask-image: -webkit-gradient(linear, left 90%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
     }
 
-    .pin-block{
-        margin-bottom: 50px;
+    // @media screen and (min-height: 100vh) {
+        .section{
+            // height: calc( 100vh - var(--header-heigth) - var(--content-indent) - var(--pin-indent-bottom) + 10px );
+        }
+        .empty1{
+            height: 50px;
+        }
+        .empty2{
+            height: 200px;
+        }
+    // }
+
+    // .pin-block{
+    //     padding-bottom: var(--pin-indent-bottom);
+    // }
+    .pin-block, .block{
+        max-height: 30vh;
     }
     .sub{
         margin-left: 20px;

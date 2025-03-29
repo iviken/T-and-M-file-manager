@@ -18,12 +18,6 @@ export default {
         type: Object,
         required: true
     }
-  },
-  methods: {
-  },
-  data(){
-    return{
-    }
   }
 }
 </script>
@@ -40,9 +34,7 @@ export default {
 </template>
 
 <style scoped lang="scss">
-  // @use '../scss/textFiles.scss' as *;
-  $right-indent: 260px;
-  $width-tasks-and-marks-field: 620px;
+  $width-tasks-and-marks-field: 420px;
   $width-text-files-filed: 280px;
 
   .component{
@@ -55,7 +47,7 @@ export default {
   }
 
   .image-files-component{
-    max-width: calc(1920px - $width-tasks-and-marks-field - $width-text-files-filed);
-    padding-right: $right-indent;
+    width: 800px;
+    max-width: calc(1920px - $width-tasks-and-marks-field - $width-text-files-filed - 400px);
   }
 </style>

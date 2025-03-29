@@ -1,0 +1,98 @@
+{
+    "proj_default": {
+        "id": "proj_default", 
+        "headerPicture": {},
+        "parameters": {
+            "pinFilesIsFolded": {
+                "imgs": false,
+                "text": false
+            },
+            "imagesHeight": 300,
+            "pinFoldersIsFolded": false
+        },
+        "meta":{
+            "name": "default",
+            "created": 1742744761272,
+            "lastModified": 1742744761272,
+            "lastOpened": 1742744761272,
+            "isPinned": false,
+            "description": "default",
+            "status": "opened"
+        },
+        "tasks": {
+            "task_001":{
+                "id": "task_001",
+                "name": "Browser some task one",
+                "descr": "Lorem ipsum ... description",
+                "status": "undone",
+                "isPinned": false,
+                "isFolded": true,
+                "subtasksAvailability": false,
+                "subtasks": {}
+            },
+            "task_002":{
+                "id": "task_002",
+                "name": "Browser some task two",
+                "descr": "Lorem ipsum ... description",
+                "status": "undone",
+                "isPinned": true,
+                "isFolded": true,
+                "subtasksAvailability": false,
+                "subtasks": {}
+            },
+            "task_003":{
+                "id": "task_003",
+                "name": "Browser some task free",
+                "descr": "",
+                "status": "undone",
+                "isPinned": false,
+                "isFolded": false,
+                "subtasksAvailability": true,
+                "subtasks": {
+                    "subtask_001":{
+                        "id": "subtask_001",
+                        "name": "Browser some sub-task one",
+                        "descr": "Lorem ipsum ... description",
+                        "status": "active",
+                        "subtasksAvailability": false
+                    },
+                    "subtask_002":{
+                        "id": "subtask_002",
+                        "name": "Browser some sub-task two",
+                        "descr": "Lorem ipsum ... description",
+                        "status": "undone",
+                        "subtasksAvailability": false
+                    }
+                }
+            }
+        },
+        "marks": {
+            "mark_1000": {"id": "mark_1000", "color": "red", "descr": "Some text red mark", "isFolded": {"text": true, "imgs": false}, "show": true },
+            "mark_1001": {"id": "mark_1001", "color": "green", "descr": "Some text green mark", "isFolded": {"text": true, "imgs": false}, "show": true },
+            "mark_1002": {"id": "mark_1002", "color": "yellow", "descr": "Some text yellow mark 2", "isFolded": {"text": true, "imgs": false}, "show": true },
+            "mark_1003": {"id": "mark_1003", "color": "ocean", "descr": "Some text ocean mark 3", "isFolded": {"text": true, "imgs": false}, "show": false },
+            "mark_1004": {"id": "mark_1004", "color": "default-color", "descr": "Some text mark 4", "isFolded": {"text": true, "imgs": false}, "show": true },
+            "mark_1005": {"id": "mark_1005", "color": "default-color", "descr": "Some text mark 5", "isFolded": {"text": true, "imgs": false}, "show": false },
+            "mark_1006": {"id": "mark_1006", "color": "ocean", "descr": "Some text mark 6", "isFolded": {"text": true, "imgs": false}, "show": false },
+            "mark_1007": {"id": "mark_1007", "color": "default-color", "descr": "Some text mark 7", "isFolded": {"text": true, "imgs": false}, "show": false },
+            "mark_1008": {"id": "mark_1008", "color": "default-color", "descr": "Some text mark 8", "isFolded": {"text": true, "imgs": false}, "show": false },
+            "mark_unmarked": {"id": "mark_unmarked", "color": "default-color", "descr": "--unmarked--", "isFolded": {"text": true, "imgs": false}, "show": true }
+        },
+        "folders":[
+            {
+                "id": "default__fold_001",
+                "path": "/Temp/E3/Log",
+                "isOpened": true,
+                "isPinned": true,
+                "files": [
+                    {"id": 100, "name": "file (1)", "format": "js",   "markID": "mark_1000",     "isPinned": false, "path": "C:/Users/LocalHost/Storage", "meta":{"created": 156456, "lastEdited": 165447, "size": 100256}},
+                    {"id": 101, "name": "file (2)", "format": "ini",  "markID": "mark_1000",     "isPinned": true,  "path": "C:/Users/LocalHost/Storage", "meta":{"created": 156456, "lastEdited": 165489, "size": 10024436}},
+                    {"id": 109, "name": "file (10)", "format": "png", "markID": "mark_1000",     "isPinned": false, "path": "C:/Users/LocalHost/Storage", "meta":{"created": 156422, "lastEdited": 165489, "size": 100256}},
+                    {"id": 131, "name": "file (7)", "format": "scss", "markID": "mark_1000",     "isPinned": false, "path": "C:/Users/LocalHost/Storage", "meta":{"created": 156456, "lastEdited": 165489, "size": 140256}},
+                    {"id": 132, "name": "file (7)", "format": "scss", "markID": "mark_1000",     "isPinned": false, "path": "C:/Users/LocalHost/Storage", "meta":{"created": 156456, "lastEdited": 165489, "size": 140256}},
+                    {"id": 133, "name": "file (7)", "format": "scss", "markID": "mark_1000",     "isPinned": false, "path": "C:/Users/LocalHost/Storage", "meta":{"created": 156456, "lastEdited": 165489, "size": 140256}}
+                ]
+            }
+        ]
+    }
+}

@@ -3,7 +3,7 @@
     --pure-white: white;
     --red: rgba(215,75,186,1);
     --green: rgba(62,133,47,1);
-    --yellow: rgba(175,168,62,1);
+--yellow: rgba(175,168,62,1);
     --ocean: rgba(115,208,212,1);
     --blue: rgba(46,51,200,1);
     --orange: rgba(205,133,40,1);
@@ -53,6 +53,9 @@
     --grad-red: linear-gradient(90deg, rgba(215,75,186,.53) 0%, rgba(215,75,186,0.2) 100%);
     --grad-green: linear-gradient(90deg, rgba(62,133,47,.53) 0%, rgba(62,133,47,0.2) 100%);
     --grad-yellow: linear-gradient(90deg, rgba(175,168,62,.53) 0%, rgba(175,168,62,0.2) 100%);
+    --grad-ocean: linear-gradient(90deg, rgba(115,208,212,.53) 0%, rgba(115,208,212,0.2) 100%);
+    --grad-blue: linear-gradient(90deg, rgba(46,51,200,.53) 0%, rgba(46,51,200,0.2) 100%);
+    --grad-orange: linear-gradient(90deg, rgba(205,133,40,.53) 0%, rgba(205,133,40,0.2) 100%);
     
     --grad-field-red: linear-gradient(-90deg, rgba(215,75,186,.34) 0%, rgba(215,75,186,0) 100%);
     --grad-field-green: linear-gradient(-90deg, rgba(62,133,47,.34) 0%, rgba(62,133,47,0) 100%);
@@ -248,6 +251,25 @@
 .field--yellow__rev:hover{
     background: var(--grad-field-yellow);
     transform: rotate(180deg);
+}
+//  BAR PIC COLOR BTNS
+.color-pic-red{
+    background: var(--grad-red);
+}
+.color-pic-green{
+    background: var(--grad-green);
+}
+.color-pic-yellow{
+    background: var(--grad-yellow);
+}
+.color-pic-ocean{
+    background: var(--grad-ocean);
+}
+.color-pic-blue{
+    background: var(--grad-blue);
+}
+.color-pic-orange{
+    background: var(--grad-orange);
 }
 
 /* FAKE SELECTED */

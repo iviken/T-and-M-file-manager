@@ -60,7 +60,7 @@ export default {
           
           <div v-if="( fileImgMask.includes(file.format) ) && (viewMode == 'imgs')" class="img">
             <!-- <img src="../assets/gallery/file (1).png" > -->
-            <img :src="`${file.path}${file.name}.${file.format}`" :style="`height:${pixHeight}px;`">
+            <img :src="`${file.path}/${file.name}.${file.format}`" :style="`height:${pixHeight}px;`">
           </div>
 
         </div>

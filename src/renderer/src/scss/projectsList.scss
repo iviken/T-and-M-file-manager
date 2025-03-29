@@ -29,11 +29,11 @@ $field-between-groups: 60px;
     width: 16px;
     height: 16px;
 }
-.projects-list__description{
-    max-width: calc( $left-filed-width - $left-indent);
-    width: calc( $left-filed-width - $left-indent);
-    margin-left: $left-indent;
-}
+// .projects-list__description{
+//     max-width: calc( $left-filed-width - $left-indent);
+//     width: calc( $left-filed-width - $left-indent);
+//     margin-left: $left-indent;
+// }
 .project-description{
     color: var(--text)
 }

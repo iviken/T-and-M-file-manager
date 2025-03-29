@@ -1,12 +1,12 @@
 <script>
 import Tree from '../components/Tree.vue'
 import Tasks from '../components/Tasks.vue'
-import Files from '../components/Files.vue'
 import Bar from '../components/Bar.vue'
+import AccordionFiles from '../components/Accordion.vue';
 
 export default {
     components: {
-        Tree, Tasks, Bar, Files
+        Tree, Tasks, Bar, AccordionFiles
     },
     props:{
         sessionType:{    
@@ -16,21 +16,25 @@ export default {
     },
     data(){
         return{
-            stateFiles:{     
-                files: {},      //  files:{ID: 'SELECTED/...'}
+            stateFiles:{
+                files: {},                  //  {ID_file_1: 'SELECTED', ID_file_12: 'SELECTED'}
+                imageViewerPullFiles: {},   //  pull images files for viewer
+                pathsOfOpenedFolders: [],   //
                 defaults:{
                     unmarkedMarkID: 'mark_unmarked'
                 },
-                metadata: '',
                 onFocusFile:{
+                    metadata: '',               //  metadata hovered file
                     name: '',
                     format: '',
                 },
+                atLeastOneFileSelected: false,
+                numberOfSelectedFiles: 0,
                 setCmd: function(cmd){     
-                    console.log(cmd)
+                    // console.log(cmd)
                     switch(cmd.cmd){
 
-                        case 'clickToFile':                 //  {cmd: 'clickToFile', fileID: file_ID}
+                        case 'select file':                 //  {cmd: 'select file', fileID: file_ID}
                             if(this.files[cmd.fileID] == 'SELECTED') {
                                 this.files[cmd.fileID] = ''
                             } else {
@@ -38,6 +42,10 @@ export default {
                                     this.files[cmd.fileID] = 'SELECTED'
                                 }
                             }
+                        break
+
+                        case 'unselect file':                 //  {cmd: 'unselect file', fileID: file_ID}
+                            this.files[cmd.fileID] = ''
                         break
 
                         case 'pinFiles':                    //  {cmd: 'pinFiles', allFiles: allFiles}
@@ -64,11 +72,11 @@ export default {
                         case 'endRenameSelectedFiles':      //  {cmd: 'tartRenameSelectedFiles', name: 'File name'}
                             for(let key in this.files){
                                 this.files[key] = ''
-                                console.log('cmd: rename files at <BrowserView> : ' + cmd.name)
+                                // console.log('cmd: rename files at <BrowserView> : ' + cmd.name)
                             }
                         break
 
-                        case 'setMarkToFiles':             //  {cmd: 'setMarkForFiles', allFiles: allFiles, mark_ID: 'mark_NNN'}
+                        case 'setMarkToFiles':              //  {cmd: 'setMarkForFiles', allFiles: allFiles, mark_ID: 'mark_NNN'}
                             cmd.allFiles.forEach(element => {
                                 for(let key in this.files){
                                     if( (element.id == key) && (this.files[key] == 'SELECTED') ){
@@ -93,9 +101,33 @@ export default {
                             
                         break
 
-                        case 'renameMark - end':            //  {cmd: 'renameMark - end', descr: 'Some text...' marks: marks, mark_ID: markID}
-                            cmd.marks[cmd.mark_ID].descr = cmd.descr
+                        // case 'renameMark - end':            //  {cmd: 'renameMark - end', descr: 'Some text...' marks: marks, mark_ID: markID}
+                        //     cmd.marks[cmd.mark_ID].descr = cmd.descr
+                        // break
+
+                        case 'check files for seletion':    //  {cmd: 'check files for seletion'}   =>  this.atLeastOneFileSelected
+                            this.atLeastOneFileSelected = false
+                            for (const key in this.files) {
+                                if(this.files[key] == 'SELECTED') this.atLeastOneFileSelected = true
+                            }
                         break
+
+                        case 'count the number of selected files':  //  {cmd: 'count the number of selected files'}   =>  this.numberOfSelectedFiles
+                            this.numberOfSelectedFiles = 0
+                            for (const key in this.files) {
+                                if(this.files[key] == 'SELECTED') this.numberOfSelectedFiles++
+                            }
+                        break
+
+                        case 'select files in group-mark':  //  {cmd: 'select files in group-mark', markID: mark_ID, files: files}
+                            cmd.files.forEach(element => {
+                                if(element.markID == cmd.markID){
+                                    if(!element.isPinned){
+                                        if(element) this.files[element.id] = 'SELECTED'}
+                                }
+                            })
+                        break
+
                     }
                 }
             },
@@ -105,62 +137,147 @@ export default {
                 activeFolderIndex: 0,
                 metadataIsHidden: true,
                 showFilesFromAllFoldersOption: false,
+                showImageViewer: false,
+                actualSessionType: '',                  //
             },
-            tree:{},
             data: {},
             fullData: {},
-            sessionData: {},
+            // sessionData: {},
+            refreshFilesQueueLOG: {deletedIrrelevant: [], foundAndAdded: []},
+            settings:{
+                SESSION:{
+                    allowClosingFoldersWithMarkedFiles: true,
+                    showPinFolders: true,
+                    showCloudsStorageBtns: true,
+                    showSpecialFoldersBtns: true,
+                },
+                PROJECTS:{
+                    allowClosingFoldersWithMarkedFiles: false,
+                    showPinFolders: false,
+                    showCloudsStorageBtns: false,
+                    showSpecialFoldersBtns: false,
+                },
+            }
         }
     },
     methods: {
-        ctrlKey:function(dat){
+        pressShiftKey:function(dat){
             // console.log("CTRL")
-            this.localState.metadataIsHidden = dat == 'CTRL_down' ? false : this.localState.metadataIsHidden
-            this.localState.metadataIsHidden = dat == 'CTRL_up' ? true : this.localState.metadataIsHidden
+            this.localState.metadataIsHidden = dat == 'Shift_down' ? false : this.localState.metadataIsHidden
+            this.localState.metadataIsHidden = dat == 'Shift_up' ? true : this.localState.metadataIsHidden
         },
         getAllFiles(){
             let allFiles_ = []
+            //
+            this.localState.pathsOfOpenedFolders = []
             for (const key in this.data.folders) {
                 allFiles_ = allFiles_.concat(this.data.folders[key].files)
+                //
+                this.localState.pathsOfOpenedFolders.push(this.data.folders[key].path)
             }
             return allFiles_
-        }
-    },
-    beforeMount() {
-        this.getProject()
-
-        this.tree = window.api.getTree()
-    },
-    mounted(){
-        this.$nextTick(function () {
-            window.addEventListener("keydown", e => {
-                if(e.key=='Control'){ this.ctrlKey('CTRL_down') }
-            })
-            window.addEventListener("keyup", e => {
-                if(e.key=='Control'){ this.ctrlKey('CTRL_up') }
-            })
-        })
-    },
-    beforeUpdate(){
-            this.getProject()
-    },
-    methods:{
+        },
+        refreshFiles(){
+            //
+            let actualFilenamesInTheActiveFolder =  window.api.getFileFullnames( this.data.folders[this.localState.activeFolderIndex].path )
+            // console.log(actualFilenamesInTheActiveFolder)
+            //
+            if (actualFilenamesInTheActiveFolder.length > 0 ){
+                //
+                let doesTheFileExist = false
+                //
+                this.data.folders[this.localState.activeFolderIndex].files.forEach( data_element => {
+                    doesTheFileExist = false
+                    //
+                    actualFilenamesInTheActiveFolder.forEach( (element, index) => {
+                        if( `${data_element.name}.${data_element.format}` == element ){
+                            //
+                            actualFilenamesInTheActiveFolder.splice( index, 1 )
+                            //
+                            doesTheFileExist = true
+                            //
+                            data_element.isExist = true
+                        }
+                    })
+                    //
+                    if( !doesTheFileExist ) {
+                        //
+                        this.refreshFilesQueueLOG.deletedIrrelevant.push( data_element.name.slice() )
+                        //
+                        data_element.isExist = false
+                    }
+                })
+                //
+                let arrSize = Number( this.data.folders[this.localState.activeFolderIndex].files.length )
+                if(arrSize){
+                    for(let ch=0; ch<arrSize; ch++){
+                        if( !this.data.folders[this.localState.activeFolderIndex].files[ch].isExist ){
+                            this.data.folders[this.localState.activeFolderIndex].files.splice( ch, 1 )
+                            ch--
+                            arrSize--
+                        }
+                    }
+                }
+                //
+                actualFilenamesInTheActiveFolder.forEach(element => {
+                    this.data.folders[this.localState.activeFolderIndex].files.push(
+                        {
+                            id: 'fileID_' + Math.floor(Math.random()*10000000), 
+                            name: element.slice( 0, element.lastIndexOf('.') ),       //      To Do
+                            format: element.slice( element.lastIndexOf('.') + 1 ), 
+                            markID: 'mark_unmarked',     
+                            isPinned: false, 
+                            path: this.data.folders[this.localState.activeFolderIndex].path, 
+                            meta: window.api.getFileMeta( this.data.folders[this.localState.activeFolderIndex].path, element )
+                        }
+                    )
+                    //
+                    this.refreshFilesQueueLOG.foundAndAdded.push( element )
+                })
+            }else{
+                //
+                this.data.folders[this.localState.activeFolderIndex].files = []
+            }
+            //
+            // console.log( this.refreshFilesQueueLOG )
+        },
         getProject(){
             if(this.sessionType == 'SESSION'){
                 this.fullData = window.api.getSessionData()
+                //
+                this.localState.actualSessionType = 'SESSION'       //  browser session
             }
             if(this.sessionType == 'PROJECTS'){
                 this.fullData = window.api.getData()
+                //
+                this.localState.actualSessionType = 'PROJECTS'       //  browser session
             }
+            // console.log('session type: ' + this.sessionType)
+            // console.log(this.fullData)
             //  Searching in project status 'opened' for open project
             for (const key in this.fullData) {
                 //  Open project
                 if(this.fullData[key].meta.status == 'opened'){
+                    //  Set actual project data (one opened project)
                     this.data = this.fullData[key]
+                    //
+                    let isAtLeatOneFolderOpen = false
                     //  Search opened folder in project
-                    this.fullData[key].folders.forEach((element, index) => {
-                        if(element.isOpened == 'opened'){this.localState.activeFolderIndex = index}
+                    this.fullData[key].folders.forEach((folder, index) => {
+                        if(folder.isOpened){
+                            //  Opened folder index for Accordion component :files
+                            this.localState.activeFolderIndex = index
+                            //
+                            isAtLeatOneFolderOpen = true
+                            // console.log('folder opened: ' + folder.path)
+                            // this.localState.pathsOfOpenedFolders = [element.path]
+                        }
                     })
+                    //  Reset opened folder index if is all folders closed
+                    if( !isAtLeatOneFolderOpen ){
+                        this.localState.activeFolderIndex = 0
+                        this.fullData[key].folders[0].isOpened = true
+                    }
                     break
                 }
                 // }else{
@@ -168,14 +285,71 @@ export default {
                 //     this.data = window.api.getSessionData()
                 // }
             }
+            //
+            this.refreshFiles()
+            //
+            this.resetStateFiles()
         },
-    }
+        imageViewer(){
+            //
+            this.stateFiles.imageViewerPullFiles = {}
+            //
+            let filePullIsEmpty = true
+            //
+            this.data.folders.forEach(folder => {
+                folder.files.forEach(file => {
+                    for(let key in this.stateFiles.files){
+                        if( (file.id == key) && (this.stateFiles.files[key] == 'SELECTED') ){
+                            this.stateFiles.imageViewerPullFiles[key] = file
+                            //
+                            filePullIsEmpty = false
+                        }
+                    }
+                })
+            })
+            //
+            if(!filePullIsEmpty){
+                this.localState.showImageViewer = !this.localState.showImageViewer
+            }
+        },
+        resetStateFiles(){
+            this.stateFiles.files = {}
+            this.stateFiles.pathsOfOpenedFolders = []
+            this.stateFiles.atLeastOneFileSelected = false
+            this.stateFiles.numberOfSelectedFiles = 0
+        },
+    },
+    beforeMount() {
+        //
+        this.getProject()
+    },
+    mounted(){
+        this.$nextTick(function () {
+            window.addEventListener("keydown", e => {
+                if(e.key=='Shift'){ this.pressShiftKey('Shift_down') }
+            })
+            window.addEventListener("keyup", e => {
+                if(e.key=='Shift'){ this.pressShiftKey('Shift_up') }
+            })
+            // window.addEventListener("keydown", e => {
+            //     if(e.key=='Space'){ this.localState.showImageViewer = true
+            //         console.log('SPACE')
+            //      }
+            // })
+            // window.addEventListener("keyup", e => {
+            //     if(e.key=='Space'){ this.localState.showImageViewer = false }
+            // })
+        })
+    },
+    beforeUpdate(){
+        if( this.localState.actualSessionType != this.sessionType ) this.getProject()
+    },
 }
 </script>
 
 <template>
 
-    <div class="on-col component">
+    <div class="on-col focus" @keyup.space="imageViewer()" @keyup.f5="refreshFiles()" tabindex="0">
 
         <!-- <div v-if="sessionType == 'PROJECTS'" class="header-name uppercase">
             <span class="header">{{ data.meta.name }}</span>
@@ -186,21 +360,63 @@ export default {
             {{ data.folders[localState.activeFolderIndex].path.split('/')[ data.folders[localState.activeFolderIndex].path.split('/').length - 1 ] }}
         </div> -->
 
-        <Bar :stateFiles="stateFiles" :localState="localState" :marks="data.marks" :folders="data.folders" />
+        <Bar :stateFiles="stateFiles" :localState="localState" :marks="data.marks" :folders="data.folders" :inputSettings="settings" />
 
-        <div class="page on-row h100">
+        <div class="page">
 
-            <div class="section-left h100">
-                <Tasks v-if="localState.showTasksPanel" :data="data.tasks" />
-                <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption" :tree="tree" :path="data.folders[localState.activeFolderIndex].path" />
+            <div :class="{collapse: localState.showImageViewer}" class="on-row">
+
+                <div class="left-field w100"></div>
+                
+                <div class="page-block on-row w100">
+                
+                    <div class="section-left">
+                        <Tasks v-if="localState.showTasksPanel" :data="data.tasks" class="component" />
+
+                        <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders" :inputSettings="settings"  :dataSettings="data.parameters" :localState="localState" class="component" />
+                    </div>
+                    
+                    <div class="section-right h100">
+                
+                        <div v-if="!localState.showFilesFromAllFoldersOption" class="h100">
+                            
+                            <div class="w100 h100 on-row">
+                                <div>
+                                    <AccordionFiles :files="data.folders[localState.activeFolderIndex].files" :marks="data.marks" :viewMode="'text'" :state="stateFiles" :inputSettings="data.parameters" class="text-files-component component" />
+                                </div>
+                                <div>
+                                    <AccordionFiles :files="data.folders[localState.activeFolderIndex].files" :marks="data.marks" :viewMode="'imgs'" :state="stateFiles" :inputSettings="data.parameters" class="image-files-component component" />
+                                </div>
+                            </div>
+                
+                        </div>
+                
+                        <div v-else class="h100">
+                            
+                            <div class="w100 h100 on-row">
+                                <div>
+                                    <AccordionFiles :files="getAllFiles()" :marks="data.marks" :viewMode="'text'" :state="stateFiles" :inputSettings="data.parameters" class="text-files-component component" />
+                                </div>
+                                <div>
+                                    <AccordionFiles :files="getAllFiles()" :marks="data.marks" :viewMode="'imgs'" :state="stateFiles" :inputSettings="data.parameters" class="image-files-component component" />
+                                </div>
+                            </div>
+                
+                        </div>
+                
+                    </div>
+                    
+                </div>
+                
+                <div class="right-fiels w100"></div>
+
             </div>
 
-            <div class="section-right">
-                <div v-if="!localState.showFilesFromAllFoldersOption" class="h100">
-                    <Files :files="data.folders[localState.activeFolderIndex].files" :marks="data.marks" :state="stateFiles" />
-                </div>
-                <div v-else class="h100">
-                    <Files :files="getAllFiles()" :marks="data.marks" :state="stateFiles" />
+            <div v-if="localState.showImageViewer" class="imageViewer">
+                <div class="component imageViewer on-row wrap w100">
+                    <div v-for="pix in stateFiles.imageViewerPullFiles" class="h100">
+                        <img :src="`${pix.path}/${pix.name}.${pix.format}`">
+                    </div>
                 </div>
             </div>
 
@@ -211,17 +427,92 @@ export default {
 </template>
 
 <style scoped lang="scss">
-    $left-indent: 200px;
-    $width-tasks-and-marks-field: 620px;
-    
+
     .page{
         background: var(--grad-center);
+        padding-top: var(--content-indent);
     }
-    .section-left{
-        width: calc( $width-tasks-and-marks-field - $left-indent );
-        padding-left: $left-indent;
+
+    .page-block{
+        -webkit-mask-image: -webkit-gradient(linear, left 90%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
     }
-    // .component{
+    .text-files-component{
+        background: var(--grad-text-files-and-tasks);
+    }
+
+    .component{
+        height: calc( 100vh - var(--header-heigth) - var(--content-indent) - var(--pin-indent-bottom) + 10px );
+    }
+
+    @media screen and (min-width: 1501px) {
+        
+        .page-block{
+            width: 1500px;
+        }
+        .section-left{
+            width: 420px;
+        }
+        .text-files-component{
+            width: 280px;
+        }
+        .image-files-component{
+            width: 800px;
+            max-width: 800px;
+        }
+    }
+    
+    @media screen and (max-width: 1500px) and (min-width: 1001px) {
+        
+        .page-block{
+            width: 1200px;
+        }
+        .section-left{
+            width: 300px;
+        }
+        .text-files-component{
+            width: 200px;
+        }
+        .image-files-component{
+            width: 700px;
+            max-width: 700px;
+        }
+    }
+    
+    @media screen and (max-width: 1000px) {
+        
+        .page-block{
+            width: 1000px;
+        }
+        .section-left{
+            width: 300px;
+        }
+        .text-files-component{
+            width: 200px;
+        }
+        .image-files-component{
+            width: 100%;
+            // max-width: 700px;
+        }
+        .left-field, .right-fiels{
+            width: 0px;
+        }
+    }
+
+    .imageViewer{
+        color:red;
+    }
+
+    .collapse{
+        // visibility:hidden;
+        // visibility: collapse;
+        display: none;
+    }
+
+    .focus:focus{
+        outline: none;
+    }
+
+    // ._component{
     //     position: relative;
     // }
     // .header-name{
@@ -232,11 +523,4 @@ export default {
     //     left: 160px;
     //     text-align: center;
     // }
-</style>
-
-<style>
-  :root{
-      --top-indent: 80px;
-      --width-tasks-and-marks-field: 620px;
-  }
 </style>
