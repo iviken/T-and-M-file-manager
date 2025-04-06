@@ -33,51 +33,129 @@ export default {
       //
       // document.querySelector('#'+mark_ID).style.height = '80pt'
     },
+    countSelectedFiles(){
+      this.state.numberOfSelectedFiles = 0
+      for (const key in this.state.files) {
+          if(this.state.files[key] == 'SELECTED') this.state.numberOfSelectedFiles++
+      }
+    },
     clickToFile: function(file_ID){
       //
-      this.state.setCmd( {cmd: 'select file', fileID: file_ID} )
+      if(this.state.files[file_ID] == 'SELECTED') {
+          this.state.files[file_ID] = ''
+      } else {
+        if( (this.state.files[file_ID] == '') || (this.state.files[file_ID] == undefined) ){
+            this.state.files[file_ID] = 'SELECTED'
+        }
+      }
       //
-      this.state.setCmd( {cmd: 'count the number of selected files'} )
+      this.countSelectedFiles()
     },
     hideOthersMarksAndFiles: function(mark_ID){
       //
       this.marks[mark_ID].isFolded[this.viewMode] = true
       //
-      // this.displayedMarks[this.viewMode] = JSON.stringify(this.displayedMarks[this.viewMode]) == JSON.stringify([mark_ID]) ? this.unVoidMarks[this.viewMode].slice() : [mark_ID]
       this.singleDisplayMarkMode.isEnabled = !this.singleDisplayMarkMode.isEnabled
       this.singleDisplayMarkMode.mark_id = mark_ID
     },
     unselectAllFiles:function(){
-      this.state.setCmd( {cmd: 'unselectAllFiles'} )
+      this.state.files = {}
       //
-      this.state.setCmd( {cmd: 'count the number of selected files'} )
+      this.countSelectedFiles()
     },
-    enter:function(){
-      console.log('ENTER')
-    },
-    deleteFile:function(){
-      console.log('DELETE FILE')
+    deleteFiles:function(){
+      // console.log('DELETE FILE')
+      try{
+        for (const fileID in this.state.files) {
+          // console.log('e')
+          if( this.state.files[fileID] == 'SELECTED' ){
+            // console.log(this.state.files[fileID])
+            this.files.forEach((file, index) => {
+              if( file.id == fileID ){
+                this.deleteFile( file )
+                // console.log(this.files[index])
+                // window.api.deleteFile( `${this.files[index].path}/${this.files[index].name}.${this.files[index].format}` )
+                  // .then(
+                  //   (resolve)=>{
+                  //     if(resolve == undefined){
+                  //       //
+                  //       this.files.splice( index, 1 )
+                  //       //
+                  //       this.state.files[fileID] = ''
+                  //     }
+                  //   }
+                  // )
+              }
+            })
+          }
+        }
+      } catch{
+        //
+      } finally{
+        //
+        let arrSize = this.files.length
+        for(let ch = 0; ch < arrSize; ch++){
+          if( !this.files[ch].isDeleted ){
+            this.files.splice(ch, 1)
+            ch--
+            arrSize--
+          }
+        }
+      }
     },
     // refreshFiles:function(){
     //   // console.log('REFRESH FILES in: ' + this.state.pathsOfOpenedFolders)
     //   //
     //   // console.log( window.api.getFilenames(this.state.pathsOfOpenedFolders[0]) )
     // },
-    renameFile:function(){
-      this.state.setCmd( {cmd: 'startRenameSelectedFiles'} )
+    renameFiles:function(dat){
+      // console.log(dat)
+      if( dat.state = 'start rename' ){
+        for(let key in this.state.files){
+          this.state.files[key] = 'RENAME'
+        }
+      }
+      //
+      if( dat.newName ){
+        let ch = 0
+        for (const fileID in this.state.files) {
+          if( this.state.files[fileID] == 'RENAME' ){
+            console.log(this.state.files[fileID])
+            ch++
+            this.files.forEach((file, index) => {
+              if( file.id == fileID ){
+                //  For one file
+                if(ch == 1){
+                  this.renameFile( this.files[index], `${dat.newName}` )
+                }
+                //  For many files
+                if(ch > 1){
+                  this.renameFile( this.files[index], `${dat.newName} ${ch}` )
+                }
+              }
+            })
+          }
+        }
+      }
     },
-    copyFilesToBuffer:function(){
+    copyFiles:function(){
       console.log('COPY FILES')
     },
-    cutFilesToBuffer:function(){
+    cutFiles:function(){
       console.log('CUT FILES')
     },
-    pasteFilesFromBuffer:function(){
+    pasteFiles:function(){
       console.log('PASTE FILES')
     },
     pinThisFiles:function(){
-      this.state.setCmd( {cmd: 'pinFiles', allFiles: this.files} )
-      // console.log('PIN FOLDER')
+      this.files.forEach(file => {
+        for(let key in this.state.files){
+          if( (file.id == key) && (this.state.files[key] == 'SELECTED') ){
+            file.isPinned = !file.isPinned
+            this.state.files[key] = ''
+          }
+        }
+      })
     },
     showOneMarkMode:function(dat){  //  marks
       // console.log("FILTER")
@@ -132,20 +210,24 @@ export default {
     },
     openFile:function(file){
       console.log('OPEN FILE')
+      //
+      window.api.openFileInExternalApp( file.path, `${file.name}.${file.format}` )
     },
     selectAllFilesInGroupMark:function(mark_ID){
       //
-      this.state.setCmd( 
-        {
-          cmd: 'select files in group-mark', 
-          markID: mark_ID, 
-          files: this.viewMode == 'imgs' ? 
-            this.files.filter(file=>this.fileImgMask.includes(file.format)) : 
-            this.files.filter(file=>!this.fileImgMask.includes(file.format))
-        } 
-      )
+      let filteredFiles = this.viewMode == 'imgs' ? 
+        this.files.filter(file=>this.fileImgMask.includes(file.format)) : 
+        this.files.filter(file=>!this.fileImgMask.includes(file.format))
       //
-      this.state.setCmd( {cmd: 'count the number of selected files'} )
+      filteredFiles.forEach(file => {
+        if(file.markID == mark_ID){
+          if(!file.isPinned){
+            if(file) this.state.files[file.id] = 'SELECTED'
+          }
+        }
+      })
+      //
+      this.countSelectedFiles()
     },
     countUnpinBlockHeight:function(){
       this.unpinHeightBlock = document.querySelector('._component').clientHeight - document.querySelector('._left-field').clientHeight
@@ -160,17 +242,45 @@ export default {
           if( file.isPinned ){
             //  imgs
             if( (this.viewMode == 'imgs') && (this.fileImgMask.includes(file.format)) ){
-              this.state.setCmd( {cmd: 'unselect file', fileID: file.id} )
+              this.state.files[file.id] = ''
             }
             //  text
             if( (this.viewMode == 'text') && (!this.fileImgMask.includes(file.format)) ){
-              this.state.setCmd( {cmd: 'unselect file', fileID: file.id} )
+              this.state.files[file.id] = ''
             }
           }
         })
         //
-        this.state.setCmd( {cmd: 'count the number of selected files'} )
+        this.countSelectedFiles()
       }
+    },
+    renameFile(file, newName){
+      window.api.renameFile( file.path ,`${file.name}.${file.format}` , `${newName}.${file.format}` )
+        .then((resolve)=>{
+          if(resolve == undefined){
+            //
+            file.name = newName
+            //
+            this.state.files[file.id] = ''
+          }
+        })
+    },
+    deleteFile( file ){
+      let res = window.api.deleteFile( `${file.path}/${file.name}.${file.format}` )
+      if(res == undefined){
+        file.isDeleted = true
+        //
+        this.state.files[fileID] = ''
+      }
+        // .then((resolve)=>{
+        //   if(resolve == undefined){
+        //     //
+        //     // this.files.splice( index, 1 )
+        //     file.isDeleted = true
+        //     //
+        //     this.state.files[fileID] = ''
+        //   }
+        // })
     },
     // getCountFiles:function(){
     //   this.countFiles = {text: {pin: 0, unpin: 0}, imgs: {pin: 0, unpin: 0}}
@@ -199,6 +309,16 @@ export default {
     //     deep: true,
     //     immediate: true
     // }
+  },
+  computed:{
+    isThereAtLeastOneAttachedFile(){
+      return this.files
+        .filter( (file)=>this.viewMode == 'imgs' ? this.fileImgMask.includes(file.format) : !this.fileImgMask.includes(file.format) )
+        .find( (file)=>file.isPinned == true )
+    }
+    // countUnpinBlockHeight1:function(){
+    //   return document.querySelector('._component').clientHeight - document.querySelector('._left-field').clientHeight
+    // },
   },
   data(){
     return{
@@ -234,24 +354,23 @@ export default {
     class="h100 focus _component" 
     tabindex="0" 
     @keyup.esc="unselectAllFiles()" 
-    @keyup.enter="enter()" 
-    @keyup.f2="renameFile()" 
-    @keyup.delete="deleteFile()"
-    @keyup.ctrl.c="copyFilesToBuffer()"
-    @keyup.ctrl.v="pasteFilesFromBuffer()"
-    @keyup.ctrl.x="cutFilesToBuffer()"
+    @keyup.f2="renameFiles( {state: 'start rename'} )" 
+    @keyup.delete="deleteFiles()"
+    @keyup.ctrl.c="copyFiles()"
+    @keyup.ctrl.v="pasteFiles()"
+    @keyup.ctrl.x="cutFiles()"
     @keyup.ctrl.d="pinThisFiles()"
   >
 
     <div class="on-row">
       <div @click="foldPin()" class="left-field _left-field">
-        <div :class="{pinActive: inputSettings.pinFilesIsFolded[viewMode]}">Pin</div>
+        <div v-if="isThereAtLeastOneAttachedFile" :class="{pinActive: inputSettings.pinFilesIsFolded[viewMode]}">Pin</div>
       </div>
       <div v-if="!inputSettings.pinFilesIsFolded[viewMode]">
         <div :class="`${viewMode}`">
           <div v-for="fileItem in files">
             <div v-if="fileItem.isPinned" @click="clickToFile(fileItem.id)" @mouseenter.ctrl="readMetadata(fileItem)" @dblclick="openFile(fileItem)">
-              <FileComponent :file="fileItem" :viewMode="viewMode" :state="state" :pixHeight="inputSettings.imagesHeight" />
+              <FileComponent :file="fileItem" :viewMode="viewMode" :state="state" :pixHeight="inputSettings.imagesHeight" @renameFiles="renameFiles" />
             </div>
           </div>
         </div>
@@ -285,6 +404,7 @@ export default {
                       :state="state"
                       :viewMode="viewMode" 
                       :pixHeight="inputSettings.imagesHeight"
+                      @renameFiles="renameFiles"
                       />
                   </div>
                 </div>

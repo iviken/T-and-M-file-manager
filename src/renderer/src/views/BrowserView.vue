@@ -30,111 +30,12 @@ export default {
                 },
                 atLeastOneFileSelected: false,
                 numberOfSelectedFiles: 0,
-                setCmd: function(cmd){     
-                    // console.log(cmd)
-                    switch(cmd.cmd){
-
-                        case 'select file':                 //  {cmd: 'select file', fileID: file_ID}
-                            if(this.files[cmd.fileID] == 'SELECTED') {
-                                this.files[cmd.fileID] = ''
-                            } else {
-                                if( (this.files[cmd.fileID] == '') || (this.files[cmd.fileID] == undefined) ){
-                                    this.files[cmd.fileID] = 'SELECTED'
-                                }
-                            }
-                        break
-
-                        case 'unselect file':                 //  {cmd: 'unselect file', fileID: file_ID}
-                            this.files[cmd.fileID] = ''
-                        break
-
-                        case 'pinFiles':                    //  {cmd: 'pinFiles', allFiles: allFiles}
-                            cmd.allFiles.forEach(element => {
-                                for(let key in this.files){
-                                    if( (element.id == key) && (this.files[key] == 'SELECTED') ){
-                                        element.isPinned = !element.isPinned
-                                        this.files[key] = ''
-                                    }
-                                }
-                            })
-                        break
-
-                        case 'unselectAllFiles':            //  {cmd: 'unselectAllFiles'}
-                            this.files = {}
-                        break
-
-                        case 'startRenameSelectedFiles':    //  {cmd: 'tartRenameSelectedFiles'}
-                            for(let key in this.files){
-                                this.files[key] = 'RENAME'
-                            }
-                        break
-
-                        case 'endRenameSelectedFiles':      //  {cmd: 'tartRenameSelectedFiles', name: 'File name'}
-                            for(let key in this.files){
-                                this.files[key] = ''
-                                // console.log('cmd: rename files at <BrowserView> : ' + cmd.name)
-                            }
-                        break
-
-                        case 'setMarkToFiles':              //  {cmd: 'setMarkForFiles', allFiles: allFiles, mark_ID: 'mark_NNN'}
-                            cmd.allFiles.forEach(element => {
-                                for(let key in this.files){
-                                    if( (element.id == key) && (this.files[key] == 'SELECTED') ){
-                                        element.markID = cmd.mark_ID
-                                        this.files[key] = ''
-                                    }
-                                }
-                            })
-                        break
-
-                        case 'deleteMark':                  //  {cmd: 'deleteMark', allFiles: allFiles, marks: marks, mark_ID: markID}
-                            if(cmd.mark_ID != this.defaults.unmarkedMarkID){
-                                cmd.allFiles.forEach(element => {
-                                    if(element.markID == cmd.mark_ID){element.markID = this.defaults.unmarkedMarkID}
-                                })
-                                delete cmd.marks[cmd.mark_ID]
-                            }
-                        break
-
-                        case 'switchFolderInTree':          //  {cmd: 'switchFolderInTree', name: dat.name, path: dat.path}
-                            //  Обработка и чтение файлов в новом каталоге
-                            
-                        break
-
-                        // case 'renameMark - end':            //  {cmd: 'renameMark - end', descr: 'Some text...' marks: marks, mark_ID: markID}
-                        //     cmd.marks[cmd.mark_ID].descr = cmd.descr
-                        // break
-
-                        case 'check files for seletion':    //  {cmd: 'check files for seletion'}   =>  this.atLeastOneFileSelected
-                            this.atLeastOneFileSelected = false
-                            for (const key in this.files) {
-                                if(this.files[key] == 'SELECTED') this.atLeastOneFileSelected = true
-                            }
-                        break
-
-                        case 'count the number of selected files':  //  {cmd: 'count the number of selected files'}   =>  this.numberOfSelectedFiles
-                            this.numberOfSelectedFiles = 0
-                            for (const key in this.files) {
-                                if(this.files[key] == 'SELECTED') this.numberOfSelectedFiles++
-                            }
-                        break
-
-                        case 'select files in group-mark':  //  {cmd: 'select files in group-mark', markID: mark_ID, files: files}
-                            cmd.files.forEach(element => {
-                                if(element.markID == cmd.markID){
-                                    if(!element.isPinned){
-                                        if(element) this.files[element.id] = 'SELECTED'}
-                                }
-                            })
-                        break
-
-                    }
-                }
             },
             localState:{
                 showTreePanel: false,
                 showTasksPanel: true,
                 activeFolderIndex: 0,
+                previousFolderIndex: 0,
                 metadataIsHidden: true,
                 showFilesFromAllFoldersOption: false,
                 showImageViewer: false,
@@ -142,29 +43,37 @@ export default {
             },
             data: {},
             fullData: {},
-            // sessionData: {},
             refreshFilesQueueLOG: {deletedIrrelevant: [], foundAndAdded: []},
             settings:{
                 SESSION:{
-                    allowClosingFoldersWithMarkedFiles: true,
+                    // allowClosingFoldersWithMarkedFiles: true,
                     showPinFolders: true,
                     showCloudsStorageBtns: true,
                     showSpecialFoldersBtns: true,
+                    showSessionFolders: false,
+                    openPreviousFolderAfterClosingActiveOne: false,
+                    resettingSelectedFilesAfterSwitchingToAnotherFolder: true,
                 },
                 PROJECTS:{
-                    allowClosingFoldersWithMarkedFiles: false,
+                    // allowClosingFoldersWithMarkedFiles: true,
                     showPinFolders: false,
-                    showCloudsStorageBtns: false,
-                    showSpecialFoldersBtns: false,
+                    showCloudsStorageBtns: true,
+                    showSpecialFoldersBtns: true,
+                    showSessionFolders: true,
+                    openPreviousFolderAfterClosingActiveOne: false,
+                    resettingSelectedFilesAfterSwitchingToAnotherFolder: true,
                 },
+                imageZoomStep: 25,
+                minimumImagePreviewSize: 50,
+                maximumImagePreviewSize: 175,
             }
         }
     },
     methods: {
-        pressShiftKey:function(dat){
+        showMeta:function(dat){
             // console.log("CTRL")
-            this.localState.metadataIsHidden = dat == 'Shift_down' ? false : this.localState.metadataIsHidden
-            this.localState.metadataIsHidden = dat == 'Shift_up' ? true : this.localState.metadataIsHidden
+            this.localState.metadataIsHidden = dat == 'show meta' ? false : this.localState.metadataIsHidden
+            this.localState.metadataIsHidden = dat == 'hide meta' ? true : this.localState.metadataIsHidden
         },
         getAllFiles(){
             let allFiles_ = []
@@ -178,67 +87,79 @@ export default {
             return allFiles_
         },
         refreshFiles(){
-            //
-            let actualFilenamesInTheActiveFolder =  window.api.getFileFullnames( this.data.folders[this.localState.activeFolderIndex].path )
-            // console.log(actualFilenamesInTheActiveFolder)
-            //
-            if (actualFilenamesInTheActiveFolder.length > 0 ){
-                //
-                let doesTheFileExist = false
-                //
-                this.data.folders[this.localState.activeFolderIndex].files.forEach( data_element => {
-                    doesTheFileExist = false
+            //  Is folder exist? Y:
+            if( window.api.folderIsExist(this.data.folders[this.localState.activeFolderIndex].path) ){
+                //  Get actual files from folder
+                let actualFilenamesInTheActiveFolder =  window.api.getFileFullnames( this.data.folders[this.localState.activeFolderIndex].path )
+                // console.log(actualFilenamesInTheActiveFolder)
+                //  Если есть файлы в (отсканированном) каталоге
+                if (actualFilenamesInTheActiveFolder.length > 0 ){
                     //
-                    actualFilenamesInTheActiveFolder.forEach( (element, index) => {
-                        if( `${data_element.name}.${data_element.format}` == element ){
+                    let doesTheFileExist = false
+                    //  Сравниваем найденные файлы в каталоге с файлами в базе
+                    //      Файлы базы
+                    this.data.folders[this.localState.activeFolderIndex].files.forEach( data_element => {
+                        doesTheFileExist = false
+                        //      Файлы каталога
+                        actualFilenamesInTheActiveFolder.forEach( (element, index) => {
+                            //  И сравниваем
+                            if( `${data_element.name}.${data_element.format}` == element ){
+                                //  При совпадении убираем найденный файл каталога из очереди для уменьшения вычислит. нагрузки
+                                actualFilenamesInTheActiveFolder.splice( index, 1 )
+                                //  Файл существует
+                                //      Variable for LOG
+                                doesTheFileExist = true
+                                //      Undeletion flag
+                                data_element.isExist = true
+                            }
+                        })
+                        //  Если не существует
+                        if( !doesTheFileExist ) {
+                            //  Add to LOG
+                            this.refreshFilesQueueLOG.deletedIrrelevant.push( data_element.name.slice() )
                             //
-                            actualFilenamesInTheActiveFolder.splice( index, 1 )
-                            //
-                            doesTheFileExist = true
-                            //
-                            data_element.isExist = true
+                            data_element.isExist = false
                         }
                     })
+                    //  Delete marked files (isExist == false)
+                    let arrSize = Number( this.data.folders[this.localState.activeFolderIndex].files.length )
                     //
-                    if( !doesTheFileExist ) {
-                        //
-                        this.refreshFilesQueueLOG.deletedIrrelevant.push( data_element.name.slice() )
-                        //
-                        data_element.isExist = false
-                    }
-                })
-                //
-                let arrSize = Number( this.data.folders[this.localState.activeFolderIndex].files.length )
-                if(arrSize){
-                    for(let ch=0; ch<arrSize; ch++){
-                        if( !this.data.folders[this.localState.activeFolderIndex].files[ch].isExist ){
-                            this.data.folders[this.localState.activeFolderIndex].files.splice( ch, 1 )
-                            ch--
-                            arrSize--
+                    if(arrSize){
+                        for(let ch=0; ch<arrSize; ch++){
+                            if( !this.data.folders[this.localState.activeFolderIndex].files[ch].isExist ){
+                                this.data.folders[this.localState.activeFolderIndex].files.splice( ch, 1 )
+                                ch--
+                                arrSize--
+                            }
                         }
                     }
+                    //  Заносим найденные файлы в каталоге в базу
+                    actualFilenamesInTheActiveFolder.forEach(element => {
+                        this.data.folders[this.localState.activeFolderIndex].files.push(
+                            {
+                                id: 'fileID_' + Math.floor(Math.random()*10000000), 
+                                name: element.slice( 0, element.lastIndexOf('.') ),       //      To Do
+                                format: element.slice( element.lastIndexOf('.') + 1 ), 
+                                markID: 'mark_unmarked',     
+                                isPinned: false, 
+                                path: this.data.folders[this.localState.activeFolderIndex].path, 
+                                meta: window.api.getFileMeta( this.data.folders[this.localState.activeFolderIndex].path, element )
+                            }
+                        )
+                        //  Add to LOG
+                        this.refreshFilesQueueLOG.foundAndAdded.push( element )
+                    })
+                }else{
+                    //  Если нету файлов в каталоге, стираем все из базы
+                    this.data.folders[this.localState.activeFolderIndex].files = []
                 }
                 //
-                actualFilenamesInTheActiveFolder.forEach(element => {
-                    this.data.folders[this.localState.activeFolderIndex].files.push(
-                        {
-                            id: 'fileID_' + Math.floor(Math.random()*10000000), 
-                            name: element.slice( 0, element.lastIndexOf('.') ),       //      To Do
-                            format: element.slice( element.lastIndexOf('.') + 1 ), 
-                            markID: 'mark_unmarked',     
-                            isPinned: false, 
-                            path: this.data.folders[this.localState.activeFolderIndex].path, 
-                            meta: window.api.getFileMeta( this.data.folders[this.localState.activeFolderIndex].path, element )
-                        }
-                    )
-                    //
-                    this.refreshFilesQueueLOG.foundAndAdded.push( element )
-                })
             }else{
                 //
-                this.data.folders[this.localState.activeFolderIndex].files = []
+                
+                //  N:, delete from db
+                this.data.folders.splice(this.localState.activeFolderIndex, 1)
             }
-            //
             // console.log( this.refreshFilesQueueLOG )
         },
         getProject(){
@@ -248,7 +169,7 @@ export default {
                 this.localState.actualSessionType = 'SESSION'       //  browser session
             }
             if(this.sessionType == 'PROJECTS'){
-                this.fullData = window.api.getData()
+                this.fullData = window.api.getProjectData()
                 //
                 this.localState.actualSessionType = 'PROJECTS'       //  browser session
             }
@@ -325,24 +246,40 @@ export default {
     },
     mounted(){
         this.$nextTick(function () {
+
             window.addEventListener("keydown", e => {
-                if(e.key=='Shift'){ this.pressShiftKey('Shift_down') }
+                //  show metadata file
+                if(e.key == 'Shift'){ this.showMeta('show meta') }
             })
+
             window.addEventListener("keyup", e => {
-                if(e.key=='Shift'){ this.pressShiftKey('Shift_up') }
+                //  show metadata file
+                if(e.key == 'Shift'){ this.showMeta('hide meta') }
+                //  zoom image preview
+                if( (e.key == '+') || (e.key == '=')){
+                    if(this.data.parameters.imagesHeight < (this.settings.maximumImagePreviewSize - this.settings.imageZoomStep) )
+                      this.data.parameters.imagesHeight += this.settings.imageZoomStep 
+                }
+                if(e.key == '-'){
+                    if(this.data.parameters.imagesHeight > (this.settings.minimumImagePreviewSize + this.settings.imageZoomStep) )
+                      this.data.parameters.imagesHeight -= this.settings.imageZoomStep 
+                }
             })
-            // window.addEventListener("keydown", e => {
-            //     if(e.key=='Space'){ this.localState.showImageViewer = true
-            //         console.log('SPACE')
-            //      }
-            // })
-            // window.addEventListener("keyup", e => {
-            //     if(e.key=='Space'){ this.localState.showImageViewer = false }
-            // })
         })
     },
     beforeUpdate(){
+        //
         if( this.localState.actualSessionType != this.sessionType ) this.getProject()
+        //
+        if( this.localState.activeFolderIndex != this.localState.previousFolderIndex ){
+            //
+            this.refreshFiles()
+            //  Clear selection files queue
+            if(this.settings.resettingSelectedFilesAfterSwitchingToAnotherFolder){
+                this.stateFiles.files = {}
+                this.stateFiles.numberOfSelectedFiles = 0
+            }
+        }
     },
 }
 </script>
@@ -373,7 +310,7 @@ export default {
                     <div class="section-left">
                         <Tasks v-if="localState.showTasksPanel" :data="data.tasks" class="component" />
 
-                        <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders" :inputSettings="settings"  :dataSettings="data.parameters" :localState="localState" class="component" />
+                        <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders" :inputSettings="settings"  :dataSettings="data.parameters" :localState="localState" :projectID="data.id" class="component" />
                     </div>
                     
                     <div class="section-right h100">

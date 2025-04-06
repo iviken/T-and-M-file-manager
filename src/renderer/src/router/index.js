@@ -1,12 +1,13 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createMemoryHistory } from 'vue-router'
+// import { createRouter, createWebHistory } from 'vue-router'
 import BrowserView from '../views/BrowserView.vue'
 import HelpView from '../views/HelpView.vue'
-// import NewTabView from '../views/NewTabView.vue'
 import ProjectsListView from '../views/ProjectsListView.vue'
 import UnsplashView from '../views/UnsplashView.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createMemoryHistory(import.meta.env.BASE_URL),
+  // history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/BrowserView',

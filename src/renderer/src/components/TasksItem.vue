@@ -49,7 +49,7 @@ export default {
         if(dat.state == 'input-start') {
             this.isRemaned = true
             this.renamedValue = dat.name
-            console.log(dat.name)
+            // console.log(dat.name)
         }
         if(dat.state == 'input-done'){
             if(this.renamedValue.length > 0){

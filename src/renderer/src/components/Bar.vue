@@ -25,15 +25,27 @@ export default {
   },
   methods: {
     pinFiles: function(){
-        if(!this.localState.showFilesFromAllFoldersOption){
-            this.stateFiles.setCmd( {cmd: 'pinFiles', allFiles: this.folders[this.localState.activeFolderIndex].files} )
-        }else{
-            let _allFiles = []
-            for (const key in this.folders) {
-                _allFiles = _allFiles.concat(this.folders[key].files)
-            }
-            this.stateFiles.setCmd( {cmd: 'pinFiles', allFiles: _allFiles} )
-        }
+        // function pin(){
+            this.folders[this.localState.activeFolderIndex].files.forEach(file => {
+                for(let key in this.stateFiles.files){
+                    if( (file.id == key) && (this.stateFiles.files[key] == 'SELECTED') ){
+                        file.isPinned = !file.isPinned
+                        this.stateFiles.files[key] = ''
+                    }
+                }
+            })
+        // }
+
+        // if(!this.localState.showFilesFromAllFoldersOption){
+        //     // this.stateFiles.setCmd( {cmd: 'pinFiles', allFiles: this.folders[this.localState.activeFolderIndex].files} )
+        //     this.pin()
+        // }else{
+        //     let _allFiles = []
+        //     for (const key in this.folders) {
+        //         _allFiles = _allFiles.concat(this.folders[key].files)
+        //     }
+        //     this.stateFiles.setCmd( {cmd: 'pinFiles', allFiles: _allFiles} )
+        // }
     },
     switchPannel:function(){
         if(!this.localState.showFilesFromAllFoldersOption){
@@ -42,85 +54,130 @@ export default {
         }
     },
     newBrowserTab:function(){
-        let _id = 'folder_' + Math.floor(Math.random()*10000000)
-        let _index = this.folders.length
-        //
-        if(_index < this.settings.maxFoldersOnBar){
-            this.folders.push(
-                {
-                    id: _id,
-                    // path: this.folders[this.localState.activeFolderIndex].path,
-                    path: this.folders[this.localState.activeFolderIndex].path.substring(0, this.folders[this.localState.activeFolderIndex].path.lastIndexOf('/') ),
-                    // files: [],
-                    files: [
-                        {id: 99999, name: 'some file', format: 'js', markID: 'mark_unmarked', isPinned: false, meta:{created: 156456, lastEdited: 165447, size: 100256}}
-                    ],
-                    isOpened: true,
-                    isPinned: false,
-                }
-            )
-            this.switchToFolder({id: _id, index: _index})
+        if( this.folders[this.localState.activeFolderIndex].path.split('/').length > 2 ){
+            //
+            let path = this.folders[this.localState.activeFolderIndex].path.substring(0, this.folders[this.localState.activeFolderIndex].path.lastIndexOf('/') )
+            //
+            console.log('to path: ' + path)
+            if( this.folders.find(folder=>folder.path == path) == undefined ){
+                let _id = 'folder_' + Math.floor(Math.random()*10000000)
+                let _index = this.folders.length
+                //
+                this.folders.push(
+                    {
+                        id: _id,
+                        path: path,
+                        files: [],
+                        isOpened: false,
+                        // isOpened: true,
+                        isPinned: false,
+                        displayedOnBar: true,
+                    }
+                )
+                //
+                this.switchToFolder({id: _id, index: _index})
+            }else{
+                //
+                this.folders.forEach((folder, index) => {
+                    if( folder.path == path ){
+                        this.switchToFolder( {id: folder.id, index: index} )
+                    }
+                })
+            }
         }
     },
-    switchToFolder:function(dat){
+    switchToFolder:function(dat){       //  {index}
+        console.log('switch to folder: ')
+        console.log(dat)
+        console.log(this.folders[dat.index].displayedOnBar)
+        //  Change folder indexes
+        if( dat.index != this.localState.activeFolderIndex ){
+            //
+            this.localState.previousFolderIndex = this.localState.activeFolderIndex
+        }
+        //
         this.localState.activeFolderIndex = dat.index
+        //
         this.folders.forEach(element=>{element.isOpened = false})
         this.folders[dat.index].isOpened = true
-        //
+        this.folders[dat.index].displayedOnBar = true
+        //  For 'ALL' tab
         this.localState.showFilesFromAllFoldersOption = false
     },
-    closeFolder:function(dat){
+    closeFolderTab:function(dat){
         if(this.folders.length > 1){
-            let checkMarksFilesCounter = 0
-            let isDeleteFolder = false
-            //  check files to unmarked (--unmarked--)
-            this.folders[dat.index].files.forEach(element => {
-                if(element.markID != this.stateFiles.defaults.unmarkedMarkID){
-                    checkMarksFilesCounter ++
-                }
-            });
-            //  if marked files not found?
-            if(checkMarksFilesCounter == 0){
-                // console.log('folder is empty of marked files. Delete')
-                isDeleteFolder = true
-                // console.log(this.folders)
-            }
-            //  If the paths are the same?
-            this.folders.forEach((element, index) => {
-                if(element.path == this.folders[dat.index].path){
-                    if(dat.index != index){
-                        // console.log(element.path + ' : ' + this.folders[dat.index].path)
-                        // console.log('folders match. Delete')
-                        isDeleteFolder = true
+            //
+            let numberOfOpenFoldersDisplayedOnTheBar = 0
+            //  If the indexes math, count index of the fiture open folder after closing opened
+            this.folders.forEach( (folder, indexOfTheFutureOpenFolderAfterClosingCurrentFolder) => {
+                //
+                if( folder.displayedOnBar ) numberOfOpenFoldersDisplayedOnTheBar++
+                //
+                if( indexOfTheFutureOpenFolderAfterClosingCurrentFolder != dat.index ){
+                    //
+                    if( folder.displayedOnBar ){
+                        //
+                        if(numberOfOpenFoldersDisplayedOnTheBar > 1){
+                            //
+                            if( this.localState.previousFolderIndex == this.localState.activeFolderIndex ){
+                                //
+                                this.localState.previousFolderIndex = indexOfTheFutureOpenFolderAfterClosingCurrentFolder
+                            }
+                        }
                     }
                 }
             })
-            //
-            isDeleteFolder = isDeleteFolder || this.inputSettings[ this.localState.actualSessionType ].allowClosingFoldersWithMarkedFiles
-            //
-            if(isDeleteFolder){
-                //  delete folder rom bd
-                this.folders.splice(dat.index, 1)
-                //  Set focus on first filder
-                this.localState.activeFolderIndex = 0
-                this.folders[0].isOpened = true
+            //  Closing folder tab
+            if( numberOfOpenFoldersDisplayedOnTheBar > 1 ){
+                //  Set focus on first displayed on the bar folder
+                this.folders[this.localState.activeFolderIndex].isOpened = false
+                //
+                this.folders[this.localState.activeFolderIndex].displayedOnBar = false
+                // }
+                if( this.folders[this.localState.previousFolderIndex].displayedOnBar ){
+                    //
+                    this.localState.activeFolderIndex = this.localState.previousFolderIndex
+                    //
+                    this.folders[ this.localState.activeFolderIndex ].isOpened = true
+
+                }
             }
         }
     },
+    openClosedTab(){
+        //
+        if(this.folders.length > this.localState.previousFolderIndex){
+            this.switchToFolder( {index: this.localState.previousFolderIndex} )
+        }
+    },
     setMarkToFiles:function(markID){
+        //
+        function mark(files, mark_ID, stateFiles){
+            console.log(stateFiles.files)
+            files.forEach(file => {
+                for(let key in stateFiles.files){
+                    if( (file.id == key) && (stateFiles.files[key] == 'SELECTED') ){
+                        file.markID = mark_ID
+                        stateFiles.files[key] = ''
+                    }
+                }
+            })
+        }
         //
         this.checkIfAtLeastOneFileSelected()
         //
         if(this.stateFiles.atLeastOneFileSelected){
             // console.log('click to mark: ' + markID)
             if(!this.localState.showFilesFromAllFoldersOption){
-                this.stateFiles.setCmd( {cmd: 'setMarkToFiles', allFiles: this.folders[this.localState.activeFolderIndex].files, mark_ID: markID} )
+                // this.stateFiles.setCmd( {cmd: 'setMarkToFiles', allFiles: this.folders[this.localState.activeFolderIndex].files, mark_ID: markID} )
+                mark(  this.folders[this.localState.activeFolderIndex].files, markID, this.stateFiles )
             }else{
                 let _allFiles = []
                 for (const key in this.folders) {
                     _allFiles = _allFiles.concat(this.folders[key].files)
                 }
-                this.stateFiles.setCmd( {cmd: 'setMarkToFiles', allFiles: _allFiles, mark_ID: markID} )
+                // this.stateFiles.setCmd( {cmd: 'setMarkToFiles', allFiles: _allFiles, mark_ID: markID} )
+                mark( _allFiles, markID, this.stateFiles )
             }
         }
     },
@@ -157,30 +214,32 @@ export default {
     //     document.querySelector('._marks-unfolded-block').style.left = document.querySelector('._marks').getBoundingClientRect().left + 'px'
     // },
     deleteMark:function(markID){
-        this.stateFiles.setCmd( {cmd: 'deleteMark', allFiles: this.folders[this.localState.activeFolderIndex].files, marks: this.marks, mark_ID: markID} )
-        //  Resetting the romovable marking
-        this.folders.forEach(folder=>{
-            folder.forEach(file => {
-                file.mark = this.stateFiles.defaults.unmarkedMarkID
+        if(markID != this.stateFiles.defaults.unmarkedMarkID){
+            this.folders.forEach(folder => {
+                folder.files.forEach(file => {
+                    if(file.markID == markID){file.markID = this.stateFiles.defaults.unmarkedMarkID}
+                })
             })
-        })
+            delete this.marks[markID]
+        }
     },
     renameMark:function(dat){
         //
         this.checkIfAtLeastOneFileSelected()
         //
         if(!this.stateFiles.atLeastOneFileSelected){
-            if(dat.state == 'start rename'){
-                // this.stateFiles.setCmd( {cmd: 'renameMark - end', descr: dat.descr, marks: this.marks, mark_ID: dat.markID} )
-                this.state.markRenameID = dat.markID
-                //
-                this.state.markNewName = this.marks[this.state.markRenameID].descr
-            }
-            if(dat.state == 'end rename'){
-                // console.log('ren')
-                this.marks[this.state.markRenameID].descr = this.state.markNewName
-                //
-                this.state.markRenameID = null
+            if(dat.markID != this.stateFiles.defaults.unmarkedMarkID){
+                if(dat.state == 'start rename'){
+                    this.state.markRenameID = dat.markID
+                    //
+                    this.state.markNewName = this.marks[this.state.markRenameID].descr
+                }
+
+                if(dat.state == 'end rename'){
+                    this.marks[this.state.markRenameID].descr = this.state.markNewName
+                    //
+                    this.state.markRenameID = null
+                }
             }
         }
     },
@@ -191,7 +250,7 @@ export default {
         this.state.markRenameID = null
         this.state.showColorPicker = false
     },
-    converFileSize:function(num){
+    convertFileSize:function(num){
         let _size = 0
         if( num < 1000000 ){ _size = Math.floor(Number(num) / 1024) + 'Kb' }
         if( num >= 1000000 ){ _size = Math.floor(Number(num) / 1024 / 1024) + 'Mb' }
@@ -209,7 +268,10 @@ export default {
         }
     },
     checkIfAtLeastOneFileSelected:function(){
-        this.stateFiles.setCmd( {cmd: 'check files for seletion'} )
+        this.stateFiles.atLeastOneFileSelected = false
+        for (const key in this.stateFiles.files) {
+            if(this.stateFiles.files[key] == 'SELECTED') this.stateFiles.atLeastOneFileSelected = true
+        }
     },
     // handleScroll:function (evt, el) {
     //     console.log("SCROLLL")
@@ -244,6 +306,7 @@ export default {
             maxMarksOnBar: 5,
             maxFoldersOnBar: 6,
             AvailableMarkColors: ['red', 'green', 'yellow', 'ocean', 'blue', 'orange'],
+            rootFolderTabName: 'root C'
         },
         state:{
             marksBoxIsFolded: true,
@@ -255,13 +318,22 @@ export default {
             // countFoldersOnBar: 1,
         },
     }
+  },
+  computed:{
+    numberOfFoldersDisplayedOnTheBar(){
+        let count = 0
+        this.folders.forEach(folder => {
+            if( folder.displayedOnBar ) count++
+        })
+        return count
+    },
   }
 }
 </script>
 
 <template>
 
-    <div @keyup.esc="pressEscOnBar()" tabindex="0" class="bar on-center focus">
+    <div @keyup.esc="pressEscOnBar()" @keyup.ctrl.t="openClosedTab()" tabindex="0" class="bar on-center focus">
 
         <div class="info on-center">
             <div v-if="stateFiles.numberOfSelectedFiles > 0" class=" on-row">
@@ -310,15 +382,16 @@ export default {
             </div>
 
             <div class="folders on-row">
-                <div v-if="folders.length > 1" :class="{activeTab: localState.showFilesFromAllFoldersOption}">
+                <div v-if="numberOfFoldersDisplayedOnTheBar > 1" :class="{activeTab: localState.showFilesFromAllFoldersOption}">
                     <span class="item" @click="filesFromAllFolders()">ALL</span>
                 </div>
                 <div v-for="(item, index) in folders" class="on-row">
-                    <div @click="switchToFolder({id: item.id, index: index})" @dblclick="closeFolder({id: item.id, index: index})" :class="{activeTab: item.isOpened}">
-                        <span class="item">{{ item.path.split('/')[ item.path.split('/').length - 1 ] }}</span>
+                    <div v-if="item.displayedOnBar" @click="switchToFolder({id: item.id, index: index})" @dblclick="closeFolderTab({id: item.id, index: index})" :class="{activeTab: item.isOpened}">
+                        <span v-if="item.path != ''" class="item">{{ item.path.split('/')[ item.path.split('/').length - 1 ] }}</span>
+                        <span v-else class="item">{{ settings.rootFolderTabName }}</span>
                     </div>
                 </div>
-                <div v-if="folders.length < settings.maxFoldersOnBar" @click="newBrowserTab()" class="item">+</div>
+                <div v-if="numberOfFoldersDisplayedOnTheBar < settings.maxFoldersOnBar" @click="newBrowserTab()" class="item">+</div>
             </div>
 
         </div>
@@ -326,10 +399,10 @@ export default {
         <div v-else class="on-row">
             <span class="meta-item">{{ stateFiles.onFocusFile.name }}</span>
             <span class="meta-item">Created:&nbsp;</span>
-            <span class="meta-item">{{ stateFiles.onFocusFile.metadata.created }}</span>
+            <span class="meta-item">{{ stateFiles.onFocusFile.metadata.created.toLocaleString() }}</span>
             <span class="meta-item">Last edited:&nbsp;</span>
-            <span class="meta-item">{{ stateFiles.onFocusFile.metadata.lastEdited }}</span>
-            <span class="meta-item">{{ converFileSize(stateFiles.onFocusFile.metadata.size) }}</span>
+            <span class="meta-item">{{ stateFiles.onFocusFile.metadata.lastEdited.toLocaleString() }}</span>
+            <span class="meta-item">{{ convertFileSize(stateFiles.onFocusFile.metadata.size) }}</span>
             <span class="meta-item">{{ stateFiles.onFocusFile.format }}</span>
         </div>
 
@@ -352,7 +425,7 @@ export default {
             <div class="on-row">
                 <input type="checkbox" v-model="state.showColorPicker" id="picker" name="picker" class="checkbox">
                 <label for="picker">
-                    <div @click="state.markRenameID = item.id" class="set-color">=</div>
+                    <div v-if="item.id != stateFiles.defaults.unmarkedMarkID" @click="state.markRenameID = item.id" class="set-color">=</div>
                 </label>
                 <div v-if="state.showColorPicker && (state.markRenameID == item.id)" @click="state.showColorPicker = false" class="color-pic on-row">
                     <div v-for="clr in settings.AvailableMarkColors" @click="state.markRenameID = null">
@@ -460,10 +533,29 @@ export default {
         position: absolute;
         top: 140px;
         // top: calc( var(--bar-height) + var(--header-height) );
-        // left: 0px;
-        right: calc( 1920px - var(--width-tasks-and-marks-field) );
+        width: 400px;
         z-index: 1000;
-        background-color: black;        //      TO DO
+        background-color: black;
+    }
+
+    @media screen and (min-width: 1501px) {
+        ._marks-unfolded-block{
+            left: 230px;
+            // right: 1290px;
+        }
+    }
+    
+    @media screen and (max-width: 1500px) and (min-width: 1001px) {  
+        ._marks-unfolded-block{
+            left: 100px;
+            // right: 800px;
+        }  
+    }
+    
+    @media screen and (max-width: 1000px) {
+        ._marks-unfolded-block{
+            left: 0px;
+        }
     }
     // .marks-box__item:hover{
     //     background-color: aquamarine;

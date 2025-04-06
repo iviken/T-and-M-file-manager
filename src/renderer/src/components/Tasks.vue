@@ -27,7 +27,10 @@ export default {
                 subtasks: {}
             }
         }
-    }
+    },
+    moveTask:function(dat){
+        console.log('task: ' + dat)
+    },
   },
   beforeUpdate(){
     for (const key in this.data) {
@@ -57,7 +60,8 @@ export default {
 </script>
 
 <template>
-    <div class="task-component">
+
+    <div @keyup.up="moveTask('up')" @keyup.down="moveTask('down')" class="task-component focus" tabindex="0">
         <div class="section on-col">
         
             <div class="pin-block scrollY on-col">
@@ -99,6 +103,7 @@ export default {
 
         </div>
     </div>
+
 </template>
 
 <style scoped lang="scss">
@@ -135,5 +140,9 @@ export default {
     .rename{
         background-color: antiquewhite;
         padding-left: 20px;
+    }
+
+    .focus:focus{
+        outline: none;
     }
 </style>

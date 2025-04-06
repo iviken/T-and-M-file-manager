@@ -31,7 +31,12 @@ export default {
 
         this.fullData[newProjectId].tasks = {}
         this.fullData[newProjectId].marks = {
-            mark_unmarked: {id: 'mark_unmarked', color: 'default-color', descr: '--unmarked--', isFolded: {text: false, imgs: false}, show: true }
+            mark_unmarked: {
+                id: 'mark_unmarked', 
+                color: this.defaults.defaultMark.color, 
+                descr: this.defaults.defaultMark.descr, 
+                isFolded: {text: false, imgs: false}, show: true 
+            }
         }
         //  Clear folders in browser session
         let session = window.api.getSessionData().proj_default       //  Browser session
@@ -61,7 +66,7 @@ export default {
     },
   },
   beforeMount() {
-    this.fullData = window.api.getData()
+    this.fullData = window.api.getProjectData()
     // console.log(this.fullData)
   },
   computed:{
@@ -82,6 +87,12 @@ export default {
         renamedValue: '',
         selectedProjectID: null,
         renamingProjectID: null,
+        defaults:{
+            defaultMark:{
+                color: 'default-color',
+                descr: '--unmarked--',
+            },
+        },
     }
   }
 }

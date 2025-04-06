@@ -73,11 +73,17 @@ export default {
     },
   },
   beforeMount() {
-    this.fullData = window.api.getData()
+    this.fullData = window.api.getProjectData()
     //
     this.projectName =  this.getActualProjectName()
     //
     this.checkIfAtLeastOneProjectOpen()
+    //
+    if(this.state.atLeastOneProjectOpen){
+        this.state.active = 'PROJECTS'
+    }else{
+        this.state.active = 'BROWSER'
+    }
   },
   beforeUpdate() {
     //
@@ -103,7 +109,8 @@ export default {
   data(){
     return{
         state: {
-            active: 'BROWSER',
+            active: null,
+            // active: 'BROWSER',
             windowIsMaximized: true,
             atLeastOneProjectOpen: true,
         },
@@ -224,6 +231,10 @@ export default {
 
 <style scoped lang="scss">
     @use '../scss/header.scss' as *;
+
+    button:focus{
+        outline: none;
+    }
 
     .header__btns-left, .header__btns-right{
         width: 160px;

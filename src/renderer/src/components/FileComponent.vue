@@ -1,8 +1,6 @@
 <script>
 
 export default {
-  components:{
-  },
   props:{
     file:{
         type: Object,
@@ -23,19 +21,38 @@ export default {
   },
   methods: {
     renameFile:function(dat){
+
+      // function rename(file, newName, state){
+      //   window.api.renameFile( file.path ,`${file.name}.${file.format}` , `${newName}.${file.format}` )
+      //     .then((resolve)=>{
+      //       if(resolve == undefined){
+      //         //
+      //         file.name = newName
+      //         //
+      //         state.files[file.id] = ''
+      //       }
+      //     })
+      // }
+        
       if(dat.state == 'file-rename:input-done'){
+        this.renamedValue = this.renamedValue.replace(this.settings.fileNameRegexp, '').trim()
         if(this.renamedValue.length > 0){
-          console.log("RENAME FILE at <FILE component>")
-          this.state.setCmd( {cmd: 'endRenameSelectedFiles', name: this.renamedValue} )
-          this.state.files[dat.id] = ''
+          //  Compress state.files (filesState)
+          // console.log("RENAME FILE")  
+          this.$emit( 'renameFiles', { state: 'end rename', newName: this.renamedValue } )
+
+          // rename(dat.file, this.renamedValue, this.state)
         }
       }
     }
   },
   data(){
     return{
-      fileImgMask: ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'svg'],
-      renamedValue: ''
+      renamedValue: '',
+      settings:{
+        fileImgMask: ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'svg'],
+        fileNameRegexp: /[\\\/<>:\"\*\?\|]/g,
+      },
     }
   }
 }
@@ -45,7 +62,7 @@ export default {
 
         <div :class="`${state.files[file.id]}`">
 
-          <div v-if="( !fileImgMask.includes(file.format) ) && (viewMode != 'imgs')" class="text">
+          <div v-if="( !settings.fileImgMask.includes(file.format) ) && (viewMode != 'imgs')" class="text">
 
             <div v-if="state.files[file.id] != 'RENAME'">
               <span class="item-name">{{ file.name }}</span>
@@ -53,14 +70,22 @@ export default {
             </div>
 
             <div v-if="state.files[file.id] == 'RENAME'">
-              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="item-name rename w100" @keyup.enter="renameFile({state: 'file-rename:input-done', id: file.id})"></input>
+              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename w100" @keyup.enter="renameFile({state: 'file-rename:input-done', file: file})"></input>
             </div>
 
           </div>
           
-          <div v-if="( fileImgMask.includes(file.format) ) && (viewMode == 'imgs')" class="img">
-            <!-- <img src="../assets/gallery/file (1).png" > -->
-            <img :src="`${file.path}/${file.name}.${file.format}`" :style="`height:${pixHeight}px;`">
+          <div v-if="( settings.fileImgMask.includes(file.format) ) && (viewMode == 'imgs')" :style="`height:${pixHeight}px;`" class="img-box">
+            
+            <div v-if="state.files[file.id] != 'RENAME'">
+              <!-- <img src="../assets/gallery/file (3).png" class="img"> -->
+              <img :src="`file://C:${file.path}/${file.name}.${file.format}`" class="img">
+            </div>
+
+            <div v-if="state.files[file.id] == 'RENAME'" class="h100 w100 rename-block-img on-center">
+              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename" @keyup.enter="renameFile({state: 'file-rename:input-done', file: file})"></input>
+            </div>
+
           </div>
 
         </div>
@@ -84,14 +109,23 @@ export default {
     color: var(--pure-white);
   }
 
-  .img{
+  .img-box{
     // position: relative;
     padding: 20px;
+  }
+  .img{
+    height: 100%;
+    width: auto;
   }
 
   .rename{
     background-color: antiquewhite;
+    color: var(--text);
   }
+  .rename-block-img{
+    
+  }
+
   .SELECTED{
     background-color: aquamarine;
   }

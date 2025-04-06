@@ -5,10 +5,10 @@ const utils = require("@electron-toolkit/utils");
 const icon = path.join(__dirname, "../../resources/icon.png");
 function createWindow() {
   const mainWindow = new electron.BrowserWindow({
-    width: 1920,
-    height: 1080,
-    // width: 1200,
-    // height: 900,
+    // width: 1920,
+    // height: 1080,
+    width: 1200,
+    height: 900,
     show: false,
     autoHideMenuBar: true,
     frame: false,
