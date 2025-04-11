@@ -10,6 +10,10 @@ export default {
         type: Object,
         required: true
     },
+    filesMethods:{
+        type: Object,
+        required: true
+    },
     viewMode:{    //text or imgs
         type: String,
         required: true
@@ -17,33 +21,6 @@ export default {
     pixHeight:{   //  300 (px)
       type: Number,
       required: true
-    }
-  },
-  methods: {
-    renameFile:function(dat){
-
-      // function rename(file, newName, state){
-      //   window.api.renameFile( file.path ,`${file.name}.${file.format}` , `${newName}.${file.format}` )
-      //     .then((resolve)=>{
-      //       if(resolve == undefined){
-      //         //
-      //         file.name = newName
-      //         //
-      //         state.files[file.id] = ''
-      //       }
-      //     })
-      // }
-        
-      if(dat.state == 'file-rename:input-done'){
-        this.renamedValue = this.renamedValue.replace(this.settings.fileNameRegexp, '').trim()
-        if(this.renamedValue.length > 0){
-          //  Compress state.files (filesState)
-          // console.log("RENAME FILE")  
-          this.$emit( 'renameFiles', { state: 'end rename', newName: this.renamedValue } )
-
-          // rename(dat.file, this.renamedValue, this.state)
-        }
-      }
     }
   },
   data(){
@@ -70,7 +47,7 @@ export default {
             </div>
 
             <div v-if="state.files[file.id] == 'RENAME'">
-              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename w100" @keyup.enter="renameFile({state: 'file-rename:input-done', file: file})"></input>
+              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename w100" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValueю.replace(this.settings.fileNameRegexp, '').trim()} )"></input>
             </div>
 
           </div>
@@ -83,7 +60,7 @@ export default {
             </div>
 
             <div v-if="state.files[file.id] == 'RENAME'" class="h100 w100 rename-block-img on-center">
-              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename" @keyup.enter="renameFile({state: 'file-rename:input-done', file: file})"></input>
+              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValueю.replace(this.settings.fileNameRegexp, '').trim()} )"></input>
             </div>
 
           </div>

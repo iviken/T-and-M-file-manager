@@ -1,0 +1,62 @@
+{
+    "proj_001": {
+        "id": "proj_001", 
+        "headerPicture": {},
+        "parameters": {
+            "pinFilesIsFolded": {
+                "imgs": false,
+                "text": false
+            },
+            "imagesHeight": 200,
+            "pinFoldersIsFolded": false,
+            "foldersIsFolded": false
+        },
+        "meta":{
+            "name": "project first",
+            "created": 1742744761272,
+            "lastModified": 1742744761272,
+            "lastOpened": 1742744761272,
+            "isPinned": true,
+            "description": "Descrtiption first of project",
+            "status": "opened"
+        },
+        "tasks": {
+            "task_001":{
+                "id": "task_001",
+                "name": "Project task one",
+                "descr": "Lorem ipsum ... description",
+                "isDone": false,
+                "isSelected": false,
+                "isPinned": false,
+                "isFolded": true,
+                "subtasksAvailability": false,
+                "subtasks": {}
+            }
+        },
+        "marks": {
+            "mark_1000": {"id": "mark_1000", "color": "red", "descr": "Some text red mark", "isFolded": {"text": true, "imgs": false}, "show": true },
+            "mark_1001": {"id": "mark_1001", "color": "green", "descr": "Some text green mark", "isFolded": {"text": true, "imgs": false}, "show": true },
+            "mark_1002": {"id": "mark_1002", "color": "yellow", "descr": "Some text yellow mark 2", "isFolded": {"text": true, "imgs": false}, "show": true },
+            "mark_1003": {"id": "mark_1003", "color": "ocean", "descr": "Some text ocean mark 3", "isFolded": {"text": true, "imgs": false}, "show": false },
+            "mark_1004": {"id": "mark_1004", "color": "default-color", "descr": "Some text mark 4", "isFolded": {"text": true, "imgs": false}, "show": true },
+            "mark_1005": {"id": "mark_1005", "color": "default-color", "descr": "Some text mark 5", "isFolded": {"text": true, "imgs": false}, "show": false },
+            "mark_1006": {"id": "mark_1006", "color": "ocean", "descr": "Some text mark 6", "isFolded": {"text": true, "imgs": false}, "show": false },
+            "mark_1007": {"id": "mark_1007", "color": "default-color", "descr": "Some text mark 7", "isFolded": {"text": true, "imgs": false}, "show": false },
+            "mark_1008": {"id": "mark_1008", "color": "default-color", "descr": "Some text mark 8", "isFolded": {"text": true, "imgs": false}, "show": false },
+            "mark_unmarked": {"id": "mark_unmarked", "color": "default-color", "descr": "--unmarked--", "isFolded": {"text": true, "imgs": false}, "show": true }
+        },
+        "folders":[
+            {
+                "id": "proj_001__fold_001",
+                "path": "/Temp/body",
+                "isOpened": true,
+                "isPinned": false,
+                "displayedOnBar": true,
+                "files": [
+                    {"id": 100, "name": "file (1)", "format": "js",   "markID": "mark_1000",     "isPinned": false, "path": "/Temp/body", "meta":{"created": 156456, "lastEdited": 165447, "size": 100256}},
+                    {"id": 133, "name": "file (7)", "format": "scss", "markID": "mark_1000",     "isPinned": false, "path": "/Temp/body", "meta":{"created": 156456, "lastEdited": 165489, "size": 140256}}
+                ]
+            }
+        ]
+    }
+}

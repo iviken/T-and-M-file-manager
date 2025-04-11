@@ -169,7 +169,7 @@ const api = {
     }
   },
 
-  getPathSpecialFolder:(folderName)=>{
+  getPathSpecialFolder:()=>{
     //Поддерживаются следующие имена:
 
     // home - Домашняя папка (например /home/<Username>, c:\Users\<Username>, /Users/<Username>)
@@ -229,16 +229,7 @@ const api = {
   },
 
   renameFolder:(dat)=>{
-    // if( !api.folderIsExist(dat.fullpath) ) return false
-    //
-    // let result = null
     let newPath = path.join( dat.fullpath.substring(0, dat.fullpath.lastIndexOf('/') ), dat.newName )
-    //
-    // console.log('old path: ' + dat.fullpath)
-    // console.log('new path: ' + newPath.replaceAll(sep, win32sep))
-    // console.log('input data: ')
-    // console.log(dat.folderObj)
-    // console.log('new path: ' + newPath.replaceAll(path.sep, path.win32.sep))
     try{
       fs.renameSync( path.resolve( dat.fullpath ), path.resolve( newPath ) )
       return true
@@ -246,8 +237,6 @@ const api = {
       console.log(error)
       return false
     }
-    // return result
-    
   },
 
   deleteFolder:(folderPath)=>{
@@ -260,37 +249,6 @@ const api = {
     }
   },
 
-  // deleteFolder:(folderPath)=>{
-  //   if( api.folderIsExist(folderPath) ){
-  //     return fs.rmdir(path.resolve(folderPath), { recursive: true, force: true }, err => {
-  //       if (err) {
-  //         throw err
-  //       }
-  //       console.log(`${folderPath} is deleted!`)
-  //     })
-  //   }else{
-  //     console.log(`${folderPath} is not exist`)
-  //     return false
-  //   }
-  // },
-
-  // copyFolder:(folderPathSrc, folderPathDest)=>{
-  //   //
-  //   if( api.folderIsExist(folderPathSrc) ){
-  //     // if( api.folderIsExist(folderPathDest) ){}
-  //     //
-  //     console.log('copy folder')
-  //     return copy(folderPathSrc, folderPathDest)
-  //     async function copy(folderPathSrc, folderPathDest){
-  //       try{
-  //         await fsPromises.cp(folderPathSrc, folderPathDest, {recursive: true})
-  //       }catch{
-  //         console.log('error copy')
-  //       }
-  //     }
-  //   }
-  // },
-
   copyFolder:(folderPathSrc, folderPathDest)=>{
     //
     if( api.folderIsExist(folderPathSrc) ){
@@ -298,30 +256,6 @@ const api = {
       return fsPromises.cp(folderPathSrc, folderPathDest, {recursive: true})
     }
   },
-
-  // copyFolder:(folderPathSrc, folderPathDest)=>{
-  //   //
-  //   if( api.folderIsExist(folderPathSrc) ){
-  //     // if( api.folderIsExist(folderPathDest) ){
-  //       //
-  //       console.log('copy folder')
-  //       let result = null
-  //       return copy(folderPathSrc, folderPathDest)
-  //       async function copy(folderPathSrc, folderPathDest){
-  //         try{
-  //           await fsPromises.cp(folderPathSrc, folderPathDest, {recursive: true})
-  //           if(result == undefined) {
-  //             console.log('try success')
-  //             return undefined
-  //           }
-  //         }catch{
-  //           console.log('error copy')
-  //           return 'error'
-  //         }
-  //       }
-  //     // }
-  //   }
-  // },
 
   folderIsExist:(folderPath)=>{
     return fs.existsSync(path.resolve(folderPath))

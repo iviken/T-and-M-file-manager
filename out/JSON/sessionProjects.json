@@ -7,25 +7,38 @@
 				"imgs": false,
 				"text": false
 			},
-			"imagesHeight": 200,
+			"imagesHeight": 125,
 			"pinFoldersIsFolded": false,
-			"foldersIsFolded": false
+			"foldersIsFolded": true
 		},
 		"meta": {
 			"name": "project first",
 			"created": 1742744761272,
-			"lastModified": 1743975916480,
-			"lastOpened": 1743975916480,
+			"lastModified": 1744324798522,
+			"lastOpened": 1744324798522,
 			"isPinned": true,
 			"description": "Descrtiption first of project",
 			"status": "closed"
 		},
 		"tasks": {
-			"task_001": {
-				"id": "task_001",
-				"name": "Project task one",
-				"descr": "Lorem ipsum ... description",
+			"task_9636617": {
+				"id": "task_9636617",
+				"name": "new task",
+				"descr": "",
 				"status": "undone",
+				"isPinned": true,
+				"isFolded": false,
+				"subtasksAvailability": false,
+				"subtasks": {},
+				"isSelected": true,
+				"isDone": false
+			},
+			"task_2782949": {
+				"id": "task_2782949",
+				"name": "new task uy",
+				"descr": "",
+				"isDone": false,
+				"isSelected": false,
 				"isPinned": false,
 				"isFolded": true,
 				"subtasksAvailability": false,
@@ -33,45 +46,15 @@
 			}
 		},
 		"marks": {
-			"mark_1000": {
-				"id": "mark_1000",
-				"color": "red",
-				"descr": "Some text red mark",
-				"isFolded": {
-					"text": true,
-					"imgs": false
-				},
-				"show": true
-			},
-			"mark_1001": {
-				"id": "mark_1001",
-				"color": "green",
-				"descr": "Some text green mark",
-				"isFolded": {
-					"text": true,
-					"imgs": false
-				},
-				"show": true
-			},
-			"mark_1002": {
-				"id": "mark_1002",
-				"color": "yellow",
-				"descr": "Some text yellow mark 2",
-				"isFolded": {
-					"text": true,
-					"imgs": false
-				},
-				"show": true
-			},
 			"mark_1003": {
 				"id": "mark_1003",
 				"color": "ocean",
 				"descr": "Some text ocean mark 3",
 				"isFolded": {
 					"text": true,
-					"imgs": false
+					"imgs": true
 				},
-				"show": false
+				"show": true
 			},
 			"mark_1004": {
 				"id": "mark_1004",
@@ -129,53 +112,73 @@
 				"descr": "--unmarked--",
 				"isFolded": {
 					"text": true,
-					"imgs": false
+					"imgs": true
+				},
+				"show": true
+			},
+			"mark_3844523": {
+				"id": "mark_3844523",
+				"color": "red",
+				"descr": "mark name sonne",
+				"isFolded": {
+					"text": true,
+					"imgs": true
+				},
+				"show": true
+			},
+			"mark_6709164": {
+				"id": "mark_6709164",
+				"color": "orange",
+				"descr": "mark name sonne 2",
+				"isFolded": {
+					"text": true,
+					"imgs": true
+				},
+				"show": true
+			},
+			"mark_4874505": {
+				"id": "mark_4874505",
+				"color": "yellow",
+				"descr": "mark name 12",
+				"isFolded": {
+					"text": true,
+					"imgs": true
 				},
 				"show": true
 			}
 		},
 		"folders": [
 			{
-				"id": "proj_001__fold_6674992",
-				"path": "/Temp/body/folder one",
-				"isOpened": true,
-				"isPinned": false,
-				"displayedOnBar": true,
-				"files": [
-					{
-						"id": "fileID_9495259",
-						"name": "ren 1",
-						"format": "txt",
-						"markID": "mark_1000",
-						"isPinned": false,
-						"path": "/Temp/body/folder one",
-						"meta": {
-							"created": "2025-04-04T13:25:40.837Z",
-							"createdMS": null,
-							"lastEdited": "2025-03-28T21:40:43.528Z",
-							"lastEditedMS": 1743198043527.88,
-							"size": 0,
-							"createdMs": 1743773140836.8865
-						},
-						"isExist": true
-					}
-				],
-				"isExist": true
-			},
-			{
-				"id": "proj_001__fold_8580927",
-				"path": "/Temp/body/last folder 4",
+				"id": "proj_001__fold_5682967",
+				"path": "/Temp/body/folder renamed 4",
 				"isOpened": false,
 				"isPinned": false,
 				"displayedOnBar": false,
 				"files": [
 					{
-						"id": "fileID_810786",
-						"name": "56565656565 1",
+						"id": "fileID_6038626",
+						"name": "56565656565 2",
 						"format": "txt",
-						"markID": "mark_1000",
+						"markID": "mark_1004",
 						"isPinned": false,
-						"path": "/Temp/body/last folder 4",
+						"path": "/Temp/body/folder renamed 4",
+						"meta": {
+							"created": "2025-04-05T22:23:03.174Z",
+							"createdMS": null,
+							"lastEdited": "2025-03-28T21:40:43.528Z",
+							"lastEditedMS": 1743198043527.88,
+							"size": 0,
+							"createdMs": 1743891783173.7917
+						},
+						"isExist": true
+					},
+					{
+						"id": "fileID_5448688",
+						"name": "4try 2",
+						"format": "txt",
+						"markID": "mark_1004",
+						"isPinned": false,
+						"path": "/Temp/body/folder renamed 4",
 						"meta": {
 							"created": "2025-04-05T22:23:03.173Z",
 							"createdMS": null,
@@ -185,31 +188,21 @@
 							"createdMs": 1743891783172.795
 						},
 						"isExist": true
-					}
-				],
-				"isExist": true
-			},
-			{
-				"id": "proj_001__fold_2163236",
-				"path": "/Temp/body/and renamed",
-				"isOpened": false,
-				"isPinned": false,
-				"displayedOnBar": false,
-				"files": [
+					},
 					{
-						"id": "fileID_5550919",
-						"name": "56565656565 1",
-						"format": "txt",
-						"markID": "mark_1000",
+						"id": "fileID_7887897",
+						"name": "FM55",
+						"format": "png",
+						"markID": "mark_4874505",
 						"isPinned": false,
-						"path": "/Temp/body/and renamed",
+						"path": "/Temp/body/folder renamed 4",
 						"meta": {
-							"created": "2025-04-05T22:25:50.639Z",
+							"created": "2025-04-05T22:38:56.790Z",
 							"createdMS": null,
-							"lastEdited": "2025-03-28T21:40:43.528Z",
-							"lastEditedMS": 1743198043527.88,
-							"size": 0,
-							"createdMs": 1743891950639.4724
+							"lastEdited": "2025-03-13T21:05:56.589Z",
+							"lastEditedMS": 1741899956588.709,
+							"size": 985929,
+							"createdMs": 1743892736789.6462
 						},
 						"isExist": true
 					}

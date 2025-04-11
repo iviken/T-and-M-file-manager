@@ -97,7 +97,7 @@ const api = {
       }
     }
   },
-  getPathSpecialFolder: (folderName) => {
+  getPathSpecialFolder: () => {
     if (process.platform === "win32") {
       return process.env.USERPROFILE;
     } else {
@@ -148,63 +148,11 @@ const api = {
       return false;
     }
   },
-  // deleteFolder:(folderPath)=>{
-  //   if( api.folderIsExist(folderPath) ){
-  //     return fs.rmdir(path.resolve(folderPath), { recursive: true, force: true }, err => {
-  //       if (err) {
-  //         throw err
-  //       }
-  //       console.log(`${folderPath} is deleted!`)
-  //     })
-  //   }else{
-  //     console.log(`${folderPath} is not exist`)
-  //     return false
-  //   }
-  // },
-  // copyFolder:(folderPathSrc, folderPathDest)=>{
-  //   //
-  //   if( api.folderIsExist(folderPathSrc) ){
-  //     // if( api.folderIsExist(folderPathDest) ){}
-  //     //
-  //     console.log('copy folder')
-  //     return copy(folderPathSrc, folderPathDest)
-  //     async function copy(folderPathSrc, folderPathDest){
-  //       try{
-  //         await fsPromises.cp(folderPathSrc, folderPathDest, {recursive: true})
-  //       }catch{
-  //         console.log('error copy')
-  //       }
-  //     }
-  //   }
-  // },
   copyFolder: (folderPathSrc, folderPathDest) => {
     if (api.folderIsExist(folderPathSrc)) {
       return fsPromises.cp(folderPathSrc, folderPathDest, { recursive: true });
     }
   },
-  // copyFolder:(folderPathSrc, folderPathDest)=>{
-  //   //
-  //   if( api.folderIsExist(folderPathSrc) ){
-  //     // if( api.folderIsExist(folderPathDest) ){
-  //       //
-  //       console.log('copy folder')
-  //       let result = null
-  //       return copy(folderPathSrc, folderPathDest)
-  //       async function copy(folderPathSrc, folderPathDest){
-  //         try{
-  //           await fsPromises.cp(folderPathSrc, folderPathDest, {recursive: true})
-  //           if(result == undefined) {
-  //             console.log('try success')
-  //             return undefined
-  //           }
-  //         }catch{
-  //           console.log('error copy')
-  //           return 'error'
-  //         }
-  //       }
-  //     // }
-  //   }
-  // },
   folderIsExist: (folderPath) => {
     return fs.existsSync(path.resolve(folderPath));
   },

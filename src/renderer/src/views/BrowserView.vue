@@ -2,7 +2,11 @@
 import Tree from '../components/Tree.vue'
 import Tasks from '../components/Tasks.vue'
 import Bar from '../components/Bar.vue'
-import AccordionFiles from '../components/Accordion.vue';
+import AccordionFiles from '../components/Accordion.vue'
+
+import { filesMethods } from '../lib/files.js'
+import { marksMethods } from '../lib/marks.js'
+import { foldersMethods } from '../lib/folders.js'
 
 export default {
     components: {
@@ -40,6 +44,7 @@ export default {
                 showFilesFromAllFoldersOption: false,
                 showImageViewer: false,
                 actualSessionType: '',                  //
+                renamigMark: false,
             },
             data: {},
             fullData: {},
@@ -66,7 +71,10 @@ export default {
                 imageZoomStep: 25,
                 minimumImagePreviewSize: 50,
                 maximumImagePreviewSize: 175,
-            }
+            },
+            filesMethods: null,
+            marksMethods: null,
+            foldersMethods: null,
         }
     },
     methods: {
@@ -243,18 +251,36 @@ export default {
     beforeMount() {
         //
         this.getProject()
+        //
+        this.filesMethods = filesMethods
+        this.filesMethods.localState = this.localState
+        this.filesMethods.stateFiles = this.stateFiles
+        this.filesMethods.init( this.data )
+        //
+        this.marksMethods = marksMethods
+        this.marksMethods.stateFiles = this.stateFiles
+        this.marksMethods.marks = this.data.marks
+        //
+        this.foldersMethods = foldersMethods
+        this.foldersMethods.folders = this.data.folders
+        this.foldersMethods.localState = this.localState
+        this.foldersMethods.inputSettings = this.settings
+        this.foldersMethods.projectID = this.projectID
     },
     mounted(){
         this.$nextTick(function () {
 
             window.addEventListener("keydown", e => {
                 //  show metadata file
-                if(e.key == 'Shift'){ this.showMeta('show meta') }
+                if(e.key == 'Shift'){
+                    if(!this.localState.renamigMark) this.showMeta('show meta') 
+                }
             })
 
             window.addEventListener("keyup", e => {
                 //  show metadata file
-                if(e.key == 'Shift'){ this.showMeta('hide meta') }
+                if(e.key == 'Shift'){ 
+                    if(!this.localState.renamigMark) this.showMeta('hide meta') }
                 //  zoom image preview
                 if( (e.key == '+') || (e.key == '=')){
                     if(this.data.parameters.imagesHeight < (this.settings.maximumImagePreviewSize - this.settings.imageZoomStep) )
@@ -297,7 +323,7 @@ export default {
             {{ data.folders[localState.activeFolderIndex].path.split('/')[ data.folders[localState.activeFolderIndex].path.split('/').length - 1 ] }}
         </div> -->
 
-        <Bar :stateFiles="stateFiles" :localState="localState" :marks="data.marks" :folders="data.folders" :inputSettings="settings" />
+        <Bar :stateFiles="stateFiles" :localState="localState" :marks="data.marks" :foldersMethods="foldersMethods" :marksMethods="marksMethods" :filesMethods="filesMethods" :folders="data.folders" :inputSettings="settings" />
 
         <div class="page">
 
@@ -310,7 +336,7 @@ export default {
                     <div class="section-left">
                         <Tasks v-if="localState.showTasksPanel" :data="data.tasks" class="component" />
 
-                        <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders" :inputSettings="settings"  :dataSettings="data.parameters" :localState="localState" :projectID="data.id" class="component" />
+                        <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption" :foldersMethods="foldersMethods" :filesMethods="filesMethods" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders" :inputSettings="settings"  :dataSettings="data.parameters" :localState="localState" :projectID="data.id" class="component" />
                     </div>
                     
                     <div class="section-right h100">
@@ -319,10 +345,10 @@ export default {
                             
                             <div class="w100 h100 on-row">
                                 <div>
-                                    <AccordionFiles :files="data.folders[localState.activeFolderIndex].files" :marks="data.marks" :viewMode="'text'" :state="stateFiles" :inputSettings="data.parameters" class="text-files-component component" />
+                                    <AccordionFiles :filesMethods="filesMethods" :files="data.folders[localState.activeFolderIndex].files" :marks="data.marks" :viewMode="'text'" :state="stateFiles" :inputSettings="data.parameters" class="text-files-component component" />
                                 </div>
                                 <div>
-                                    <AccordionFiles :files="data.folders[localState.activeFolderIndex].files" :marks="data.marks" :viewMode="'imgs'" :state="stateFiles" :inputSettings="data.parameters" class="image-files-component component" />
+                                    <AccordionFiles :filesMethods="filesMethods" :files="data.folders[localState.activeFolderIndex].files" :marks="data.marks" :viewMode="'imgs'" :state="stateFiles" :inputSettings="data.parameters" class="image-files-component component" />
                                 </div>
                             </div>
                 
@@ -332,10 +358,10 @@ export default {
                             
                             <div class="w100 h100 on-row">
                                 <div>
-                                    <AccordionFiles :files="getAllFiles()" :marks="data.marks" :viewMode="'text'" :state="stateFiles" :inputSettings="data.parameters" class="text-files-component component" />
+                                    <AccordionFiles :filesMethods="filesMethods" :files="getAllFiles()" :marks="data.marks" :viewMode="'text'" :state="stateFiles" :inputSettings="data.parameters" class="text-files-component component" />
                                 </div>
                                 <div>
-                                    <AccordionFiles :files="getAllFiles()" :marks="data.marks" :viewMode="'imgs'" :state="stateFiles" :inputSettings="data.parameters" class="image-files-component component" />
+                                    <AccordionFiles :filesMethods="filesMethods" :files="getAllFiles()" :marks="data.marks" :viewMode="'imgs'" :state="stateFiles" :inputSettings="data.parameters" class="image-files-component component" />
                                 </div>
                             </div>
                 

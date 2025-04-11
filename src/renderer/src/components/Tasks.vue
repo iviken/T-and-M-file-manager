@@ -20,7 +20,8 @@ export default {
                 id: taskID,
                 name: this.newTaskValue,
                 descr: '',
-                status: 'undone',
+                isDone: false,
+                isSelected: false,
                 isPinned: false,
                 isFolded: true,
                 subtasksAvailability: false,
@@ -31,29 +32,31 @@ export default {
     moveTask:function(dat){
         console.log('task: ' + dat)
     },
-  },
-  beforeUpdate(){
-    for (const key in this.data) {
-
-        let isEmpty = true;
-        
-        for (let subkey in this.data[key].subtasks) {
-            isEmpty = false;
-            break;
-        }
-        
-        if (isEmpty) {
-        // Объект пуст
-            this.data[key].subtasksAvailability = false
-            this.data[key].isFolded = true
-        } else {
-        // Объект не пуст
+    deleteTask(task){
+        if( Object.hasOwn(this.data, task.id) ){
+            delete this.data[task.id]
+        }else{
+            for (const key in this.data) {
+                if( Object.hasOwn(this.data[key], 'subtasks') ){            
+                    if( Object.hasOwn(this.data[key].subtasks, task.id) ){
+                        //
+                        if( Object.keys(this.data[key].subtasks).length == 1)
+                            this.data[key].subtasksAvailability = false
+                        //
+                        delete this.data[key].subtasks[task.id]
+                    }
+                }
+            }
         }
     }
   },
+  beforeUpdate(){},
+  beforeMount(){},
   data(){
     return{
-        newTaskValue: 'new task'
+        newTaskValue: 'new task',
+        selectedTaskId: null,
+        selectedSubTaskId: null,
     }
   }
 }
@@ -65,33 +68,39 @@ export default {
         <div class="section on-col">
         
             <div class="pin-block scrollY on-col">
-                <div v-for="task in data">
+                <label v-for="task in data" :key="task.id">
                     <div v-if="task.isPinned">
+
+                        <input type="radio" v-model="selectedTaskId" :value="task.id">
         
-                        <TaskItem :task="task" :data="data" />
+                        <TaskItem :task="task" :selected="task.id == selectedTaskId" :class="{selected: (!task.isDone && task.isSelected)}" @deleteTask="deleteTask"/>
         
                         <div v-for="subtask in task.subtasks" class="sub" v-if="!task.isFolded">
-                            <TaskItem :task="subtask" :data="task.subtasks" />
+                            <TaskItem :task="subtask" :selected="subtask.id == selectedSubTaskId" :class="{selected: (!subtask.isDone && subtask.isSelected)}" @deleteTask="deleteTask"/>
                         </div>
         
                     </div>
-                </div>
+                </label>
             </div>
 
             <div class="empty1"></div>
         
             <div class="block scrollY">
-                <div v-for="task in data">
-                    <div v-if="!task.isPinned">
-                
-                        <TaskItem :task="task" :data="data" />
+                <label v-for="task in data" :key="task.id">
+                    <div v-if="!task.isPinned" class="on-col">
+
+                        <div class="on-row">
+                            <input type="radio" v-model="selectedTaskId" :value="task.id">
+                            
+                            <TaskItem :task="task" :selected="task.id == selectedTaskId" :class="{selected: (!task.isDone && task.isSelected)}" @deleteTask="deleteTask"/>
+                        </div>
                         
                         <div v-for="subtask in task.subtasks" class="sub" v-if="!task.isFolded">
-                            <TaskItem :task="subtask" :data="task.subtasks" />
+                            <TaskItem :task="subtask" :selected="subtask.id == selectedSubTaskId" :class="{selected: (!subtask.isDone && subtask.isSelected)}" @deleteTask="deleteTask"/>
                         </div>
                         
                     </div>
-                </div>
+                </label>
                 
             </div>
             
@@ -140,6 +149,10 @@ export default {
     .rename{
         background-color: antiquewhite;
         padding-left: 20px;
+    }
+
+    .selected{
+        background-color: aquamarine;
     }
 
     .focus:focus{
