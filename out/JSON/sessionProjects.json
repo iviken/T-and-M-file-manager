@@ -14,8 +14,8 @@
 		"meta": {
 			"name": "project first",
 			"created": 1742744761272,
-			"lastModified": 1744324798522,
-			"lastOpened": 1744324798522,
+			"lastModified": 1745438236442,
+			"lastOpened": 1745438236442,
 			"isPinned": true,
 			"description": "Descrtiption first of project",
 			"status": "closed"
@@ -30,7 +30,7 @@
 				"isFolded": false,
 				"subtasksAvailability": false,
 				"subtasks": {},
-				"isSelected": true,
+				"isSelected": false,
 				"isDone": false
 			},
 			"task_2782949": {
@@ -38,7 +38,7 @@
 				"name": "new task uy",
 				"descr": "",
 				"isDone": false,
-				"isSelected": false,
+				"isSelected": true,
 				"isPinned": false,
 				"isFolded": true,
 				"subtasksAvailability": false,
@@ -94,7 +94,7 @@
 					"text": true,
 					"imgs": false
 				},
-				"show": false
+				"show": true
 			},
 			"mark_1008": {
 				"id": "mark_1008",
@@ -149,65 +149,70 @@
 		},
 		"folders": [
 			{
-				"id": "proj_001__fold_5682967",
-				"path": "/Temp/body/folder renamed 4",
-				"isOpened": false,
-				"isPinned": false,
-				"displayedOnBar": false,
+				"id": "folder_984390",
+				"path": "/Temp/body/11 copy",
 				"files": [
 					{
-						"id": "fileID_6038626",
-						"name": "56565656565 2",
+						"id": "fileID_1109914",
+						"name": "4545t",
 						"format": "txt",
 						"markID": "mark_1004",
 						"isPinned": false,
-						"path": "/Temp/body/folder renamed 4",
+						"path": "/Temp/body/11 copy",
 						"meta": {
-							"created": "2025-04-05T22:23:03.174Z",
+							"created": "2025-04-20T22:56:23.176Z",
 							"createdMS": null,
 							"lastEdited": "2025-03-28T21:40:43.528Z",
 							"lastEditedMS": 1743198043527.88,
 							"size": 0,
-							"createdMs": 1743891783173.7917
-						},
-						"isExist": true
-					},
-					{
-						"id": "fileID_5448688",
-						"name": "4try 2",
-						"format": "txt",
-						"markID": "mark_1004",
-						"isPinned": false,
-						"path": "/Temp/body/folder renamed 4",
-						"meta": {
-							"created": "2025-04-05T22:23:03.173Z",
-							"createdMS": null,
-							"lastEdited": "2025-03-28T21:40:43.528Z",
-							"lastEditedMS": 1743198043527.88,
-							"size": 0,
-							"createdMs": 1743891783172.795
-						},
-						"isExist": true
-					},
-					{
-						"id": "fileID_7887897",
-						"name": "FM55",
-						"format": "png",
-						"markID": "mark_4874505",
-						"isPinned": false,
-						"path": "/Temp/body/folder renamed 4",
-						"meta": {
-							"created": "2025-04-05T22:38:56.790Z",
-							"createdMS": null,
-							"lastEdited": "2025-03-13T21:05:56.589Z",
-							"lastEditedMS": 1741899956588.709,
-							"size": 985929,
-							"createdMs": 1743892736789.6462
-						},
-						"isExist": true
+							"createdMs": 1745189783176.11
+						}
 					}
 				],
-				"isExist": true
+				"isOpened": true,
+				"isPinned": false,
+				"displayedOnBar": true
+			},
+			{
+				"id": "folder_6676127",
+				"path": "/Temp/body/11",
+				"files": [
+					{
+						"id": "fileID_2780853",
+						"name": "4try 2",
+						"format": "txt",
+						"markID": "mark_1007",
+						"isPinned": false,
+						"path": "/Temp/body/11",
+						"meta": {
+							"created": "2025-04-20T22:56:23.173Z",
+							"createdMS": null,
+							"lastEdited": "2025-03-28T21:40:43.528Z",
+							"lastEditedMS": 1743198043527.88,
+							"size": 0,
+							"createdMs": 1745189783173.1167
+						}
+					},
+					{
+						"id": "fileID_4419288",
+						"name": "4545t",
+						"format": "txt",
+						"markID": "mark_6709164",
+						"isPinned": false,
+						"path": "/Temp/body/11",
+						"meta": {
+							"created": "2025-04-20T22:56:23.176Z",
+							"createdMS": null,
+							"lastEdited": "2025-03-28T21:40:43.528Z",
+							"lastEditedMS": 1743198043527.88,
+							"size": 0,
+							"createdMs": 1745189783176.11
+						}
+					}
+				],
+				"isOpened": false,
+				"isPinned": false,
+				"displayedOnBar": false
 			}
 		]
 	}

@@ -6,7 +6,7 @@ import AccordionFiles from '../components/Accordion.vue'
 
 import { filesMethods } from '../lib/files.js'
 import { marksMethods } from '../lib/marks.js'
-import { foldersMethods } from '../lib/folders.js'
+import { folders } from '../lib/folders.js'
 
 export default {
     components: {
@@ -39,7 +39,7 @@ export default {
                 showTreePanel: false,
                 showTasksPanel: true,
                 activeFolderIndex: 0,
-                previousFolderIndex: 0,
+                // previousFolderIndex: 0,
                 metadataIsHidden: true,
                 showFilesFromAllFoldersOption: false,
                 showImageViewer: false,
@@ -74,7 +74,7 @@ export default {
             },
             filesMethods: null,
             marksMethods: null,
-            foldersMethods: null,
+            foldersMethods2: null,
         }
     },
     methods: {
@@ -94,82 +94,82 @@ export default {
             }
             return allFiles_
         },
-        refreshFiles(){
-            //  Is folder exist? Y:
-            if( window.api.folderIsExist(this.data.folders[this.localState.activeFolderIndex].path) ){
-                //  Get actual files from folder
-                let actualFilenamesInTheActiveFolder =  window.api.getFileFullnames( this.data.folders[this.localState.activeFolderIndex].path )
-                // console.log(actualFilenamesInTheActiveFolder)
-                //  Если есть файлы в (отсканированном) каталоге
-                if (actualFilenamesInTheActiveFolder.length > 0 ){
-                    //
-                    let doesTheFileExist = false
-                    //  Сравниваем найденные файлы в каталоге с файлами в базе
-                    //      Файлы базы
-                    this.data.folders[this.localState.activeFolderIndex].files.forEach( data_element => {
-                        doesTheFileExist = false
-                        //      Файлы каталога
-                        actualFilenamesInTheActiveFolder.forEach( (element, index) => {
-                            //  И сравниваем
-                            if( `${data_element.name}.${data_element.format}` == element ){
-                                //  При совпадении убираем найденный файл каталога из очереди для уменьшения вычислит. нагрузки
-                                actualFilenamesInTheActiveFolder.splice( index, 1 )
-                                //  Файл существует
-                                //      Variable for LOG
-                                doesTheFileExist = true
-                                //      Undeletion flag
-                                data_element.isExist = true
-                            }
-                        })
-                        //  Если не существует
-                        if( !doesTheFileExist ) {
-                            //  Add to LOG
-                            this.refreshFilesQueueLOG.deletedIrrelevant.push( data_element.name.slice() )
-                            //
-                            data_element.isExist = false
-                        }
-                    })
-                    //  Delete marked files (isExist == false)
-                    let arrSize = Number( this.data.folders[this.localState.activeFolderIndex].files.length )
-                    //
-                    if(arrSize){
-                        for(let ch=0; ch<arrSize; ch++){
-                            if( !this.data.folders[this.localState.activeFolderIndex].files[ch].isExist ){
-                                this.data.folders[this.localState.activeFolderIndex].files.splice( ch, 1 )
-                                ch--
-                                arrSize--
-                            }
-                        }
-                    }
-                    //  Заносим найденные файлы в каталоге в базу
-                    actualFilenamesInTheActiveFolder.forEach(element => {
-                        this.data.folders[this.localState.activeFolderIndex].files.push(
-                            {
-                                id: 'fileID_' + Math.floor(Math.random()*10000000), 
-                                name: element.slice( 0, element.lastIndexOf('.') ),       //      To Do
-                                format: element.slice( element.lastIndexOf('.') + 1 ), 
-                                markID: 'mark_unmarked',     
-                                isPinned: false, 
-                                path: this.data.folders[this.localState.activeFolderIndex].path, 
-                                meta: window.api.getFileMeta( this.data.folders[this.localState.activeFolderIndex].path, element )
-                            }
-                        )
-                        //  Add to LOG
-                        this.refreshFilesQueueLOG.foundAndAdded.push( element )
-                    })
-                }else{
-                    //  Если нету файлов в каталоге, стираем все из базы
-                    this.data.folders[this.localState.activeFolderIndex].files = []
-                }
-                //
-            }else{
-                //
+        // refreshFiles(){
+        //     //  Is folder exist? Y:
+        //     if( window.api.folderIsExist(this.data.folders[this.localState.activeFolderIndex].path) ){
+        //         //  Get actual files from folder
+        //         let actualFilenamesInTheActiveFolder =  window.api.getFileFullnames( this.data.folders[this.localState.activeFolderIndex].path )
+        //         // console.log(actualFilenamesInTheActiveFolder)
+        //         //  Если есть файлы в (отсканированном) каталоге
+        //         if (actualFilenamesInTheActiveFolder.length > 0 ){
+        //             //
+        //             let doesTheFileExist = false
+        //             //  Сравниваем найденные файлы в каталоге с файлами в базе
+        //             //      Файлы базы
+        //             this.data.folders[this.localState.activeFolderIndex].files.forEach( data_element => {
+        //                 doesTheFileExist = false
+        //                 //      Файлы каталога
+        //                 actualFilenamesInTheActiveFolder.forEach( (element, index) => {
+        //                     //  И сравниваем
+        //                     if( `${data_element.name}.${data_element.format}` == element ){
+        //                         //  При совпадении убираем найденный файл каталога из очереди для уменьшения вычислит. нагрузки
+        //                         actualFilenamesInTheActiveFolder.splice( index, 1 )
+        //                         //  Файл существует
+        //                         //      Variable for LOG
+        //                         doesTheFileExist = true
+        //                         //      Undeletion flag
+        //                         data_element.isExist = true
+        //                     }
+        //                 })
+        //                 //  Если не существует
+        //                 if( !doesTheFileExist ) {
+        //                     //  Add to LOG
+        //                     this.refreshFilesQueueLOG.deletedIrrelevant.push( data_element.name.slice() )
+        //                     //
+        //                     data_element.isExist = false
+        //                 }
+        //             })
+        //             //  Delete marked files (isExist == false)
+        //             let arrSize = Number( this.data.folders[this.localState.activeFolderIndex].files.length )
+        //             //
+        //             if(arrSize){
+        //                 for(let ch=0; ch<arrSize; ch++){
+        //                     if( !this.data.folders[this.localState.activeFolderIndex].files[ch].isExist ){
+        //                         this.data.folders[this.localState.activeFolderIndex].files.splice( ch, 1 )
+        //                         ch--
+        //                         arrSize--
+        //                     }
+        //                 }
+        //             }
+        //             //  Заносим найденные файлы в каталоге в базу
+        //             actualFilenamesInTheActiveFolder.forEach(element => {
+        //                 this.data.folders[this.localState.activeFolderIndex].files.push(
+        //                     {
+        //                         id: 'fileID_' + Math.floor(Math.random()*10000000), 
+        //                         name: element.slice( 0, element.lastIndexOf('.') ),       //      To Do
+        //                         format: element.slice( element.lastIndexOf('.') + 1 ), 
+        //                         markID: 'mark_unmarked',     
+        //                         isPinned: false, 
+        //                         path: this.data.folders[this.localState.activeFolderIndex].path, 
+        //                         meta: window.api.getFileMeta( this.data.folders[this.localState.activeFolderIndex].path, element )
+        //                     }
+        //                 )
+        //                 //  Add to LOG
+        //                 this.refreshFilesQueueLOG.foundAndAdded.push( element )
+        //             })
+        //         }else{
+        //             //  Если нету файлов в каталоге, стираем все из базы
+        //             this.data.folders[this.localState.activeFolderIndex].files = []
+        //         }
+        //         //
+        //     }else{
+        //         //
                 
-                //  N:, delete from db
-                this.data.folders.splice(this.localState.activeFolderIndex, 1)
-            }
-            // console.log( this.refreshFilesQueueLOG )
-        },
+        //         //  N:, delete from db
+        //         this.data.folders.splice(this.localState.activeFolderIndex, 1)
+        //     }
+        //     // console.log( this.refreshFilesQueueLOG )
+        // },
         getProject(){
             if(this.sessionType == 'SESSION'){
                 this.fullData = window.api.getSessionData()
@@ -183,6 +183,7 @@ export default {
             }
             // console.log('session type: ' + this.sessionType)
             // console.log(this.fullData)
+
             //  Searching in project status 'opened' for open project
             for (const key in this.fullData) {
                 //  Open project
@@ -190,32 +191,27 @@ export default {
                     //  Set actual project data (one opened project)
                     this.data = this.fullData[key]
                     //
-                    let isAtLeatOneFolderOpen = false
-                    //  Search opened folder in project
-                    this.fullData[key].folders.forEach((folder, index) => {
-                        if(folder.isOpened){
-                            //  Opened folder index for Accordion component :files
-                            this.localState.activeFolderIndex = index
-                            //
-                            isAtLeatOneFolderOpen = true
-                            // console.log('folder opened: ' + folder.path)
-                            // this.localState.pathsOfOpenedFolders = [element.path]
-                        }
-                    })
-                    //  Reset opened folder index if is all folders closed
-                    if( !isAtLeatOneFolderOpen ){
-                        this.localState.activeFolderIndex = 0
-                        this.fullData[key].folders[0].isOpened = true
-                    }
-                    break
+                    // let isAtLeatOneFolderOpen = false
+                    // //  Search opened folder in project
+                    // this.fullData[key].folders.forEach((folder, index) => {
+                    //     if(folder.isOpened){
+                    //         //  Opened folder index for Accordion component :files
+                    //         this.localState.activeFolderIndex = index
+                    //         //
+                    //         isAtLeatOneFolderOpen = true
+                    //         // console.log('folder opened: ' + folder.path)
+                    //     }
+                    // })
+                    // //  Reset opened folder index if is all folders closed
+                    // if( !isAtLeatOneFolderOpen ){
+                    //     this.localState.activeFolderIndex = 0
+                    //     this.fullData[key].folders[0].isOpened = true
+                    // }
+                    // break
                 }
-                // }else{
-                //     //  Or open folders session (id: proj_default)
-                //     this.data = window.api.getSessionData()
-                // }
             }
             //
-            this.refreshFiles()
+            // this.refreshFiles()
             //
             this.resetStateFiles()
         },
@@ -252,6 +248,9 @@ export default {
         //
         this.getProject()
         //
+        this.foldersMethods2 = folders
+        this.foldersMethods2.init( {folders: this.data.folders, localState: this.localState} )
+        //
         this.filesMethods = filesMethods
         this.filesMethods.localState = this.localState
         this.filesMethods.stateFiles = this.stateFiles
@@ -260,12 +259,6 @@ export default {
         this.marksMethods = marksMethods
         this.marksMethods.stateFiles = this.stateFiles
         this.marksMethods.marks = this.data.marks
-        //
-        this.foldersMethods = foldersMethods
-        this.foldersMethods.folders = this.data.folders
-        this.foldersMethods.localState = this.localState
-        this.foldersMethods.inputSettings = this.settings
-        this.foldersMethods.projectID = this.projectID
     },
     mounted(){
         this.$nextTick(function () {
@@ -296,23 +289,13 @@ export default {
     beforeUpdate(){
         //
         if( this.localState.actualSessionType != this.sessionType ) this.getProject()
-        //
-        if( this.localState.activeFolderIndex != this.localState.previousFolderIndex ){
-            //
-            this.refreshFiles()
-            //  Clear selection files queue
-            if(this.settings.resettingSelectedFilesAfterSwitchingToAnotherFolder){
-                this.stateFiles.files = {}
-                this.stateFiles.numberOfSelectedFiles = 0
-            }
-        }
     },
 }
 </script>
 
 <template>
 
-    <div class="on-col focus" @keyup.space="imageViewer()" @keyup.f5="refreshFiles()" tabindex="0">
+    <div class="on-col focus" @keyup.space="imageViewer()" @keyup.f5="foldersMethods2.refreshFiles()" tabindex="0">
 
         <!-- <div v-if="sessionType == 'PROJECTS'" class="header-name uppercase">
             <span class="header">{{ data.meta.name }}</span>
@@ -323,7 +306,7 @@ export default {
             {{ data.folders[localState.activeFolderIndex].path.split('/')[ data.folders[localState.activeFolderIndex].path.split('/').length - 1 ] }}
         </div> -->
 
-        <Bar :stateFiles="stateFiles" :localState="localState" :marks="data.marks" :foldersMethods="foldersMethods" :marksMethods="marksMethods" :filesMethods="filesMethods" :folders="data.folders" :inputSettings="settings" />
+        <Bar :stateFiles="stateFiles" :localState="localState" :foldersMethods2="foldersMethods2" :marks="data.marks" :marksMethods="marksMethods" :filesMethods="filesMethods" :folders="data.folders" :inputSettings="settings" />
 
         <div class="page">
 
@@ -336,7 +319,7 @@ export default {
                     <div class="section-left">
                         <Tasks v-if="localState.showTasksPanel" :data="data.tasks" class="component" />
 
-                        <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption" :foldersMethods="foldersMethods" :filesMethods="filesMethods" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders" :inputSettings="settings"  :dataSettings="data.parameters" :localState="localState" :projectID="data.id" class="component" />
+                        <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption"  :foldersMethods2="foldersMethods2" :filesMethods="filesMethods" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders" :inputSettings="settings"  :dataSettings="data.parameters" :localState="localState" :projectID="data.id" class="component" />
                     </div>
                     
                     <div class="section-right h100">

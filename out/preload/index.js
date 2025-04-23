@@ -21,6 +21,8 @@ const settings = {
   fileImgMask: ["jpg", "png", "gif", "bmp", "jpeg", "svg"],
   sessionProjectsFile: "sessionProjects.json",
   sessionBrowserFile: "sessionBrowser.json",
+  win32separator: "\\",
+  actualSeparator: "/",
   defaults: {
     defaulMarkID: "mark_unmarked"
   }
@@ -43,35 +45,41 @@ function compressSession(projects) {
   for (const key in projects) {
     projects[key].folders.forEach((folder) => {
       folder.files = folder.files.filter((file) => file.markID != settings.defaults.defaulMarkID || file.isPinned);
-      if (!folder.files.length) {
+      if (folder.files.length == 0) {
         folder.isEmpty = true;
       }
     });
-    projects[key].folders = projects[key].folders.filter((folder) => !folder.isEmpty);
+    if (projects[key].folders.length == 1) {
+      projects[key].folders[0].isEmpty = false;
+    }
+    if (projects[key].folders.length > 1) {
+      projects[key].folders = projects[key].folders.filter((folder) => !folder.isEmpty);
+    }
   }
   return JSON.stringify(projects, null, "	");
 }
 const api = {
+  validate: (path2) => {
+    return path2.replaceAll(settings.win32separator, settings.actualSeparator);
+  },
   writeFile: (filePath, data) => {
     return fs.writeFile(path.resolve(filePath), data, { encoding: "utf8" });
   },
   getFileFullnames: (folderPath) => {
-    if (api.folderIsExist(folderPath)) {
-      return fs.readdirSync(path.resolve(folderPath), { withFileTypes: true }).filter((d) => d.isFile()).map((d) => d.name);
-    }
+    if (!api.folderIsExist(folderPath)) return;
+    return fs.readdirSync(path.resolve(folderPath), { withFileTypes: true }).filter((d) => d.isFile()).map((d) => d.name);
   },
   getFilenames: (InPath) => {
-    if (api.folderIsExist(InPath)) {
-      let files = fs.readdirSync(path.resolve(InPath));
-      let result = [];
-      files.forEach((element) => {
-        result.push({
-          name: path.extname(path.join(InPath, element)),
-          format: path.basename(path.join(InPath, element), path.extname(path.join(InPath, element)))
-        });
+    if (!api.folderIsExist(InPath)) return;
+    let files = fs.readdirSync(path.resolve(InPath));
+    let result = [];
+    files.forEach((element) => {
+      result.push({
+        name: path.extname(path.join(InPath, element)),
+        format: path.basename(path.join(InPath, element), path.extname(path.join(InPath, element)))
       });
-      return result;
-    }
+    });
+    return result;
   },
   renameFile: (folderPath, oldFileName, newFileName) => {
     return fsPromises.rename(path.resolve(path.join(folderPath, oldFileName)), path.resolve(path.join(folderPath, newFileName)));
@@ -88,18 +96,20 @@ const api = {
       }
     });
   },
-  getFolderNames: (folderPath) => {
-    if (api.folderIsExist(folderPath)) {
-      if (folderPath == "") {
-        return fs.readdirSync(path.parse(process.cwd()).root, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
-      } else {
-        return fs.readdirSync(path.resolve(folderPath), { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
-      }
+  getFolderNames: (folderPath, cnst) => {
+    if (cnst != "dont check for existence" || cnst == void 0) {
+      if (!api.folderIsExist(folderPath))
+        return;
+    }
+    if (folderPath == "") {
+      return fs.readdirSync(path.parse(process.cwd()).root, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
+    } else {
+      return fs.readdirSync(path.resolve(folderPath), { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
     }
   },
   getPathSpecialFolder: () => {
     if (process.platform === "win32") {
-      return process.env.USERPROFILE;
+      return api.validate(process.env.USERPROFILE).substring(2);
     } else {
       return process.env.HOME;
     }
@@ -120,37 +130,51 @@ const api = {
   },
   createFolder: (InPath, folderName) => {
     if (folderName == void 0) folderName = "";
-    if (!api.folderIsExist(path.join(InPath, folderName))) {
-      return fs.mkdirSync(path.resolve(path.join(InPath, folderName)), (err) => {
-        if (err) {
-          console.error(err);
-        } else {
-          console.log("Directory created successfully.");
-        }
-      });
+    if (api.folderIsExist(path.join(InPath, folderName))) {
+      if (folderName == "") InPath += Math.floor(Math.random() * 1e7);
+      if (folderName) folderName += Math.floor(Math.random() * 1e7);
+    }
+    try {
+      fs.mkdirSync(path.resolve(path.join(InPath, folderName)));
+      if (folderName == "") return api.validate(InPath);
+      if (folderName) return api.validate(path.join(InPath, folderName));
+    } catch (error) {
+      console.log(error);
+      return false;
     }
   },
   renameFolder: (dat) => {
     let newPath = path.join(dat.fullpath.substring(0, dat.fullpath.lastIndexOf("/")), dat.newName);
     try {
       fs.renameSync(path.resolve(dat.fullpath), path.resolve(newPath));
-      return true;
+      return api.validate(newPath);
     } catch (error) {
       console.log(error);
       return false;
     }
   },
   deleteFolder: (folderPath) => {
-    if (api.folderIsExist(folderPath)) {
-      return fsPromises.rmdir(path.resolve(folderPath), { recursive: true, force: true });
-    } else {
-      console.log(`${folderPath} is not exist`);
-      return false;
-    }
+    return fsPromises.rmdir(path.resolve(folderPath), { recursive: true, force: true }).then(
+      (resolve) => {
+        return api.validate(folderPath);
+      }
+    ).catch(
+      (error) => {
+        return false;
+      }
+    );
   },
   copyFolder: (folderPathSrc, folderPathDest) => {
-    if (api.folderIsExist(folderPathSrc)) {
-      return fsPromises.cp(folderPathSrc, folderPathDest, { recursive: true });
+    if (api.folderIsExist(folderPathSrc) && folderPathSrc != folderPathDest) {
+      return fsPromises.cp(folderPathSrc, folderPathDest, { recursive: true }).then(
+        (resolve) => {
+          return api.validate(folderPathSrc);
+        }
+      ).catch(
+        (error) => {
+          return false;
+        }
+      );
     }
   },
   folderIsExist: (folderPath) => {

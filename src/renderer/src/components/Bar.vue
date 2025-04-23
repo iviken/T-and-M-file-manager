@@ -14,7 +14,7 @@ export default {
         type: Object,
         required: true
     },
-    foldersMethods:{
+    foldersMethods2:{
         type: Object,
         required: true
     },
@@ -49,9 +49,9 @@ export default {
             this.localState.showTasksPanel = !this.localState.showTasksPanel
         }
     },
-    switchToFolder(dat){
+    clickOnTab(dat){
         //
-        this.foldersMethods.switchToFolder(dat)
+        this.foldersMethods2.clickOnTab(dat.path)
         //  For 'ALL (folders)' tab
         this.localState.showFilesFromAllFoldersOption = false 
     },
@@ -181,7 +181,7 @@ export default {
 
 <template>
 
-    <div @keyup.esc="pressEscOnBar()" @keyup.ctrl.t="foldersMethods.openClosedTab()" tabindex="0" class="bar on-center focus">
+    <div @keyup.esc="pressEscOnBar()" @keyup.ctrl.t="foldersMethods2.openClosedTab()" tabindex="0" class="bar on-center focus">
 
         <div class="info on-center">
             <div v-if="stateFiles.numberOfSelectedFiles > 0" class=" on-row">
@@ -237,12 +237,12 @@ export default {
                     <span class="item" @click="filesFromAllFolders()">ALL</span>
                 </div>
                 <div v-for="(item, index) in folders" class="on-row">
-                    <div v-if="item.displayedOnBar" @click="switchToFolder({id: item.id, index: index})" @dblclick="foldersMethods.closeFolderTab({id: item.id, index: index})" :class="{activeTab: item.isOpened}">
+                    <div v-if="item.displayedOnBar" @click="clickOnTab({id: item.id, index: index, path: item.path})" @dblclick="foldersMethods2.closeTab()" :class="{activeTab: item.isOpened}">
                         <span v-if="item.path != ''" class="item">{{ item.path.split('/')[ item.path.split('/').length - 1 ] }}</span>
                         <span v-else class="item">{{ settings.rootFolderTabName }}</span>
                     </div>
                 </div>
-                <div v-if="numberOfFoldersDisplayedOnTheBar < settings.maxFoldersOnBar" @click="foldersMethods.newBrowserTab()" class="item">+</div>
+                <div v-if="numberOfFoldersDisplayedOnTheBar < settings.maxFoldersOnBar" @click="foldersMethods2.newTab()" class="item">+</div>
             </div>
 
         </div>

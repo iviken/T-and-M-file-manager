@@ -35,6 +35,8 @@ const settings = {
   fileImgMask: ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'svg'],
   sessionProjectsFile: 'sessionProjects.json',
   sessionBrowserFile: 'sessionBrowser.json',
+  win32separator: '\\',
+  actualSeparator: '/',
   defaults: {
     defaulMarkID: 'mark_unmarked',
   }
@@ -62,16 +64,25 @@ function compressSession(projects){  //  sessionProjectClone /
   // console.log(projects)
   //
   for (const key in projects) {
-    projects[key].folders.forEach(folder => {
+
+    projects[key].folders.forEach((folder) => {
       //  Clear unmarks & unpin files
       folder.files = folder.files.filter( (file) => ( (file.markID != settings.defaults.defaulMarkID) || file.isPinned ) )
       //  Clear empty folder (marking)
-      if(!folder.files.length){
+      if(folder.files.length == 0){
         folder.isEmpty = true
       }
     })
+
+    //  AND leave the folder if it is the only one
+    if(projects[key].folders.length == 1){
+      projects[key].folders[0].isEmpty = false
+    }
+
     //  Clear empty folder
-    projects[key].folders = projects[key].folders.filter( (folder) => !folder.isEmpty )
+    if( projects[key].folders.length > 1 ){
+      projects[key].folders = projects[key].folders.filter( (folder) => !folder.isEmpty )
+    }
   }
   //
   // console.log('compressSession out: ')
@@ -86,48 +97,57 @@ function compressSession(projects){  //  sessionProjectClone /
 // }
 // Custom APIs for renderer
 const api = {
+
+  validate:(path)=>{
+
+    return path.replaceAll(settings.win32separator, settings.actualSeparator)
+  },
+
   writeFile:(filePath, data)=>{
-    //
+    
     return fs.writeFile( path.resolve(filePath), data, {encoding: 'utf8'} )
   },
 
   getFileFullnames:(folderPath)=>{
-    if( api.folderIsExist(folderPath) ){
-      // console.log('get fullnames')
-      return fs.readdirSync(path.resolve(folderPath), { withFileTypes: true })
-      .filter(d => d.isFile())
-      .map(d => d.name)
+    if( !api.folderIsExist(folderPath) ) return
 
-      // if( folderPath == '' ){
-      //   //  root
-      //   return fs.readdirSync(path.parse(process.cwd()).root, { withFileTypes: true })
-      //   .filter(d => d.isFile())
-      //   .map(d => d.name)
-      // }else{
-      //   //  others
-      //   return fs.readdirSync(path.resolve(folderPath), { withFileTypes: true })
-      //   .filter(d => d.isFile())
-      //   .map(d => d.name)
-      // }
-    }
+    // console.log('get fullnames')
+    return fs.readdirSync( path.resolve(folderPath), { withFileTypes: true } )
+    .filter(d => d.isFile())
+    .map(d => d.name)
+
+    // if( folderPath == '' ){
+    //   //  root
+    //   return fs.readdirSync(path.parse(process.cwd()).root, { withFileTypes: true })
+    //   .filter(d => d.isFile())
+    //   .map(d => d.name)
+    // }else{
+    //   //  others
+    //   return fs.readdirSync(path.resolve(folderPath), { withFileTypes: true })
+    //   .filter(d => d.isFile())
+    //   .map(d => d.name)
+    // }
   },
 
   getFilenames:(InPath)=>{
-    if( api.folderIsExist(InPath) ){
-      let files = fs.readdirSync( path.resolve(InPath) )
-      let result = []
-      //
-      files.forEach(element => {
-        result.push({
-          name: path.extname(path.join( InPath, element) ),
-          format: path.basename(path.join( InPath, element) , path.extname(path.join( InPath, element) ))
-        })
+
+    if( !api.folderIsExist(InPath) ) return
+
+    let files = fs.readdirSync( path.resolve(InPath) )
+    let result = []
+    
+    files.forEach(element => {
+      result.push({
+        name: path.extname(path.join( InPath, element) ),
+        format: path.basename(path.join( InPath, element) , path.extname(path.join( InPath, element) ))
       })
-      return result
-    }
+    })
+
+    return result
   },
 
   renameFile:( folderPath, oldFileName, newFileName )=>{
+
     return fsPromises.rename( path.resolve(path.join(folderPath, oldFileName)), path.resolve(path.join(folderPath, newFileName)) )
     // return fs.renameSync( path.resolve(path.join(folderPath, oldFileName)), path.resolve(path.join(folderPath, newFileName)) )
   },
@@ -146,26 +166,23 @@ const api = {
     })
   },
 
-  getFolderNames:(folderPath)=>{
-    if( api.folderIsExist(folderPath) ){
-      // console.log('path: ' + folderPath)
-      // console.log('path.replaceAll: ' + folderPath.replaceAll(path.sep, path.win32.sep))
-      // console.log('join(path): ' + path.join(folderPath) )
-      // console.log('join(path).replaceAll: ' + path.join(folderPath).replaceAll(path.sep, path.win32.sep) )
-      // console.log('resolve(path): ' + path.resolve(folderPath) )
-      // console.log('resolve(path).replaceAll: ' + path.resolve(folderPath).replaceAll(path.sep, path.win32.sep) )
-      if( folderPath == '' ){
-        //  root
-        return fs.readdirSync(path.parse(process.cwd()).root, { withFileTypes: true })
-        .filter(d => d.isDirectory())
-        // .filter(d => !fs.stat(path.resolve(folderPath, d)).isHidden())
-        .map(d => d.name)
-      }else{
-        //  others
-        return fs.readdirSync(path.resolve(folderPath), { withFileTypes: true })
-        .filter(d => d.isDirectory())
-        .map(d => d.name)
-      }
+  getFolderNames:(folderPath, cnst)=>{
+
+    if( (cnst != 'dont check for existence') || (cnst == undefined) )
+      if( !api.folderIsExist(folderPath) )
+        return
+
+    if( folderPath == '' ){
+      //  root
+      return fs.readdirSync(path.parse(process.cwd()).root, { withFileTypes: true })
+      .filter(d => d.isDirectory())
+      // .filter(d => !fs.stat(path.resolve(folderPath, d)).isHidden())
+      .map(d => d.name)
+    }else{
+      //  others
+      return fs.readdirSync(path.resolve(folderPath), { withFileTypes: true })
+      .filter(d => d.isDirectory())
+      .map(d => d.name)
     }
   },
 
@@ -189,7 +206,7 @@ const api = {
 
     if (process.platform === 'win32') {
       // console.log(homeDir); // Выведет домашнюю директорию пользователя в Windows
-      return process.env.USERPROFILE
+      return api.validate( process.env.USERPROFILE ).substring(2)
     } else {
       // console.log(homeDir); // Выведет домашнюю директорию пользователя в Unix-подобных системах
       return process.env.HOME
@@ -217,14 +234,20 @@ const api = {
 
     if(folderName == undefined) folderName = ''   //  overload*
     
-    if( !api.folderIsExist(path.join( InPath, folderName )) ){    //  returned udefined if !{recursice: true}
-      return fs.mkdirSync(path.resolve( path.join( InPath, folderName ) ), (err) => {
-        if (err) {
-          console.error(err)
-        } else {
-          console.log('Directory created successfully.')
-        }
-      })
+    if( api.folderIsExist(path.join( InPath, folderName )) ){     //  returned udefined if !{recursice: true}
+
+      if( folderName == '' )  InPath += Math.floor(Math.random()*10000000)
+      if( folderName )  folderName += Math.floor(Math.random()*10000000)
+    }
+
+    try{
+      fs.mkdirSync( path.resolve(path.join( InPath, folderName )) )
+
+      if(folderName == '') return api.validate( InPath )
+      if(folderName) return api.validate( path.join( InPath, folderName ) )
+    }catch(error){
+      console.log(error)
+      return false
     }
   },
 
@@ -232,7 +255,7 @@ const api = {
     let newPath = path.join( dat.fullpath.substring(0, dat.fullpath.lastIndexOf('/') ), dat.newName )
     try{
       fs.renameSync( path.resolve( dat.fullpath ), path.resolve( newPath ) )
-      return true
+      return api.validate( newPath )
     }catch(error){
       console.log(error)
       return false
@@ -240,24 +263,41 @@ const api = {
   },
 
   deleteFolder:(folderPath)=>{
-    if( api.folderIsExist(folderPath) ){
-      // console.log(`${folderPath} is deleted!`)
-      return fsPromises.rmdir(path.resolve(folderPath), { recursive: true, force: true })
-    }else{
-      console.log(`${folderPath} is not exist`)
-      return false
-    }
+    // console.log(`${folderPath} is deleted!`)
+
+    return fsPromises.rmdir(path.resolve(folderPath), { recursive: true, force: true })
+      .then(
+        resolve=>{
+          return api.validate( folderPath )
+        }
+      ).catch(
+        error=>{
+          return false
+        }
+      )
   },
 
   copyFolder:(folderPathSrc, folderPathDest)=>{
     //
-    if( api.folderIsExist(folderPathSrc) ){
+    if( api.folderIsExist(folderPathSrc) && (folderPathSrc != folderPathDest) ){
       // console.log('copy folder')
+      // return fsPromises.cp(folderPathSrc, folderPathDest, {recursive: true})
       return fsPromises.cp(folderPathSrc, folderPathDest, {recursive: true})
+        .then(
+          resolve=>{
+            return api.validate( folderPathSrc )
+          }
+        ).catch(
+          error=>{
+            return false
+          }
+        )
     }
   },
 
   folderIsExist:(folderPath)=>{
+    // console.log('check folder isExist: ')
+    // console.log(folderPath)
     return fs.existsSync(path.resolve(folderPath))
   },
 

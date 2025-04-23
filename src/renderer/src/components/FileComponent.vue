@@ -47,7 +47,7 @@ export default {
             </div>
 
             <div v-if="state.files[file.id] == 'RENAME'">
-              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename w100" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValueю.replace(this.settings.fileNameRegexp, '').trim()} )"></input>
+              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename w100" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(this.settings.fileNameRegexp, '').trim()} )"></input>
             </div>
 
           </div>
@@ -60,7 +60,7 @@ export default {
             </div>
 
             <div v-if="state.files[file.id] == 'RENAME'" class="h100 w100 rename-block-img on-center">
-              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValueю.replace(this.settings.fileNameRegexp, '').trim()} )"></input>
+              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(this.settings.fileNameRegexp, '').trim()} )"></input>
             </div>
 
           </div>

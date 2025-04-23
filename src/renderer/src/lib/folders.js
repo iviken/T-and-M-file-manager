@@ -2,615 +2,1097 @@ const settings = {
     replacedSymbolPath: ' > ',
     folderNameRegexp: /[\\\/<>:\"\*\?\|]/g,
     win32separator: '\\',
-    excludedFolders: [
-      'Recovery', 'System Volume Information', 'PerfLogs', 'Config.Msi', '$SysReset', '$Recycle.Bin', 'OneDriveTemp'
-    ],
-  }
+    actualSeparator: '/',
+    excludedFolders: ['Recovery', 'System Volume Information', 'PerfLogs', 'Config.Msi', '$SysReset', '$Recycle.Bin', 'OneDriveTemp'],
+    maxTabs: 10,    //  maxFoldersOnBar
+}
 
 const defaults = {
-    // newFolder:{
-    //   id: null,
-    //   path: null,
-    //   isOpened: true,
-    //   isPinned: false,
-    //   displayedOnBar: false,
-    //   files: [],
-    // },
     defaulMarkID: 'mark_unmarked',
-  }
+}
 
-export const foldersMethods = {
+const paths = {
 
-    folders: null,
-    localState: null,
-    inputSettings: null,
-    projectID: null,
-    selectedFolderID: null,
-    folderNavigationHistory: [],
-    folderNavigationStateFlag: false,
-    folderList: null,
-    subfolderList: null,
-    isDeleteSrcFolder: false,
-    copyCutFolderID: null,
-    copyCutFolderName: null,
+  errors:function(mode, val){
 
-    newFolderPushDB:function(path){
-        let _id = 'folder_' + Math.floor(Math.random()*10000000)
-        let _index = this.folders.length
-        //
-        this.folders.push(
-            {
-                id: _id,
-                path: path,
-                files: [],
-                isOpened: false,
-                // isOpened: true,
-                isPinned: false,
-                displayedOnBar: true,
-            }
-        )
-        return {id: _id, index: _index}
-    },
+    return mode == 'safe' ? val : false
+    //
+    // if( mode == 'root name' ){
+    //   if( val == '/' ) return 'root'
+    // }
+  },
+  
+  getParentFolderPath:function(path, params){
 
-    refreshFolders(){
-        //
-        this.folderList =  window.api.getFolderNames( this.getParentFolderPath( this.folders[ this.localState.activeFolderIndex ].path ) )
-        // this.folderList =  window.api.getFolderNames( this.folders[this.localState.activeFolderIndex].path.substring(0, this.folders[this.localState.activeFolderIndex].path.lastIndexOf('/') ) )
-        //  exclude hidden (system) folders
-        this.folderList = this.folderList.filter(i=>!settings.excludedFolders.includes(i))
-        //
-        this.subfolderList =  window.api.getFolderNames( this.folders[ this.localState.activeFolderIndex ].path )
-        //
-    },
+    if( path == '/' ) return this.errors(params, '/')
+    
+    return path.slice( 0, path.lastIndexOf(this.getFolderName(path)) - 1 )
+  },
+  
+  getFolderName:function(path, params){
 
-    switchToFolder:function(dat){       //  {index}
-        // console.log('switch to folder: ')
-        // console.log(dat)
-        // console.log(this.folders[dat.index].displayedOnBar)
-        //  Change folder indexes
-        //
-        if(dat.state != 'open closed tab'){
-            if( dat.index != this.localState.activeFolderIndex ){
-                this.localState.previousFolderIndex = this.localState.activeFolderIndex
-             }
-        }
-        //
-        this.localState.activeFolderIndex = dat.index
-        //
-        this.folders.forEach(element=>{element.isOpened = false})
-        this.folders[dat.index].isOpened = true
-        this.folders[dat.index].displayedOnBar = true
-        //  For 'ALL' tab
-        // this.localState.showFilesFromAllFoldersOption = false
-    },
+    if( path == '/' ) return this.errors(params, '/')
 
-    openClosedTab(){
-        //
-        if(this.folders.length > this.localState.previousFolderIndex){
-            console.log('open closed')
-            this.switchToFolder( {index: this.localState.previousFolderIndex, state: 'open closed tab'} )
-        }
-    },
+    if(path.includes('/'))
+      return path.split('/')[ path.split('/').length - 1 ]
+    if(path.includes('\\'))
+      return path.split('\\')[ path.split('\\').length - 1 ]
+  },
+  
+  nextFirstChild:function(path, folderNamesList, params){
 
-    closeFolderTab:function(dat){
-        if(this.folders.length > 1){
-            //
-            let numberOfOpenFoldersDisplayedOnTheBar = 0
-            //  If the indexes math, count index of the fiture open folder after closing opened
-            this.folders.forEach( (folder, indexOfTheFutureOpenFolderAfterClosingCurrentFolder) => {
-                //
-                if( folder.displayedOnBar ) numberOfOpenFoldersDisplayedOnTheBar++
-                //
-                if( indexOfTheFutureOpenFolderAfterClosingCurrentFolder != dat.index ){
-                    //
-                    if( folder.displayedOnBar ){
-                        //
-                        if(numberOfOpenFoldersDisplayedOnTheBar > 1){
-                            //
-                            if( this.localState.previousFolderIndex == this.localState.activeFolderIndex ){
-                                //
-                                this.localState.previousFolderIndex = indexOfTheFutureOpenFolderAfterClosingCurrentFolder
-                            }
-                        }
-                    }
-                }
-            })
-            //  Closing folder tab
-            if( numberOfOpenFoldersDisplayedOnTheBar > 1 ){
-                //  Set focus on first displayed on the bar folder
-                this.folders[this.localState.activeFolderIndex].isOpened = false
-                //
-                this.folders[this.localState.activeFolderIndex].displayedOnBar = false
-                // }
-                if( this.folders[this.localState.previousFolderIndex].displayedOnBar ){
-                    //
-                    this.localState.activeFolderIndex = this.localState.previousFolderIndex
-                    //
-                    this.folders[ this.localState.activeFolderIndex ].isOpened = true
+    if( folderNamesList.length == 0 ) return this.errors(params, path)
+    return path += settings.actualSeparator + folderNamesList[0]
+  },
+  
+  getAdjacent:function(cnst, path, folderNamesList, params){   //  cnst = 'up'/'down'   cnst, _path, this.foldersList, 'safe
 
-                }
-            }
-        }
-    },
+    if( folderNamesList.length == 0 ) return this.errors(params, path)
+    
+    let _folderName = this.getFolderName(path)
+    let _index = folderNamesList.indexOf( _folderName )
 
-    newBrowserTab:function(){
-        if( this.folders[this.localState.activeFolderIndex].path.split('/').length > 2 ){
-            //
-            let path = this.folders[this.localState.activeFolderIndex].path.substring(0, this.folders[this.localState.activeFolderIndex].path.lastIndexOf('/') )
-            //
-            // console.log('to path: ' + path)
-            if( this.folders.find(folder=>folder.path == path) == undefined ){
-                //
-                let result = this.newFolderPushDB(path)
-                //
-                this.switchToFolder({id: result.id, index: result.index})
-            }else{
-                //
-                this.folders.forEach((folder, index) => {
-                    if( folder.path == path ){
-                        this.switchToFolder( {id: folder.id, index: index} )
-                    }
-                })
-            }
-        }
-    },
+    if( _index == -1 ) return this.errors(params, path)
 
-    pinFolder:function(){
-        //
-        this.folders.forEach(folder => {
-            if(folder.id == this.selectedFolderID){
-                folder.isPinned = !folder.isPinned
-            }
-        })
-    },
+    if(cnst == 'up') _index--
+    if(cnst == 'down') _index++
 
-    validateFolderAndFileName:function(name){
-        if( (name.trim().length > 0) && (name.split(' ').length != name.length) ){
-            return name.trim()
-        }
-    },
+    if( _index >= folderNamesList.length ) _index = 0
+    if( _index < 0 ) _index = folderNamesList.length - 1
+    return `${this.getParentFolderPath(path)}${settings.actualSeparator}${folderNamesList[_index]}`
+  },
 
-    renameSelectedFolder:function(dat){
-        //  Check input new folder name on spaces
-        if( this.validateFolderAndFileName(dat.newName) ){
-            // console.log('RENAME FOLDER')
-            //  Проверяем на совпадение нового имени с уже имеющимися
-            if( this.folderList.every(folderName => folderName != dat.newName) ){
-                //
-                const oldPath = this.folders[ this.localState.activeFolderIndex ].path
-                const newPath = `${this.getParentFolderPath(oldPath)}/${dat.newName}`
-                const ID = this.folders[ this.localState.activeFolderIndex ].id
-                //
-                let result = window.api.renameFolder( {fullpath: this.folders[ this.localState.activeFolderIndex ].path, newName: dat.newName} )
-                //  If successfull
-                if( result ) {
-                    //  For hide input element
-                    // this.remanedFolderName = null
-                    //  Rewrite in db current folder
-                    this.folders.forEach(folder => {
-                        if(folder.id == ID){
-                        folder.path = newPath
-                        folder.files.forEach(file => {
-                            file.path = newPath
-                        })
-                        }
-                    })
-                    //  Rewrite in db others folders
-                    this.folders.forEach(folder => {
-                        //
-                        let newSubpath = ''
-                        //  If the found path is longer than current path
-                        if( folder.path.split('/').length > oldPath.split('/').length ){
-                            //  If parent directories are the same, change
-                            if( folder.path.startsWith( oldPath ) ){
-                                newSubpath = oldPath.substring(0, oldPath.lastIndexOf('/')) + '/' + dat.newName + folder.path.split( oldPath )[1]
-                                //
-                                folder.path = newSubpath
-                                //
-                                folder.files.forEach(file => {
-                                    file.path = newSubpath
-                                })
-                                // console.log('other folders: ')
-                                // console.log(folder)
-                            }
-                        }
-                    })
-                    //  Refresh folders
-                    // this.refreshFolders()
-                    return true
-                }else{
-                    return false
-                }
-            //   this.renamedValue = ''
-            }
-        }
-    },
+  AisNestedInB:function(path1, path2){   //  doc/garb 'nested in' doc   Путь1 является ребенком пути2 (в т.ч. ближайшим)
+    
+    if( path2 == '/' )
+      return true
 
-    getParentFolderPath:function(pathIn){
-        //
-        return pathIn.slice( 0, pathIn.lastIndexOf(this.getFolderName(pathIn)) - 1 )
-    },
+    if( path2 == path1 )
+      return false
 
-    getFolderName:function(pathIn){
-        if(pathIn.includes('/'))
-          return pathIn.split('/')[ pathIn.split('/').length - 1 ]
-        if(pathIn.includes('\\'))
-          return pathIn.split('\\')[ pathIn.split('\\').length - 1 ]
-    },
+    return path1.startsWith(path2)
+  },
+  
+  isImmediateChild:function(path){    //  будущий путь является БЛИЖАЙШИМ ребенком актуального каталога?
 
-    clearNonExistFoldersInDB:function(){    //  Индекс каталога сдаинется!
-        //  Check fails path in db
-        this.folders.forEach(folder => {
-          if( !window.api.folderIsExist(folder.path) ){
-            folder.isExist = false
-          }else{
-            folder.isExist = true
+    if( history.isFill() ){
+      return this.getParentFolderPath(path) == history.actual(folders.folders).path
+    }else{
+      return false
+    }
+  },
+
+  isCommonParent:function(path){
+
+    if( history.isFill() ){
+      return this.getParentFolderPath(path) == this.getParentFolderPath( history.actual(folders.folders).path )
+    }else{
+      return false
+    }
+  },
+
+  isParent:function(path){
+
+    if( history.isFill() ){
+      return path == this.getParentFolderPath( history.actual(folders.folders).path )
+    }else{
+      return false
+    }
+  },
+
+  validate:function(path){
+
+    console.log('validate path: ' + path)
+
+    path = path.replaceAll(settings.win32separator, settings.actualSeparator)
+
+    if( path.startsWith('//') )
+      return path.substring(1)
+
+    if( path.startsWith('///') )
+      return path.substring(2)
+
+    return path.replaceAll(settings.win32separator, settings.actualSeparator)
+    // return path
+  },
+}
+
+const helpers = {
+  
+  validateFolderAndFileName:function(name){
+    //
+    if ( !name ) return false
+    //
+    let _name = name.trim()
+    _name = _name.replace(settings.folderNameRegexp, '')
+    //
+    if( settings.excludedFolders.includes(_name) ) return false
+    //
+    if( (_name.length == 0) && (_name.split(' ').length == _name.length) ) return false
+    //
+    return _name
+  },
+}
+
+export const folders = {
+
+  folders: null,
+  localState: null,
+
+  deletingQueue: new Set(),
+  copyCutQueue: [],
+  isDeleteSrcFolder: null,
+
+  init:function(dat){   //  {folders, localState}
+
+    this.folders = dat.folders
+
+    this.localState = dat.localState
+    //  Open at least one folder
+    // let activeFolder = db_foldersCollectionMethods.getOpenedFolder(this.folders)
+    // //  If all folders are closed, open first
+    // //      -- AT LEAST ONE FOLDER MUST BE ADDED TO THE DB ! --
+    // this.localState.activeFolderIndex = activeFolder.index == null ? 0 : activeFolder.index
+    // //  Open
+    // db_folderMethods.set_(this.folders[this.localState.activeFolderIndex], 'open')
+    // db_folderMethods.set_(this.folders[this.localState.activeFolderIndex], 'pin on bar')
+    
+    // history.add(this.folders[this.localState.activeFolderIndex])
+
+    //      -- AT LEAST ONE FOLDER MUST BE ADDED TO THE DB ! 
+    let activeFolder = db_foldersCollectionMethods.getOpenedFolder(this.folders, 'safe')
+
+    this.clickToFolder( activeFolder.folder )
+
+    db_folderMethods.set_(this.folders[this.localState.activeFolderIndex], 'pin on bar')
+    //
+    // tabs.init(this.folders)
+
+    // console.log('active index: ')
+    // console.log(this.localState.activeFolderIndex)
+    // console.log(this.folders[this.localState.activeFolderIndex])
+    //
+    navigation.init(this.folders)
+  },
+
+  clickToFolder:function(folder, cnst){
+
+    let params
+
+    if(cnst =='go to a created child') params = 'folder exists'
+
+    this.localState.activeFolderIndex = navigation.switchTo(this.folders, folder.path, cnst, params)
+  },
+
+  clickToSpecialFolder:function(folderName){
+
+    let specialFoldersPath = window.api.getPathSpecialFolder()
+
+    specialFoldersPath = paths.validate(specialFoldersPath)
+    // specialFoldersPath = specialFoldersPath.replaceAll(settings.win32separator, settings.actualSeparator).substring(2)
+    
+    this.clickToFolder( {path: `${specialFoldersPath}${settings.actualSeparator}${folderName}`} )
+  },
+  
+  copyPastFolder:function(dat){        //  the folder isn't copied to the clipboard!
+    // console.log('copyPast state:' + dat.state)
+    
+    if(dat.state == 'copy folder'){
+
+      this.isDeleteSrcFolder = false
+      this.copyCutQueue.push( history.actual(this.folders).path )
+    }
+    
+    if(dat.state == 'cut folder'){
+
+      this.isDeleteSrcFolder = true
+      this.copyCutQueue.push( history.actual(this.folders).path )
+    }
+    
+    if( dat.state == 'past folder' ){
+
+      //  if now deletion of external folder does not occur
+      if( this._isDeletionOfExternalFolder() ) return
+
+      let pathTo = navigation.checkTheNameMatches( history.actual(this.folders).path, 'path' )
+      // console.log('path to: ')
+      // console.log(pathTo)
+      
+      window.api.copyFolder( this.copyCutQueue.pop(), pathTo )   //  folderSrcPath, folderDestPath
+        .then(
+          (pathFrom)=>{
+
+            db_foldersCollectionMethods.rename( this.folders, pathFrom, paths.getFolderName(pathTo) )
+
+            navigation.addInTheFoldersList( paths.getFolderName(pathTo) )
+            
+            // this.copyCutQueue.delete( pathFrom )
+
+            if(this.isDeleteSrcFolder){
+              
+              this.copyPastFolder( {state: 'delete src folder', path: pathFrom} )
+            }  
           }
-        })
-        //
-        this._clearNonExistFolders()
+        )
+    }
+    
+    if( (dat.state == 'delete src folder') && this.isDeleteSrcFolder ){
+      
+      this.isDeleteSrcFolder = null
+      
+      this.deleteFolder( dat.path )
+    }
+
+    if( dat.state == 'get copy-folder name'){
+
+      if( this.copyCutQueue.length > 0 ){
+        //  For only one folder pull
+        return  paths.getFolderName( this.copyCutQueue[0] )
+      }
+    }
+
+  },
+
+  deleteFolder:function(path){
+
+    this.deletingQueue.add( path || history.actual(this.folders).path )
+
+    window.api.deleteFolder( path || history.actual(this.folders).path )
+      .then(
+        (deletingPath)=>{
+
+          deletingPath = paths.validate(deletingPath)
+          
+          if( history.actual(this.folders).path == deletingPath ){
+
+            console.log('delete actual: ')
+            console.log(deletingPath)
+
+            this.clickToFolder( { path: paths.getParentFolderPath(deletingPath) }, 'go parent' )
+
+            //  Delete folder from subFoldersList
+            navigation.deleteFromList(deletingPath)
+          }
+          
+          //  Check active folders path. if the active folder path is nested in the deleted one, go to nearest parent path 
+          if( paths.AisNestedInB(history.actual(this.folders).path, deletingPath) ){
+
+            console.log('nested: ')
+            console.log(deletingPath)
+
+            this.clickToFolder( {path: foldersCollectionMethods.getNearestParentFolder( this.folders, deletingPath ).folder.path}, 'forced' )
+          }
+
+          db_foldersCollectionMethods.delete( this.folders, deletingPath )
+
+          this.deletingQueue.delete(deletingPath)
+        }
+      )
+  },
+
+  renameSelectedFolder:function(dat){
+
+    //  if now deletion of external folder does not occur
+    if( this._isDeletionOfExternalFolder() ) return false
+    
+    let newName = helpers.validateFolderAndFileName(dat.newName)
+
+    if(!newName) return false
+
+    let oldPath = history.actual(this.folders).path
+    //  Проверяем на совпадение нового имени с уже имеющимися и меняем его
+    newName = navigation.checkTheNameMatches( `${paths.getParentFolderPath(oldPath)}${settings.actualSeparator}${newName}`, 'name' )
+
+    let newPath = window.api.renameFolder( {fullpath: oldPath, newName: newName} )
+
+    if(newPath){
+
+      db_foldersCollectionMethods.rename( this.folders, oldPath, paths.getFolderName(newPath) )
+      
+      navigation.replaceInTheList( oldPath, newName )
+
+      return true
+    }
+  },
+
+  createNewFolder:function(newFolderName){
+
+    //  if now deletion of external folder does not occur
+    if( this._isDeletionOfExternalFolder() ) return false
+    
+    let newName = helpers.validateFolderAndFileName(newFolderName)
+
+    if(!newName) return false
+
+    let newFolderPath = window.api.createFolder( history.actual(this.folders).path, newName )
+
+    if(newFolderPath){
+
+      //  go to the created folder (settings)
+      this.clickToFolder( {path: newFolderPath}, 'go to a created child' )
+
+      return true
+    }
+  },
+
+  pinFolder:function(){
+
+    let openedFolder = history.actual(this.folders)
+
+    openedFolder.isPinned = !openedFolder.isPinned
+  },
+
+  newTab:function(){
+    
+    if( tabs.countTabs(this.folders) < settings.maxTabs )
+      this.localState.activeFolderIndex = tabs.showNew(this.folders)
+    console.log('new tab')
+  },
+
+  closeTab:function(){
+
+    if( tabs.countTabs(this.folders) < 2 ) return
+
+    this.localState.activeFolderIndex = tabs.close(this.folders)
+  },
+
+  openClosedTab:function(){
+
+    this.localState.activeFolderIndex = tabs.openClosedTab(this.folders)
+  },
+
+  clickOnTab:function(path){
+
+    this.localState.activeFolderIndex = tabs.clickOnTab(this.folders, path)
+  },
+
+  abortCopyCutOperation:function(){   //  Before starting process !
+
+    this.isDeleteSrcFolder = null
+    this.copyCutQueue = []
+  },
+
+  _isDeletionOfExternalFolder:function(){
+
+    this.deletingQueue.forEach(deletingPath => {
+  
+      if( paths.AisNestedInB(history.actual(this.folders), deletingPath) ) return true
+    })
+
+    return false
+  },
+
+  treeNavigate:function(cnst){
+    // console.log(cnst)
+    
+    switch (cnst){
+
+      case 'parent folder':
+        this.localState.activeFolderIndex = navigation.parent(this.folders)
+      break
+
+      case 'first child folder':
+        this.localState.activeFolderIndex = navigation.nextFirst(this.folders)
+      break
+
+      case 'adjacent folder: down':
+        this.localState.activeFolderIndex = navigation.adjacent(this.folders, 'down')
+      break
+
+      case 'adjacent folder: up':
+        this.localState.activeFolderIndex = navigation.adjacent(this.folders, 'up')
+      break
+      
+      case 'previous folder in history':
+        this.localState.activeFolderIndex = navigation.previous(this.folders)
+      break
+    }
+  },
+
+  countTabs:function(){   //  numberOfFoldersDisplayedOnTheBar
+    return tabs.countTabs(this.folders)
+  },
+
+  refreshDisplayedFolders:function(){
+
+    navigation._refreshDisplayedFolders(this.folders)
+  },
+
+  getActiveFolderName:function(){
+
+    return paths.getFolderName( history.actual(this.folders).path )
+  },
+
+  validateFolderAndFileName:function(name){
+
+    return helpers.validateFolderAndFileName(name)
+  },
+
+  getFolderName:function(path){
+    
+    return paths.getFolderName( path, 'safe' )
+  },
+
+  getFoldersList:function(){
+
+    return navigation.foldersList
+  },
+
+  getSubfoldersList:function(){
+
+    return navigation.subfoldersList
+  },
+
+  refreshFiles:function(){},
+}
+
+const navigation = {
+
+  foldersList: null,
+  subfoldersList: null,
+
+  init:function(folders){
+    
+    this._refreshDisplayedFolders(folders)
+  },
+  
+  switchTo:function(folders, path, cnst, params, mode){   //  return opened folder index
+    
+    let result = foldersCollectionMethods.checkFolderAndPushNewRecordOrResetNonExistent(folders, path, params)
+    
+    if(result){
+      //  Refresh folders list
+      foldersCollectionMethods.refreshFolders( path, cnst )
+      //
+      if( history.isFill() ){
+
+        if(mode == undefined){
+
+          db_folderMethods.set_(history.actual( folders ), 'unpin on bar')
+          db_folderMethods.set_(result.folder, 'pin on bar')
+        }
+        
+        // if(mode == 'new tab'){
+          
+        //   db_folderMethods.set_(result.folder, 'pin on bar')
+        // }
+      }
+      // 
+      history.add(result.folder)
+      //  Close all
+      db_foldersCollectionMethods.closeAll(folders)
+      //  Open
+      db_folderMethods.set_(result.folder, 'open')
+      //
+      if( cnst != 'go to a created child' )
+        filesCollectionMethods.refreshFilesInActualFolder()
+  
+      return result.index
+
+    }else{
+      //  Search nearest parent folders path
+      let _nearestParentPath = foldersCollectionMethods.getNearestParentFolder(folders, path).folder.path
+      //  Go to nearest parent folder
+      this.switchTo( folders, _nearestParentPath, cnst, 'folder exists', mode )
+    }
+  },
+  
+  nextFirst:function(folders){
+    
+    let futurePath = paths.nextFirstChild( history.actual(folders).path, this.subfoldersList, 'safe' )
+
+    return this.switchTo(folders, futurePath)
+  },
+
+  previous:function(folders){
+    
+    let previousPath = history.previous(folders).path
+
+    console.log('prev: ')
+    console.log(previousPath)
+
+    if(previousPath) 
+      return this.switchTo(folders, previousPath)
+  },
+
+  parent:function(folders){
+
+    let parentPath = paths.getParentFolderPath( history.actual(folders).path, 'safe' )
+    
+    return this.switchTo(folders, parentPath)
+  },
+  
+  adjacent:function(folders, cnst){   //  cnst = 'up'/'down'
+    
+    let _path = history.actual(folders).path
+    
+    let adjacentUpPath = paths.getAdjacent(cnst, _path, this.foldersList, 'safe')
+
+    return this.switchTo(folders, adjacentUpPath)
+  },
+
+  deleteFromList:function(path){
+
+    path = paths.validate(path)
+
+    console.log('delete from list: path: ')
+    console.log(path)
+
+    let folderName = paths.getFolderName( paths.getParentFolderPath(path) )
+    let subFolderName = paths.getFolderName(path)
+
+    if( this.foldersList.includes(folderName) && this.subfoldersList.includes(subFolderName) ){
+
+      this.subfoldersList = this.subfoldersList.filter(name=> name != subFolderName )
+      console.log(this.subfoldersList)
+      return this.subfoldersList
+    }
+
+    if( this.foldersList.includes(folderName) && (this.subfoldersList.length == 0) ){
+
+      this.foldersList = this.foldersList.filter(name=> name != folderName )
+      console.log(this.foldersList)
+      return this.foldersList
+    }
+  },
+
+  replaceInTheList:function(path, name){
+
+    let list = this.deleteFromList( paths.validate(path) )
+
+    list.push(name)
+  },
+
+  addInTheFoldersList:function(name){
+
+    this.foldersList.push( name )
+  },
+
+  checkTheNameMatches:function(path, params){
+
+    foldersCollectionMethods.refreshFolders( path, 'forced' )
+
+    let name = paths.getFolderName(path)
+
+    function correctName(_name){
+      
+      if( navigation.foldersList.some(folderName => folderName == _name) ){   //
+
+        return correctName(`${_name} copy`)
+      }else{
+        return _name
+      }
+    }
+
+    if(params == 'path')
+      return `${paths.getParentFolderPath(path)}${settings.actualSeparator}${correctName(name)}`
+
+    if(params == 'name')
+      return correctName(name)
+  },
+
+  _refreshDisplayedFolders:function(folders){
+
+    foldersCollectionMethods.refreshFolders( history.actual(folders).path, 'forced' )
+  },
+}
+
+const tabs = {
+
+  close:function(folders){
+
+    if(this.countTabs(folders) < 1) return navigation.switchTo(folders, folders[0].path)    //  safe mode
+  
+    let openedFolder = history.actual(folders)
+
+    let displayedOnBarFolder = folders.findLast( folder => folder.displayedOnBar && !folder.isOpened )
+
+    console.log('last tabs path:')
+    console.log(openedFolder)
+    console.log(displayedOnBarFolder)
+    let nextFolderIndex = navigation.switchTo(folders, displayedOnBarFolder.path, null, null, 'tab')
+
+    db_folderMethods.set_( openedFolder, 'unpin on bar' )
+
+    return nextFolderIndex
+  },
+
+  showNew:function(folders, folder){
+
+    if(folder == undefined)
+      folder = foldersCollectionMethods.getNearestParentFolder(folders, history.actual(folders).path).folder   //  PARENT PATH
+
+    // console.log('add in pull: ')
+    // console.log(this.id_pull)
+    if(folder){
+      db_folderMethods.set_( folder, 'pin on bar' )
+
+      return navigation.switchTo(folders, folder.path, null, null, 'tab')
+    }
+  },
+
+  clickOnTab:function(folders, path){
+
+    return navigation.switchTo(folders, path, null, null, 'tab')
+  },
+  
+  openClosedTab:function(folders){
+
+    if( history.isFill() )
+    
+      return this.showNew( folders, history.previous(folders) )
+  },
+  
+  countTabs:function(folders){
+
+    let result = 0
+
+    folders.forEach(folder => {
+      if(folder.displayedOnBar) result++
+    })
+
+    return result
+  },
+}
+
+const history = {
+
+  id_pull: [],
+
+  previous:function(folders){
+
+    let result = 0  //  'safe' mode
+
+    let _flag = true
+
+    do {
+
+      this.id_pull.pop()
+      
+      folders.forEach( (folder, index) => {
+
+        if( folder.id == this.id_pull[this.id_pull.length - 1] ){
+          
+          result = index
+          
+          _flag = false
+        }
+      })
+      
+    } while ( _flag && (this.id_pull.length > 1) )
+
+    // console.log( this.id_pull )
+
+    return folders[result]
+  },
+
+  actual:function(folders){   //  get last opened folder
+
+    if( this.id_pull.length == 0 ) return
+
+    let result = folders.find( folder => folder.id == this.id_pull[this.id_pull.length - 1] )
+
+    if(result){
+      return result
+    }else{
+      this.id_pull.pop()
+      this.actual(folders)
+    }
+  },
+
+  add:function(folder){
+
+    if(this.id_pull.length == 0){
+      //  If first
+      this.id_pull.push(folder.id)
+    }else{
+      //
+      if( folder.id != this.id_pull[this.id_pull.length - 1] ){
+        this.id_pull.push(folder.id)
+      }
+    }
+  },
+
+  clear:function(){
+    this.id_pull = []
+  },
+
+  isFill:function(){
+
+    return this.id_pull.length
+  },
+}
+
+const db_foldersCollectionMethods = {
+  
+    clearNonExistFolders:function(folders){
+
+      let arrSize = folders.length
+      for(let ch = 0; ch < arrSize; ch++){
+        if( !folders[ch].isExist ){
+          folders.splice(ch, 1)
+          ch--
+          arrSize--
+        }
+      }
     },
     
-    _clearNonExistFolders:function(){
-        //      Deleting
-        let arrSize = this.folders.length
-        for(let ch = 0; ch < arrSize; ch++){
-          if( !this.folders[ch].isExist ){
-            this.folders.splice(ch, 1)
-            ch--
-            arrSize--
+    pushNew:function(folders, path){
+        folders.push(
+            {
+                id: 'folder_' + Math.floor(Math.random()*10000000),
+                // path: path, 
+                path: paths.validate(path), 
+                files: [],
+                isOpened: false,
+                isPinned: false,
+                displayedOnBar: false,
+            }
+        )
+
+        return {folder: folders[folders.length - 1], index: folders.length - 1}
+    },
+    
+    searchPathAndGetFolderID:function(folders, path){
+      let res = false
+      folders.forEach((folder, index) => {
+        res = db_folderMethods.is_( folder, 'are the paths the same', path )
+        if( res ) return {id: folder.id, index: index}
+      })
+      if( !res ) return {id: null, index: null}
+    },
+
+    searchFolderByPath:function(folders, path){
+
+      let result = {folder: null, index: null}
+
+      folders.forEach((folder, index) => {
+        // console.log(folder.path + ':  ' + path)
+        if( db_folderMethods.is_( folder, 'are the paths the same', {path: path} ) )
+          
+          result =  {folder: folder, index: index}
+      })
+
+      return result
+    },
+
+    rename:function(folders, oldPath, newName){
+      //
+      folders.forEach(folder => {
+        //
+        if(folder.path == oldPath){
+          db_folderMethods.set_( folder, 'rename', {name: newName} )
+        }
+        //  If the found path is longer than current path
+        if( folder.path.split( settings.actualSeparator ).length > oldPath.split( settings.actualSeparator ).length ){
+          //  If parent directories are the same, change
+          if( folder.path.startsWith( oldPath ) ){
+            let newSubpath = `${oldPath.substring( 0, oldPath.lastIndexOf(settings.actualSeparator) )}${settings.actualSeparator}${newName}${folder.path.split( oldPath )[1]}`
+            //
+            db_folderMethods.set_( folder, 'rewrite path', {path: newSubpath} )
+            // console.log('other folders: ')
+            // console.log(folder)
+          }
+        }
+      })
+    },
+
+    delete:function(folders, path){
+      //
+      folders = folders.filter(i=>!i.path.startsWith(path))
+      // folders.forEach(folder => {
+      //   //  this
+      //   if(folder.path == path){
+      //     folder.isExist = false
+      //   }
+      //   //  sub
+      //   if( folder.path.startsWith(path) ){
+      //     folder.isExist = false
+      //   }else{
+      //     folder.isExist = true
+      //   }
+      // })
+      // //
+      // this.clearNonExistFolders(folders)
+    },
+
+    getOpenedFolder:function(folders, cnst){
+      folders.forEach((folder, index) => {
+        if(folder.isOpened) return {folder: folder, index: index}
+      })
+
+      if(!cnst) return {folder: null, index: null}
+      if(cnst == 'safe') return {folder: folders[0], index: 0}
+    },
+    
+    closeAll:function(folders){
+      folders.forEach((folder, index) => {
+        folder.isOpened = false
+      })
+    },
+}
+
+const foldersCollectionMethods = {
+
+    folderIsExist:function(path){
+      return window.api.folderIsExist(path)
+    },
+
+    checkFolderAndPushNewRecordOrResetNonExistent:function(folders, path, params){    //  returned {folder, index} or null
+        //
+        let folderIsExist = params == 'folder exists' ? true : this.folderIsExist(path)
+        //
+        let folderIsRecorded = db_foldersCollectionMethods.searchFolderByPath(folders, path)
+
+        // console.log( 'path: ' )
+        // console.log( path )
+        // console.log( 'folderIsExist: ' )
+        // console.log( folderIsExist )
+        // console.log( 'folderIsRecorded: ' )
+        // console.log( folderIsRecorded )
+
+        if( folderIsRecorded.folder ){
+          
+          //  if exist, return a record from the db
+          if( folderIsExist )
+            return folderIsRecorded
+
+          //  if non-existent, erase from db
+          if( !folderIsExist ){
+            
+            db_foldersCollectionMethods.delete(folders, path)
+            return null
+          }
+        }
+
+        if( !folderIsRecorded.folder ){
+          
+          //  if exist but the database does not contain a record, create new entry
+          if( folderIsExist )
+            return db_foldersCollectionMethods.pushNew(folders, path)
+  
+          //  if non-existent and the database does not contain a record, return null
+          if( !folderIsExist ){
+            return null
           }
         }
     },
 
-    deleteAllSubfoldersInDB:function( InPath ){
-        //  Delete includes folders in db (count)
-        this.folders.forEach(folder => {
-          if( folder.path.startsWith(InPath) ){
-            folder.isExist = false
-          }else{
-            folder.isExist = true
-          }
-        })
-        //    
-        this._clearNonExistFolders()
-    },
+    refreshFolders:function(path, cnst){
 
-    deleteFolder:function(){
-        // console.log('DELETE FOLDER')
-        //
-        const oldPath = this.folders[ this.localState.activeFolderIndex ].path
-        const upPath = oldPath.slice( 0, oldPath.lastIndexOf(this.getFolderName(oldPath)) - 1 )
-        const prevFoldersIndex = this.localState.previousFolderIndex
-        const deletedFoldersIndex = this.localState.activeFolderIndex
-        //
-        window.api.deleteFolder( oldPath ).then(
-          (resolve)=>{
-            //
-            // if(resolve == undefined){
-              //
-              if( this.inputSettings[this.localState.actualSessionType].openPreviousFolderAfterClosingActiveOne ){
-                //
-                if( !prevFoldersIndex || (prevFoldersIndex == this.localState.activeFolderIndex) ){
-                  //
-                  this.clickToFolder( {path: upPath, folderID: ''} )
-                }else{
-                  //
-                  this.localState.activeFolderIndex = this.localState.previousFolderIndex
-                  //
-                  this.clickToFolder( {path: this.folders[ this.localState.activeFolderIndex ].path, folderID: this.folders[ this.localState.activeFolderIndex ].id} )
-                }
-              }else{
-                //
-                if( this.localState.activeFolderIndex == oldPath ){
-                //   console.log('up-path: ' + upPath)
-                  this.clickToFolder( {path: upPath, folderID: ''} )
-                }
-              }
-              //  Delete folder in db
-              this.folders.splice( deletedFoldersIndex, 1 )
-              //    Delete folder from folderList
-              this.folderList.filter(e=>e != this.getFolderName(oldPath))       //  ?
-              //  Delete includes folders in db (count)
-              this.deleteAllSubfoldersInDB( oldPath )
-              //
-              console.log('refresh after deleting')
-              this.refreshFolders()
+      // console.log('refreshing path: ')
+      // console.log(path)
+
+      function sublist(path, cnst){
+        navigation.subfoldersList = window.api.getFolderNames(path, cnst) || []
+        // console.log(navigation.subfoldersList)
+      }
+      
+      function list(path, cnst){
+        navigation.foldersList =  window.api.getFolderNames( paths.getParentFolderPath(path), cnst ) || []
+        //  exclude hidden (system) folders
+        navigation.foldersList = navigation.foldersList.filter( i=>!settings.excludedFolders.includes(i) ) || []
+        // console.log(navigation.foldersList)
+      }
+      //
+      if( !paths.isImmediateChild(path) )
+        cnst = 'forced'
+      //
+      if( paths.isCommonParent(path) )
+        cnst = 'common parent'
+      //
+      if( paths.isParent(path) )
+        cnst = 'go parent'
+
+      //
+      if( (cnst == 'forced') || (navigation.foldersList == null) || (navigation.subfoldersList == null) ){
+
+        sublist(path)
+        list(path)
+      }
+
+      //  Для уменьшения нагрузки на диск
+      //
+      if( (cnst != 'forced') && (cnst == undefined) ){
+
+        // console.log('starting clone done')
+        if( Array.isArray(navigation.subfoldersList) ){
+          
+          if( navigation.subfoldersList.length > 0 ){
+
+            //  Копируем список под-каталогов в список каталогов
+            navigation.foldersList = []
+            navigation.foldersList = structuredClone( navigation.subfoldersList )
+
+            // console.log('clone done')
+            
+            sublist(path, 'dont check for existence')
+          }else{
+            //  Если общий родитель у активного и будущего каталогов, не проверяем существование будущего каталога
+            // console.log('dont')
+            // if( paths.isCommonParent(path) ){
+            //   console.log('dont check')
+              
+              // list(path, 'dont check for existence')
+            // }else{
+            //   console.log('check')
+
+              list(path)
             // }
           }
-        )
+        }
+      }
+      
+      //
+      if( cnst == 'common parent'){
+
+        sublist(path, 'dont check for existence')
+      }
+      
+      //
+      if( cnst == 'go parent'){
+
+        navigation.subfoldersList = []
+        navigation.subfoldersList = structuredClone( navigation.foldersList )
+
+        list(path, 'dont check for existence')
+      }
+      
+      //
+      if( cnst == 'go to a created child'){
+
+        navigation.foldersList = structuredClone( navigation.subfoldersList )
+        navigation.foldersList.push( paths.getFolderName(path) )
+        navigation.subfoldersList = []
+      }
     },
 
-    clickToFolder:function(dat){        //   {folderID, path}
-        // console.log('click to path in tree: ' + dat.path)
-        //  For pins mechanics
-        this.selectedFolderID = dat.folderID
-        //  If selected folder (selected path) doesn't math current folder path (props)
-        if( dat.path != this.path ){
-          //
-          let isThisFolderInCurrentSession = false
-          let indexOfTheSelectedFolder = 0
-          // 
-          this.folders.forEach(folder => {
-            //  Проверяем на наличии пути в сессии
-            if( folder.path == dat.path ) {
-              //  Этот путь зарегистрирован в сессии
-              isThisFolderInCurrentSession = true
-            }
-            if( !isThisFolderInCurrentSession ){
-              //  И его индекс
-              indexOfTheSelectedFolder++
-            }
-          })
-          //  Если выбранного пути нету в базе, создаем новую запись этого пути в сессии
-          if( !isThisFolderInCurrentSession ){
+    getNearestParentFolder:function(folders, path){    //  returned {folder, index} or null
+      let result = null
+      let _path = path
+      do {
+        
+        _path = paths.getParentFolderPath(_path)
+
+        result = this.checkFolderAndPushNewRecordOrResetNonExistent(folders, _path)
+
+      } while ( (result == null) && (_path != settings.actualSeparator) )
+
+      return result
+    },
+}
+
+const db_folderMethods = {
+    
+    set_:function(folder, cnst, params){
+      switch(cnst){
+        case 'open':
+          folder.isOpened = true
+        break
+        case 'close':
+          folder.isOpened = false
+        break
+        case 'pin / unpin':
+          folder.isPinned = !folder.isPinned
+        break
+        case 'pin on bar':
+          folder.displayedOnBar = true
+        break
+        case 'unpin on bar':
+          folder.displayedOnBar = false
+        break
+        case 'rename':
+          let _newName = helpers.validateFolderAndFileName(params.name)
+          if( _newName  ){
+            let newPath = `${paths.getParentFolderPath(folder.path)}${settings.actualSeparator}${_newName}`
             //
-            this.folders.push( {
-              id: `${this.projectID}__fold_${Math.floor(Math.random()*10000000)}`,
-              path: dat.path,
-              isOpened: true,
-              isPinned: false,
-              displayedOnBar: false,
-              files: [],
-            } )
-            // console.log(this.folders)
+            folder.path = newPath
             //
-            this.localState.previousFolderIndex = this.localState.activeFolderIndex
-            //  Переводим фокус на созданную папку для переключения вкладки в баре
-            this.localState.activeFolderIndex = this.folders.length - 1
-          }else{
-            //  А если выбранный путь есть в базе
-            this.localState.previousFolderIndex = this.localState.activeFolderIndex
-            //
-            this.localState.activeFolderIndex = indexOfTheSelectedFolder
-            // console.log('indexOfTheSelectedFolder: ' + indexOfTheSelectedFolder)
+            folder.files.forEach(file => {
+              file.path = newPath
+            })
           }
-          //
-          this.folders[ this.localState.previousFolderIndex ].displayedOnBar = false
-          //  "Открываем" папку базы по актуальному индексу
-          this.folders.forEach(element=>{element.isOpened = false})
-          this.folders[ this.localState.activeFolderIndex ].isOpened = true
-          this.folders[ this.localState.activeFolderIndex ].displayedOnBar = true
-          //
-          this.selectedFolderID = this.folders[ this.localState.activeFolderIndex ].id
-          //  For navigation (previous folder)
-          if( this.folderNavigationStateFlag ){
-            if( this.localState.previousFolderIndex >= 0 ){
-              if( this.folders[ this.localState.activeFolderIndex ].path != this.folders[ this.localState.previousFolderIndex ].path ){
-                this.folderNavigationHistory.push( this.folders[ this.localState.activeFolderIndex ].path )
-              }
-            }else{
-              this.folderNavigationHistory.push( this.folders[ this.localState.activeFolderIndex ].path )
-            }
-          }else{
-            this.folderNavigationStateFlag = true
-          }
-          //
-        //   this.refreshFolders()
-        }
-    },
-
-    treeNavigate:function(dat){
-        // console.log(dat)
-        const currentPath = this.folders[ this.localState.activeFolderIndex ].path
-        //
-        switch (dat){
-  
-          case 'parent folder':
-            this.clickToFolder( {path: this.getParentFolderPath( currentPath )} )
-          break
-  
-          case 'first child folder':
-            if(this.subfolderList.length > 0){
-              this.clickToFolder( {path: `${currentPath}/${this.subfolderList[0]}`} )
-            }
-          break
-  
-          case 'adjacent folder: down':
-            if( this.folderList.length > 0 ){
-              let currentFolderName = this.getFolderName( currentPath )
-              let nextIndex = this.folderList.indexOf(currentFolderName) + 1
-              nextIndex = nextIndex < this.folderList.length ? nextIndex : 0
-              let nextFolderName = this.folderList.at( nextIndex )
-              this.clickToFolder( {path: `${this.getParentFolderPath( currentPath )}/${nextFolderName}`} )
-            }
-          break
-  
-          case 'adjacent folder: up':
-            if( this.folderList.length > 0 ){
-              let currentFolderName = this.getFolderName( currentPath )
-              let nextIndex = this.folderList.indexOf(currentFolderName) - 1
-              nextIndex = nextIndex >= 0 ? nextIndex : (this.folderList.length - 1)
-              let nextFolderName = this.folderList.at( nextIndex )
-              this.clickToFolder( {path: `${this.getParentFolderPath( currentPath )}/${nextFolderName}`} )
-            }
-          break
-          
-          case 'previous folder in history':
-            // console.log('back')
-            if( this.folderNavigationHistory.length > 0 ){
-              //
-              this.folderNavigationStateFlag = false
-              this.clickToFolder( {path: this.folderNavigationHistory.pop()} )
-            }
-          break
-        }
-    },
-
-    copyPastFolder:function(dat){        //  the folder isn't copied to the clipboard!
-        // console.log('copyPast state:' + dat.state)
-        //
-        if(dat.state == 'copy folder'){
-          this.isDeleteSrcFolder = false
-          this.copyCutFolderID = this.folders[ this.localState.activeFolderIndex ].id
-          //  For marking folders name
-          this.copyCutFolderName = this.getFolderName( this.folders[ this.localState.activeFolderIndex ].path )
-        }
-        //
-        if(dat.state == 'cut folder'){
-          this.isDeleteSrcFolder = true
-          this.copyCutFolderID = this.folders[ this.localState.activeFolderIndex ].id
-          //  For marking folders name
-          this.copyCutFolderName = this.getFolderName( this.folders[ this.localState.activeFolderIndex ].path )
-        }
-        //
-        if( (dat.state == 'past folder') && this.copyCutFolderID ){
-          //
-          let folderSrcPath = null
-          let folderDestPath = this.folders[ this.localState.activeFolderIndex ].path
-          const folderDestParentPath = folderDestPath.slice( 0, folderDestPath.lastIndexOf(this.getFolderName(folderDestPath)) - 1 )
-          this.folders.forEach(folder => {
-            if(this.copyCutFolderID == folder.id)
-              folderSrcPath = folder.path
-          })
-          //
-          if( folderDestPath == folderSrcPath ){
-            folderDestPath + '-copy'
-            window.api.createFolder( folderDestParentPath, this.getFolderName(folderDestPath) )
-          }
-          //  Check paths to:  /fold_1   ! =>  /fold_1/fold_1_1
-          if( !folderDestPath.includes(folderSrcPath)  ) {this.copyPastFolder( {state: 'starting copy', from: folderSrcPath, to: folderDestPath} )}
-          //
-          // this.refreshFolders()
-        }
-        //
-        if( dat.state == 'starting copy' ){
-          // console.log('src: ' + dat.from)
-          // console.log('dest: ' + dat.to)
-          window.api.copyFolder( dat.from, dat.to )   //  folderSrcPath, folderDestPath
-            .then(
-                (resolve)=>{
-                // if(resolve == undefined){   //  if successful
-                    // console.log('resolve')
-                    //  Copy data db
-                    let copiedFolderIndex = null
-                    let srcFolderIndex = null
-                    this.folders.forEach((folder, index) => {
-                        //    Проверим появился ли этот (новый) путь в базе (the user opened this folder while copying)
-                        if(folder.path == dat.to){
-                            copiedFolderIndex = index
-                        }
-                        //    Refresh source folder index
-                        if(folder.id == this.copyCutFolderID){
-                            srcFolderIndex = index
-                        }
-                    })
-                    // console.log('src: ' + srcFolderIndex + 'cp: ' + copiedFolderIndex)
-                    //    If haven't find it
-                    if(copiedFolderIndex == null) {
-                        //
-                        this.folders.push( JSON.parse( JSON.stringify(this.folders[srcFolderIndex]) ) )
-                        copiedFolderIndex = this.folders.length
-                        //
-                        this.folders[copiedFolderIndex].id = `${this.projectID}__fold_${Math.floor(Math.random()*10000000)}`
-                        this.folders[copiedFolderIndex].path = dat.to
-                        this.folders[copiedFolderIndex].isOpened = false
-                        this.folders[copiedFolderIndex].isPinned = false
-                        this.folders[copiedFolderIndex].displayedOnBar = false
-                    }else{
-                        //    If find it
-                        //      copying (files only)
-                        this.folders[copiedFolderIndex].files = JSON.parse( JSON.stringify(this.folders[srcFolderIndex].files) )
-                    }
-                    //  Refresh files path
-                    this.folders[copiedFolderIndex].files.forEach(file => {
-                        file.path = dat.to
-                    })
-                    //  Refresh other folders path
-                    this.folders.forEach(folder => {
-                        if( folder.path.startsWith(dat.from) ){
-                            folder.path = dat.to + folder.path.split(dat.from)[1]
-                        }
-                    })
-                    console.log(this.folders[copiedFolderIndex])
-                    //
-                    if(this.isDeleteSrcFolder){
-                        this.copyPastFolder( {state: 'delete src folder', path: dat.from} )
-                    }else{
-                        //
-                        this.refreshFolders()
-                    }
-                    // console.log('reset')
-                    this.copyCutFolderName = null
-                // }
-                }
-            )
-        }
-        //
-        if( (dat.state == 'delete src folder') && this.isDeleteSrcFolder ){
-          //
-          console.log('start delete src folder')
-          //
-          window.api.deleteFolder( dat.path )
-          
-          .then((resolve)=>{    //  and create new empty folder this his name
-            if(resolve == undefined){
-              return window.api.createFolder( dat.path )
-            }
-          })
-          
-          .then((resolve)=>{
-            if(resolve == undefined){   //  If successful
-              console.log('finaly')
-              //  reset
-              this.isDeleteSrcFolder = false
-              //
-              // this.folders.forEach((folder, index) => {
-                // if( folder.id == this.copyCutFolderID ){
-                  //  Открыть каталог-родитель, если пользователь находится на вырезаемом... (child folders)
-                  if( this.folders[ this.localState.activeFolderIndex ].path.startsWith(dat.path) ){
-                    //
-                    this.clickToFolder( {path: dat.path.slice( 0, dat.path.lastIndexOf(this.getFolderName(dat.path)) - 1 )} )
-                  }
-                  //  Deleting
-                  // this.folders.splice( index, 1 )
-                  //
-                  this.deleteAllSubfoldersInDB( dat.path )
-                // }
-              // })
-              //  reset
-              this.copyCutFolderID = null
-              //  Delete from db
-            }
-          })
-        }
-    },
-
-    clickToSpecialFolder:function(folderName){
-        let specialFoldersPath = window.api.getPathSpecialFolder()
-        specialFoldersPath = specialFoldersPath.replaceAll(settings.win32separator, '/').substring(2)
-        // console.log(`${path}/${folderName}`)
-        this.clickToFolder( {path: `${specialFoldersPath}/${folderName}`} )
-    },
-
-    createNewFolder:function(newFolderName){
-        //
-        if( this.validateFolderAndFileName(newFolderName) ){
+        break
+        case 'rewrite path':
+          if(params.path){
             //
-            newFolderName = newFolderName.trim()
+            folder.path = params.path
             //
-            if( !this.subfolderList.includes(newFolderName) ){
-              //
-              let res = false
-              //
-              res = window.api.createFolder( this.folders[ this.localState.activeFolderIndex ].path, newFolderName )
-              //
-              if(res == undefined){
-                // this.isCreatredNewFolder = false
-                //
-                this.clickToFolder( {path: `${this.folders[ this.localState.activeFolderIndex ].path}/${newFolderName}`} )
-                //
-                this.refreshFolders()
-                //
-                return true
-              }
-            }
-        }
+            folder.files.forEach(file => {
+              file.path = params.path
+            })
+          }
+        break
+
+      }
+    },
+    
+    get_:function(folder, cnst, params){
+      switch(cnst){
+
+        case 'path':
+          return folder.path
+
+        case 'parent path':
+          return paths.getParentFolderPath( folder.path )
+
+        case 'is opened':
+          return folder.isOpened
+
+      }
+    },
+    
+    is_:function(childFolder, cnst, params){    //  doc/garb 'nested in' doc
+      switch(cnst){
+        
+        // case 'nested in':
+        //   if( == '/') return
+        //   return ParentFolder.path.startsWith(childFolder.path)
+          // if( folder.path.startsWith(params.path) || params.path.startsWith(folder.path) ){
+          //   return params.path.includes(folder.path)
+          // }
+
+        case 'are the paths the same':
+          return childFolder.path == params.path
+
+      }
+    },
+}
+
+const filesCollectionMethods = {
+
+    refreshFilesInActualFolder:function(){
+
+      let readDirResult = window.api.getFileFullnames( history.actual(folders.folders).path )
+
+      console.log('readDirResult')
+      console.log(readDirResult)
+
+      history.actual(folders.folders).files = history.actual(folders.folders).files.filter(file => readDirResult.includes(`${file.name}.${file.format}`))
+
+      readDirResult.forEach(fullname => {
+        this.recordNewFileInActualFolder(fullname)
+      })
     },
 
-    abortCopyCutOperation:function(){
-      this.copyCutFolderID = null
-      this.isDeleteSrcFolder = false
-      this.copyCutFolderName = null
+    recordNewFileInActualFolder:function(fullname){
+      // console.log('fullname')
+      // console.log(fullname)
+
+      if( history.actual(folders.folders).files.find(file => `${file.name}.${file.format}` == fullname) ) return false
+
+      history.actual(folders.folders).files.push(
+        {
+          id: 'fileID_' + Math.floor(Math.random()*10000000),
+          name: fullname.slice( 0, fullname.lastIndexOf('.') ),       //      To Do
+          format: fullname.slice( fullname.lastIndexOf('.') + 1 ), 
+          markID: defaults.defaulMarkID, 
+          isPinned: false, 
+          path: paths.validate( history.actual(folders.folders).path ), 
+          meta: window.api.getFileMeta( history.actual(folders.folders).path, fullname ), 
+        }
+      )
+
+      return true
     },
 }

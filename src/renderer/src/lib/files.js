@@ -6,11 +6,15 @@ const settings = {
 export const filesMethods = {
     localState: null,
     stateFiles: null,
-    files: null,
+    files: null,  //
     folders: null,
 
     init:function(dat){
+
+        // console.log(this.localState)
         this.folders = dat.folders
+        console.log(this.folders)
+
     },
 
     pinSelectedFiles:function(){

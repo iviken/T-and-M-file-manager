@@ -1,7 +1,7 @@
 <script>
 export default {
   props:{
-    foldersMethods:{
+    foldersMethods2:{
         type: Object,
         required: true
     },
@@ -33,60 +33,14 @@ export default {
   methods: {
     deleteFolder(){
       //
-      this.foldersMethods.deleteFolder()
+      this.foldersMethods2.deleteFolder()
       //
       // this.foldersMethods.refreshFolders()
     },
-    // deleteFolder:function(){
-    //   console.log('DELETE FOLDER')
-    //   //
-    //   let res = false
-    //   const oldPath = this.folders[ this.localState.activeFolderIndex ].path
-    //   const upPath = oldPath.slice( 0, oldPath.lastIndexOf(this.getFolderName(oldPath)) - 1 )
-    //   const prevFoldersIndex = this.localState.previousFolderIndex
-    //   const deletedFoldersIndex = this.localState.activeFolderIndex
-    //   //
-    //   res = window.api.deleteFolder( oldPath )
-    //   //
-    //   if(res == undefined){
-    //     //
-    //     if( this.inputSettings[this.localState.actualSessionType].openPreviousFolderAfterClosingActiveOne ){
-    //       //
-    //       if( !prevFoldersIndex || (prevFoldersIndex == this.localState.activeFolderIndex) ){
-    //         //
-    //         this.clickToFolder( {path: upPath, folderID: ''} )
-    //       }else{
-    //         //
-    //         this.localState.activeFolderIndex = this.localState.previousFolderIndex
-    //         //
-    //         this.clickToFolder( {path: this.folders[ this.localState.activeFolderIndex ].path, folderID: this.folders[ this.localState.activeFolderIndex ].id} )
-    //       }
-    //     }else{
-    //       //
-    //       // console.log('up-path: ' + this.getFolderName(oldPath))
-    //       // console.log('up-path: ' + (oldPath.lastIndexOf(this.getFolderName(oldPath)) - 1) )
-    //       console.log('up-path: ' + upPath)
-    //       this.clickToFolder( {path: upPath, folderID: ''} )
-    //     }
-    //     //  Delete folder in db
-    //     this.folders.splice( deletedFoldersIndex, 1 )
-    //     //
-    //     console.log('refresh after deleting')
-    //     this.refreshFolders()
-    //   }
-    // },
     markActiveFolder:function(name){
       return name == this.path.split('/')[ this.path.split('/').length - 1 ]
     },
     markOpenedFolder:function(dat){},
-    pinFolder:function(){
-      //
-      if( this.inputSettings[ this.localState.actualSessionType ].showPinFolders ){
-        //
-        this.foldersMethods.pinFolder()
-        // this.foldersMethods.pinFolder(this.selectedFolderID)
-      }
-    },
     foldPin:function(){
       this.dataSettings.pinFoldersIsFolded = !this.dataSettings.pinFoldersIsFolded
     },
@@ -96,7 +50,7 @@ export default {
     clickToAddressBarPart:function(dat){
       // console.log('click to address: ' + dat.path)
       //
-      this.foldersMethods.clickToFolder(dat)
+      this.foldersMethods2.clickToFolder(dat)
     },
     sessionFolderDisplayFilter:function(folder){
       // console.log(folder)
@@ -113,80 +67,59 @@ export default {
       // this.isDeleteSrcFolder = false
       // this.foldersMethods.isDeleteSrcFolder = false
       // this.copyCutFolderName = null
-      this.foldersMethods.bortCopyCutOperation()
+      this.foldersMethods2.abortCopyCutOperation()
       //
       this.renameSelectedFolder( {state: 'abort'} )
     },
     renameSelectedFolder:function(dat){
         //
         if(dat.state == 'input-start'){
-          this.remanedFolderName = this.foldersMethods.getFolderName( this.folders[ this.localState.activeFolderIndex ].path )
+          this.nameOfTheFolderToBeRenamed = this.foldersMethods2.getActiveFolderName()
+          // this.nameOfTheFolderToBeRenamed = this.foldersMethods.getFolderName( this.folders[ this.localState.activeFolderIndex ].path )
         }
         //
         if(dat.state == 'abort'){
-          this.remanedFolderName = null
+          this.nameOfTheFolderToBeRenamed = null
         }
         //
         if(dat.state == 'input-done'){
-          //  Check input new folder name on spaces
-          if( this.foldersMethods.validateFolderAndFileName(this.renamedValue) ){
+          // console.log('RENAME FOLDER')
+          let result = this.foldersMethods2.renameSelectedFolder( {newName: this.renameValue} )
+          // let result = this.foldersMethods.renameSelectedFolder( {newName: this.renameValue, folderList: this.folderList} )
+          //
+          if(result){
             //
-            this.renamedValue = this.renamedValue.trim()
-            // console.log('RENAME FOLDER')
-            let result = this.foldersMethods.renameSelectedFolder( {newName: this.renamedValue, folderList: this.folderList} )
-            //
-            if(result){
-              //
-              this.renamedValue = ''
-              //  For hide input element
-              this.remanedFolderName = null
-              //  Refresh folders
-              this.foldersMethods.refreshFolders()
-            }
+            this.renameValue = ''
+            //  For hide input element
+            this.nameOfTheFolderToBeRenamed = null
+            //  Refresh folders
+            // this.foldersMethods.refreshFolders()
           }
-        }
+            
+          }
     },
     createNewFolder:function(dat){
         console.log('CREATE FOLDER')
-        //
+        
         if(dat.state == 'input-start'){
-          //
+          
           this.isCreatredNewFolder = true
         }
+
         if(dat.state == 'input-done'){
 
-          if( this.foldersMethods.validateFolderAndFileName(newFolderName) ){
+          let result = this.foldersMethods2.createNewFolder( this.newFolderName )
 
-            let result = this.foldersMethods.createNewFolder( this.newFolderName )
-
-            if(result){
-              //
-              this.isCreatredNewFolder = false
-            }
+          if(result){
+            //
+            this.isCreatredNewFolder = false
           }
-        }
+      }
     },
   },
   beforeMount(){
-    this.foldersMethods.selectedFolderID = this.folders[ this.localState.activeFolderIndex ].id
-    // this.selectedFolderID = this.folders[ this.localState.activeFolderIndex ].id
-    //
-    this.foldersMethods.folderNavigationHistory.push( this.folders[ this.localState.activeFolderIndex ].path )
-    //
-    this.foldersMethods.clearNonExistFoldersInDB()
-    //
-    this.foldersMethods.refreshFolders()
   },
   beforeUpdate(){
-    //
-    if( this.localState.activeFolderIndex != this.localState.previousFolderIndex ) this.foldersMethods.refreshFolders()
-
-    
-    // if(this.lastFolderIndex != this.localState.activeFolderIndex){
-    //   this.refreshFolders()
-    //   //
-    //   this.lastFolderIndex = this.localState.activeFolderIndex
-    // }
   },
   data(){
     return{
@@ -197,13 +130,14 @@ export default {
       defaults:{
         defaulMarkID: 'mark_unmarked',
       },
-      remanedFolderName: null,
-      renamedValue: '',
+      nameOfTheFolderToBeRenamed: null,
+      renameValue: '',
       isCreatredNewFolder: false,
       newFolderName: '',
     }
   },
   computed:{
+
     getPathForAddressBar(){
       if( this.path.indexOf('/') >= 0 ) return this.path.split('/')
       if( this.path.indexOf('\\') >= 0 ) return this.path.split('\\')
@@ -218,18 +152,18 @@ export default {
       tabindex="0" 
       @keyup.f2="renameSelectedFolder( {state: 'input-start'} )" 
       @keyup.esc="pressEsc()" 
-      @keyup.ctrl.d="pinFolder()"
-      @keyup.f5="foldersMethods.refreshFolders()"
-      @keyup.shift.ctrl.n="createNewFolder( {state: 'input-start'} )"
+      @keyup.ctrl.d="foldersMethods2.pinFolder()"
+      @keyup.f5="foldersMethods2.refreshDisplayedFolders()"
+      @keyup.shift.ctrl.n.exact="createNewFolder( {state: 'input-start'} )"
       @keyup.ctrl.n="createNewFolder( {state: 'input-start'} )"
-      @keyup.ctrl.c="foldersMethods.copyPastFolder( {state: 'copy folder'} )"
-      @keyup.ctrl.v="foldersMethods.copyPastFolder( {state: 'past folder'} )"
-      @keyup.ctrl.x="foldersMethods.copyPastFolder( {state: 'cut folder'} )"
-      @keyup.up="foldersMethods.treeNavigate('adjacent folder: up')"
-      @keyup.down="foldersMethods.treeNavigate('adjacent folder: down')"
-      @keyup.right="foldersMethods.treeNavigate('first child folder')"
-      @keyup.left="foldersMethods.treeNavigate('parent folder')"
-      @keyup.backspace="foldersMethods.treeNavigate('previous folder in history')"
+      @keyup.ctrl.c="foldersMethods2.copyPastFolder( {state: 'copy folder'} )"
+      @keyup.ctrl.v="foldersMethods2.copyPastFolder( {state: 'past folder'} )"
+      @keyup.ctrl.x="foldersMethods2.copyPastFolder( {state: 'cut folder'} )"
+      @keyup.up.exact="foldersMethods2.treeNavigate('adjacent folder: up')"
+      @keyup.down.exact="foldersMethods2.treeNavigate('adjacent folder: down')"
+      @keyup.right.exact="foldersMethods2.treeNavigate('first child folder')"
+      @keyup.left.exact="foldersMethods2.treeNavigate('parent folder')"
+      @keyup.ctrl.left="foldersMethods2.treeNavigate('previous folder in history')"
     >
 
         <div v-if="inputSettings[ localState.actualSessionType ].showSessionFolders" class="folders block on-row">
@@ -238,8 +172,8 @@ export default {
           </div>
           <div v-if="dataSettings.foldersIsFolded" class="on-col">
             <div v-for="folder in folders" class="item">
-              <div v-if="sessionFolderDisplayFilter(folder)" @click="foldersMethods.clickToFolder({path: folder.path, folderID: folder.id})" :id="folder.id" :class="{active: markActiveFolder( foldersMethods.getFolderName( folder.path ) ), opened: markOpenedFolder(folder.path)}">
-                <span>{{ foldersMethods.getFolderName( folder.path ) }}</span>
+              <div v-if="sessionFolderDisplayFilter(folder)" @click="foldersMethods2.clickToFolder({path: folder.path, folderID: folder.id})" :id="folder.id" :class="{active: markActiveFolder( foldersMethods2.getFolderName( folder.path ) ), opened: markOpenedFolder(folder.path)}">
+                <span>{{ foldersMethods2.getFolderName( folder.path ) }}</span>
               </div>
             </div>
           </div>
@@ -252,8 +186,8 @@ export default {
           <div v-if="!dataSettings.pinFoldersIsFolded" class="on-col">
             <div v-for="folder in folders" class="item">
               <div v-if="folder.isPinned">
-                <div @click="foldersMethods.clickToFolder({path: folder.path, folderID: folder.id})" :id="folder.id" :class="{active: markActiveFolder( foldersMethods.getFolderName( folder.path ) ), opened: markOpenedFolder(folder.path)}">
-                  <span>{{ foldersMethods.getFolderName( folder.path ) }}</span>
+                <div @click="foldersMethods2.clickToFolder({path: folder.path, folderID: folder.id})" :id="folder.id" :class="{active: markActiveFolder( foldersMethods2.getFolderName( folder.path ) ), opened: markOpenedFolder(folder.path)}">
+                  <span>{{ foldersMethods2.getFolderName( folder.path ) }}</span>
                 </div>
               </div>
             </div>
@@ -274,31 +208,31 @@ export default {
         <div class="tree on-col focus scrollY" tabindex="0">
 
           <div class="on-col block">
-            <div v-for="item in foldersMethods.folderList">
-              <div v-if="remanedFolderName != item" @dblclick="renameSelectedFolder( {state: 'input-start'} )" @click="foldersMethods.clickToFolder( {name: item, path: `${path.substring(0, path.lastIndexOf('/'))}/${item}`} )" :class="{active: markActiveFolder(item), opened: markOpenedFolder(item), 'item-copy-cut': item == foldersMethods.copyCutFolderName}" class="on-row item w100">
+            <div v-for="item in foldersMethods2.getFoldersList()">
+              <div v-if="nameOfTheFolderToBeRenamed != item" @dblclick="renameSelectedFolder( {state: 'input-start'} )" @click="foldersMethods2.clickToFolder( {name: item, path: `${path.substring(0, path.lastIndexOf('/'))}/${item}`} )" :class="{active: markActiveFolder(item), opened: markOpenedFolder(item), 'item-copy-cut': item == foldersMethods2.copyPastFolder( {state: 'get copy-folder name'} )}" class="on-row item w100">
                 <div>
                   <span class="text-nowrap">{{ item }}</span>
                 </div>
                 <div class="w100"></div>
                 <div @click="createNewFolder( {state: 'input-start'} )"  class="add">New</div>
                 <div @click="pinFolder()" class="pin">Pin</div>
-                <div @click="deleteFolder()" class="delete">x</div>
+                <div @click="deleteFolder()" class="delete">X</div>
               </div>
               <div v-else>
-                <input type="text" :v-model="renamedValue" @input="event => renamedValue = event.target.value.replace(settings.folderNameRegexp, '')" :id="`${item}`" class="rename" @keyup.esc="isRemaned = false" @keyup.enter="renameSelectedFolder({state: 'input-done'})"></input>
+                <input type="text" :v-model="renameValue" @input="event => renameValue = event.target.value.replace(settings.folderNameRegexp, '')" :id="`${item}`" class="rename" @keyup.esc="isRemaned = false" @keyup.enter="renameSelectedFolder({state: 'input-done'})"></input>
               </div>
             </div>
           </div>
           
           <div class="on-col block">
-            <div v-for="item in foldersMethods.subfolderList">
+            <div v-for="item in foldersMethods2.getSubfoldersList()">
               <div class="on-row item w100">
                 <div>|-</div>
-                <div v-if="remanedFolderName != item" @click="foldersMethods.clickToFolder( {name: item, path: `${path}/${item}`} )">
+                <div v-if="nameOfTheFolderToBeRenamed != item" @click="foldersMethods2.clickToFolder( {name: item, path: `${path}/${item}`} )">
                   <span>{{ item }}</span>
                 </div>
                 <div v-else>
-                  <input type="text" :v-model="renamedValue" @input="event => renamedValue = event.target.value.replace(settings.folderNameRegexp, '')" :id="`sub_${item}`" class="rename" @keyup.esc="isRemaned = false" @keyup.enter="renameSelectedFolder({state: 'input-done'})"></input>
+                  <input type="text" :v-model="renameValue" @input="event => renameValue = event.target.value.replace(settings.folderNameRegexp, '')" :id="`sub_${item}`" class="rename" @keyup.esc="isRemaned = false" @keyup.enter="renameSelectedFolder({state: 'input-done'})"></input>
                 </div>
               </div>
             </div>
@@ -313,11 +247,11 @@ export default {
         <div v-if="this.inputSettings[ this.localState.actualSessionType ].showSpecialFoldersBtns" class="special-folders on-col block">
           <div class="on-row item">
             <div></div>
-            <div @click="foldersMethods.clickToSpecialFolder( 'Documents' )">my docs</div>
+            <div @click="foldersMethods2.clickToSpecialFolder( 'Documents' )">my docs</div>
           </div>
           <div class="on-row item">
             <div></div>
-            <div @click="foldersMethods.clickToSpecialFolder( 'Downloads' )">downloads</div>
+            <div @click="foldersMethods2.clickToSpecialFolder( 'Downloads' )">downloads</div>
           </div>
         </div>
 
@@ -350,9 +284,7 @@ export default {
   .item:hover{
     color: var(--pure-white);
   }
-  .item-copy-cut{
-    background-color: bisque;
-  }
+
   .delete, .pin, .add{
     visibility: hidden;
   }
@@ -380,6 +312,10 @@ export default {
   }
   .opened{
     color: antiquewhite;
+  }
+  .item-copy-cut{
+    background-color: bisque;
+    font-weight: bold;
   }
   
   .component{
