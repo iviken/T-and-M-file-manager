@@ -31,12 +31,6 @@ export default {
     },
   },
   methods: {
-    deleteFolder(){
-      //
-      this.foldersMethods2.deleteFolder()
-      //
-      // this.foldersMethods.refreshFolders()
-    },
     markActiveFolder:function(name){
       return name == this.path.split('/')[ this.path.split('/').length - 1 ]
     },
@@ -209,14 +203,15 @@ export default {
 
           <div class="on-col block">
             <div v-for="item in foldersMethods2.getFoldersList()">
-              <div v-if="nameOfTheFolderToBeRenamed != item" @dblclick="renameSelectedFolder( {state: 'input-start'} )" @click="foldersMethods2.clickToFolder( {name: item, path: `${path.substring(0, path.lastIndexOf('/'))}/${item}`} )" :class="{active: markActiveFolder(item), opened: markOpenedFolder(item), 'item-copy-cut': item == foldersMethods2.copyPastFolder( {state: 'get copy-folder name'} )}" class="on-row item w100">
+              <div v-if="nameOfTheFolderToBeRenamed != item" @dblclick="renameSelectedFolder( {state: 'input-start'} )" @click="foldersMethods2.clickOnTheDirectoryInTheFolderTree( item, 'this level' )" :class="{active: markActiveFolder(item), opened: markOpenedFolder(item), 'item-copy-cut': item == foldersMethods2.copyPastFolder( {state: 'get copy-folder name'} )}" class="on-row item w100">
+              <!-- <div v-if="nameOfTheFolderToBeRenamed != item" @dblclick="renameSelectedFolder( {state: 'input-start'} )" @click="foldersMethods2.clickToFolder( {name: item, path: `${path.substring(0, path.lastIndexOf('/'))}/${item}`} )" :class="{active: markActiveFolder(item), opened: markOpenedFolder(item), 'item-copy-cut': item == foldersMethods2.copyPastFolder( {state: 'get copy-folder name'} )}" class="on-row item w100"> -->
                 <div>
                   <span class="text-nowrap">{{ item }}</span>
                 </div>
                 <div class="w100"></div>
                 <div @click="createNewFolder( {state: 'input-start'} )"  class="add">New</div>
-                <div @click="pinFolder()" class="pin">Pin</div>
-                <div @click="deleteFolder()" class="delete">X</div>
+                <div @click="foldersMethods2.pinFolder()" class="pin">Pin</div>
+                <div @click="foldersMethods2.deleteFolder()" class="delete">X</div>
               </div>
               <div v-else>
                 <input type="text" :v-model="renameValue" @input="event => renameValue = event.target.value.replace(settings.folderNameRegexp, '')" :id="`${item}`" class="rename" @keyup.esc="isRemaned = false" @keyup.enter="renameSelectedFolder({state: 'input-done'})"></input>
@@ -228,7 +223,8 @@ export default {
             <div v-for="item in foldersMethods2.getSubfoldersList()">
               <div class="on-row item w100">
                 <div>|-</div>
-                <div v-if="nameOfTheFolderToBeRenamed != item" @click="foldersMethods2.clickToFolder( {name: item, path: `${path}/${item}`} )">
+                <div v-if="nameOfTheFolderToBeRenamed != item" @click="foldersMethods2.clickOnTheDirectoryInTheFolderTree( item, 'child level' )">
+                <!-- <div v-if="nameOfTheFolderToBeRenamed != item" @click="foldersMethods2.clickToFolder( {name: item, path: `${path}/${item}`} )"> -->
                   <span>{{ item }}</span>
                 </div>
                 <div v-else>

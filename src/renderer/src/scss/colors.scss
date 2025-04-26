@@ -3,7 +3,7 @@
     --pure-white: white;
     --red: rgba(215,75,186,1);
     --green: rgba(62,133,47,1);
---yellow: rgba(175,168,62,1);
+    --yellow: rgba(175,168,62,1);
     --ocean: rgba(115,208,212,1);
     --blue: rgba(46,51,200,1);
     --orange: rgba(205,133,40,1);
@@ -44,8 +44,12 @@
     --grad-border-fieldset-green: linear-gradient(90deg, rgba(49,173,49,1) 0%, rgba(49,173,49,0) 12%, rgba(49,173,49,0) 100%); 
     
     --head-grad: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
+    
     --grad-center: linear-gradient(168deg, #232229ff 5%, #131313ff 120%);
-    --grad-text-files-and-tasks: linear-gradient(154deg, rgba(22, 22, 22, 0) 15.28%, rgba(108, 108, 154, 0.06) 39.78%, rgba(100, 107, 136, 0) 100%);
+    
+    // --grad-text-files-and-tasks1: linear-gradient(154deg, rgba(22, 22, 22, 0) 15.28%, rgba(108, 108, 154, 0.06) 39.78%, rgba(100, 107, 136, 0) 100%);
+    --grad-text-files-and-tasks2: linear-gradient(154deg, rgba(22, 22, 22, 0) 13.42%, rgba(70, 70, 93, 0.33) 26.37%, #0a0a0f 100%);
+
     --grad-left: linear-gradient(167deg, rgba(35,34,41,0) -15%, rgba(35,34,41,.5) 83%, rgba(19,19,19,.5) 91%);
     --grad-left-focus: linear-gradient(356deg, rgba(35,34,41,0) -15%, rgba(35,34,41,1) 13%, rgba(19,19,19,1) 91%);
 

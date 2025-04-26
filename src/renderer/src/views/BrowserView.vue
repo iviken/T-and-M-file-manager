@@ -12,18 +12,27 @@ export default {
     components: {
         Tree, Tasks, Bar, AccordionFiles
     },
+
     props:{
         sessionType:{    
             type: String,
             required: true
         }
     },
+
     data(){
         return{
+            data: {},
+            fullData: {},
+            // refreshFilesQueueLOG: {deletedIrrelevant: [], foundAndAdded: []},
+            filesMethods: null,
+            marksMethods: null,
+            foldersMethods2: null,
             stateFiles:{
                 files: {},                  //  {ID_file_1: 'SELECTED', ID_file_12: 'SELECTED'}
                 imageViewerPullFiles: {},   //  pull images files for viewer
                 pathsOfOpenedFolders: [],   //
+                numberOfSelectedFiles: 0,
                 defaults:{
                     unmarkedMarkID: 'mark_unmarked'
                 },
@@ -32,23 +41,17 @@ export default {
                     name: '',
                     format: '',
                 },
-                atLeastOneFileSelected: false,
-                numberOfSelectedFiles: 0,
             },
             localState:{
                 showTreePanel: false,
                 showTasksPanel: true,
                 activeFolderIndex: 0,
-                // previousFolderIndex: 0,
                 metadataIsHidden: true,
                 showFilesFromAllFoldersOption: false,
                 showImageViewer: false,
                 actualSessionType: '',                  //
                 renamigMark: false,
             },
-            data: {},
-            fullData: {},
-            refreshFilesQueueLOG: {deletedIrrelevant: [], foundAndAdded: []},
             settings:{
                 SESSION:{
                     // allowClosingFoldersWithMarkedFiles: true,
@@ -72,18 +75,19 @@ export default {
                 minimumImagePreviewSize: 50,
                 maximumImagePreviewSize: 175,
             },
-            filesMethods: null,
-            marksMethods: null,
-            foldersMethods2: null,
         }
     },
+
     methods: {
+
         showMeta:function(dat){
-            // console.log("CTRL")
+
             this.localState.metadataIsHidden = dat == 'show meta' ? false : this.localState.metadataIsHidden
             this.localState.metadataIsHidden = dat == 'hide meta' ? true : this.localState.metadataIsHidden
         },
+
         getAllFiles(){
+
             let allFiles_ = []
             //
             this.localState.pathsOfOpenedFolders = []
@@ -94,91 +98,22 @@ export default {
             }
             return allFiles_
         },
-        // refreshFiles(){
-        //     //  Is folder exist? Y:
-        //     if( window.api.folderIsExist(this.data.folders[this.localState.activeFolderIndex].path) ){
-        //         //  Get actual files from folder
-        //         let actualFilenamesInTheActiveFolder =  window.api.getFileFullnames( this.data.folders[this.localState.activeFolderIndex].path )
-        //         // console.log(actualFilenamesInTheActiveFolder)
-        //         //  Если есть файлы в (отсканированном) каталоге
-        //         if (actualFilenamesInTheActiveFolder.length > 0 ){
-        //             //
-        //             let doesTheFileExist = false
-        //             //  Сравниваем найденные файлы в каталоге с файлами в базе
-        //             //      Файлы базы
-        //             this.data.folders[this.localState.activeFolderIndex].files.forEach( data_element => {
-        //                 doesTheFileExist = false
-        //                 //      Файлы каталога
-        //                 actualFilenamesInTheActiveFolder.forEach( (element, index) => {
-        //                     //  И сравниваем
-        //                     if( `${data_element.name}.${data_element.format}` == element ){
-        //                         //  При совпадении убираем найденный файл каталога из очереди для уменьшения вычислит. нагрузки
-        //                         actualFilenamesInTheActiveFolder.splice( index, 1 )
-        //                         //  Файл существует
-        //                         //      Variable for LOG
-        //                         doesTheFileExist = true
-        //                         //      Undeletion flag
-        //                         data_element.isExist = true
-        //                     }
-        //                 })
-        //                 //  Если не существует
-        //                 if( !doesTheFileExist ) {
-        //                     //  Add to LOG
-        //                     this.refreshFilesQueueLOG.deletedIrrelevant.push( data_element.name.slice() )
-        //                     //
-        //                     data_element.isExist = false
-        //                 }
-        //             })
-        //             //  Delete marked files (isExist == false)
-        //             let arrSize = Number( this.data.folders[this.localState.activeFolderIndex].files.length )
-        //             //
-        //             if(arrSize){
-        //                 for(let ch=0; ch<arrSize; ch++){
-        //                     if( !this.data.folders[this.localState.activeFolderIndex].files[ch].isExist ){
-        //                         this.data.folders[this.localState.activeFolderIndex].files.splice( ch, 1 )
-        //                         ch--
-        //                         arrSize--
-        //                     }
-        //                 }
-        //             }
-        //             //  Заносим найденные файлы в каталоге в базу
-        //             actualFilenamesInTheActiveFolder.forEach(element => {
-        //                 this.data.folders[this.localState.activeFolderIndex].files.push(
-        //                     {
-        //                         id: 'fileID_' + Math.floor(Math.random()*10000000), 
-        //                         name: element.slice( 0, element.lastIndexOf('.') ),       //      To Do
-        //                         format: element.slice( element.lastIndexOf('.') + 1 ), 
-        //                         markID: 'mark_unmarked',     
-        //                         isPinned: false, 
-        //                         path: this.data.folders[this.localState.activeFolderIndex].path, 
-        //                         meta: window.api.getFileMeta( this.data.folders[this.localState.activeFolderIndex].path, element )
-        //                     }
-        //                 )
-        //                 //  Add to LOG
-        //                 this.refreshFilesQueueLOG.foundAndAdded.push( element )
-        //             })
-        //         }else{
-        //             //  Если нету файлов в каталоге, стираем все из базы
-        //             this.data.folders[this.localState.activeFolderIndex].files = []
-        //         }
-        //         //
-        //     }else{
-        //         //
-                
-        //         //  N:, delete from db
-        //         this.data.folders.splice(this.localState.activeFolderIndex, 1)
-        //     }
-        //     // console.log( this.refreshFilesQueueLOG )
-        // },
+
         getProject(){
+
+            console.log('get proj');
+            
+
             if(this.sessionType == 'SESSION'){
+
                 this.fullData = window.api.getSessionData()
-                //
+                
                 this.localState.actualSessionType = 'SESSION'       //  browser session
             }
             if(this.sessionType == 'PROJECTS'){
+
                 this.fullData = window.api.getProjectData()
-                //
+                
                 this.localState.actualSessionType = 'PROJECTS'       //  browser session
             }
             // console.log('session type: ' + this.sessionType)
@@ -214,7 +149,10 @@ export default {
             // this.refreshFiles()
             //
             this.resetStateFiles()
+            //
+            this.init()
         },
+
         imageViewer(){
             //
             this.stateFiles.imageViewerPullFiles = {}
@@ -237,29 +175,41 @@ export default {
                 this.localState.showImageViewer = !this.localState.showImageViewer
             }
         },
+
         resetStateFiles(){
-            this.stateFiles.files = {}
             this.stateFiles.pathsOfOpenedFolders = []
-            this.stateFiles.atLeastOneFileSelected = false
-            this.stateFiles.numberOfSelectedFiles = 0
+        },
+
+        init(){
+
+            this.foldersMethods2 = folders
+            this.foldersMethods2.init( {folders: this.data.folders, localState: this.localState} )
+            //
+            this.filesMethods = filesMethods
+            this.filesMethods.localState = this.localState
+            this.filesMethods.stateFiles = this.stateFiles
+
+            this.filesMethods.init( this.data )
+        
+            this.filesMethods.resetStateAllFiles()
+            //
+            this.marksMethods = marksMethods
+            this.marksMethods.stateFiles = this.stateFiles
+            this.marksMethods.marks = this.data.marks
         },
     },
+
     beforeMount() {
+
+        console.log(this.sessionType);
         //
         this.getProject()
         //
-        this.foldersMethods2 = folders
-        this.foldersMethods2.init( {folders: this.data.folders, localState: this.localState} )
-        //
-        this.filesMethods = filesMethods
-        this.filesMethods.localState = this.localState
-        this.filesMethods.stateFiles = this.stateFiles
-        this.filesMethods.init( this.data )
-        //
-        this.marksMethods = marksMethods
-        this.marksMethods.stateFiles = this.stateFiles
-        this.marksMethods.marks = this.data.marks
+        // this.init()
+
+        console.log(this.data)
     },
+
     mounted(){
         this.$nextTick(function () {
 
@@ -286,9 +236,11 @@ export default {
             })
         })
     },
+
     beforeUpdate(){
         //
-        if( this.localState.actualSessionType != this.sessionType ) this.getProject()
+        if( this.localState.actualSessionType != this.sessionType )
+            this.getProject()
     },
 }
 </script>
@@ -328,10 +280,10 @@ export default {
                             
                             <div class="w100 h100 on-row">
                                 <div>
-                                    <AccordionFiles :filesMethods="filesMethods" :files="data.folders[localState.activeFolderIndex].files" :marks="data.marks" :viewMode="'text'" :state="stateFiles" :inputSettings="data.parameters" class="text-files-component component" />
+                                    <AccordionFiles :localState="localState" :filesMethods="filesMethods" :files="data.folders[localState.activeFolderIndex].files" :marks="data.marks" :viewMode="'text'" :state="stateFiles" :inputSettings="data.parameters" class="text-files-component component" />
                                 </div>
                                 <div>
-                                    <AccordionFiles :filesMethods="filesMethods" :files="data.folders[localState.activeFolderIndex].files" :marks="data.marks" :viewMode="'imgs'" :state="stateFiles" :inputSettings="data.parameters" class="image-files-component component" />
+                                    <AccordionFiles :localState="localState" :filesMethods="filesMethods" :files="data.folders[localState.activeFolderIndex].files" :marks="data.marks" :viewMode="'imgs'" :state="stateFiles" :inputSettings="data.parameters" class="image-files-component component" />
                                 </div>
                             </div>
                 
@@ -341,10 +293,10 @@ export default {
                             
                             <div class="w100 h100 on-row">
                                 <div>
-                                    <AccordionFiles :filesMethods="filesMethods" :files="getAllFiles()" :marks="data.marks" :viewMode="'text'" :state="stateFiles" :inputSettings="data.parameters" class="text-files-component component" />
+                                    <AccordionFiles :localState="localState" :filesMethods="filesMethods" :files="getAllFiles()" :marks="data.marks" :viewMode="'text'" :state="stateFiles" :inputSettings="data.parameters" class="text-files-component component" />
                                 </div>
                                 <div>
-                                    <AccordionFiles :filesMethods="filesMethods" :files="getAllFiles()" :marks="data.marks" :viewMode="'imgs'" :state="stateFiles" :inputSettings="data.parameters" class="image-files-component component" />
+                                    <AccordionFiles :localState="localState" :filesMethods="filesMethods" :files="getAllFiles()" :marks="data.marks" :viewMode="'imgs'" :state="stateFiles" :inputSettings="data.parameters" class="image-files-component component" />
                                 </div>
                             </div>
                 
@@ -382,8 +334,14 @@ export default {
     .page-block{
         -webkit-mask-image: -webkit-gradient(linear, left 90%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
     }
+    .section-left{
+        background: var(--grad-section-left1), var(--grad-section-left2);
+    }
     .text-files-component{
-        background: var(--grad-text-files-and-tasks);
+        background: var(--grad-section-right-text-files);
+    }
+    .image-files-component{
+        background: var(--grad-section-right-image-files);
     }
 
     .component{

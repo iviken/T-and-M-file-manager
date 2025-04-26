@@ -106,4 +106,8 @@ export default {
   .SELECTED{
     background-color: aquamarine;
   }
+
+  .COPY, .CUT{
+    background-color: azure;
+  }
 </style>

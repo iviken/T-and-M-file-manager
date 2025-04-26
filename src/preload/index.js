@@ -1,17 +1,17 @@
 import { ipcRenderer, contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-const { platform } = require('node:process');
+const { platform } = require('node:process')
 
-// import { specialPath } from 'platform-folders'
+const { pathToFileURL } = require('node:url')
 
 const { shell } = require('electron')
 
-let child = require('child_process').execFile;
+let child = require('child_process').execFile
 
 let path = require('path')
 const fs = require('fs')
-const fsPromises = require('fs').promises;
+const fsPromises = require('fs').promises
 
 let os = require("os")
 let root = (os.platform() == "win32") ? process.cwd().split(path.sep)[0] : "/"
@@ -25,7 +25,6 @@ const sessionBrowserFilePath = () => path.join(__dirname, '..', 'JSON', settings
 const projectsData = {dataType: 'PROJECT' ,data: {}, state: 'not opened' }
 const browserData = {dataType: 'BROWSER' ,data: {}, state: 'not opened' }
 
-// let openProjectId = null
 let sessionProjectClone = null
 let sessionProjectClone_json = null
 let sessionBrowserClone = null
@@ -37,6 +36,7 @@ const settings = {
   sessionBrowserFile: 'sessionBrowser.json',
   win32separator: '\\',
   actualSeparator: '/',
+  dublicateFilePostfix: 'copy',
   defaults: {
     defaulMarkID: 'mark_unmarked',
   }
@@ -66,11 +66,19 @@ function compressSession(projects){  //  sessionProjectClone /
   for (const key in projects) {
 
     projects[key].folders.forEach((folder) => {
+
       //  Clear unmarks & unpin files
       folder.files = folder.files.filter( (file) => ( (file.markID != settings.defaults.defaulMarkID) || file.isPinned ) )
+
       //  Clear empty folder (marking)
       if(folder.files.length == 0){
-        folder.isEmpty = true
+
+        //  Save open folder to open it next time on startup. Erase others.
+        if( !folder.isOpened )
+          folder.isEmpty = true
+      }else{
+
+        folder.isEmpty = false
       }
     })
 
@@ -95,6 +103,7 @@ function compressSession(projects){  //  sessionProjectClone /
 //   // return fs.writeFile( sessionProjectsFilePath(), data, {encoding: 'utf8'} )
 //   return fs.writeFile( path.join(__dirname, '..', 'JSON', 'sessionProjects.json'), data, {encoding: 'utf8'} )
 // }
+
 // Custom APIs for renderer
 const api = {
 
@@ -136,10 +145,11 @@ const api = {
     let files = fs.readdirSync( path.resolve(InPath) )
     let result = []
     
-    files.forEach(element => {
+    files.forEach(file => {
+
       result.push({
-        name: path.extname(path.join( InPath, element) ),
-        format: path.basename(path.join( InPath, element) , path.extname(path.join( InPath, element) ))
+        name: path.basename(path.join( InPath, file) , path.extname(path.join( InPath, file) )),
+        format: path.extname(path.join( InPath, file) )
       })
     })
 
@@ -149,21 +159,134 @@ const api = {
   renameFile:( folderPath, oldFileName, newFileName )=>{
 
     return fsPromises.rename( path.resolve(path.join(folderPath, oldFileName)), path.resolve(path.join(folderPath, newFileName)) )
-    // return fs.renameSync( path.resolve(path.join(folderPath, oldFileName)), path.resolve(path.join(folderPath, newFileName)) )
+      .then(
+        resolve=>{
+          return newFileName
+        }
+      ).catch(
+        error=>{
+          return false
+        }
+      )
   },
 
-  deleteFile:(filePath)=>{
-    fs.stat( path.resolve( filePath ), (error, stats) => {  
-      if (error){
-        return error
-      }else{
-        if(stats.isFile()){
-          return fsPromises.unlink( path.resolve(filePath) )
+  deleteFile:(folderPath, fileFullname)=>{
+    
+    return fsPromises.stat( path.resolve( path.join(folderPath, fileFullname) ) )
+      .then(
+
+        stats=>{
+
+          console.log('stats: ')
+          console.log(stats)
+          
+          if(stats.isFile())
+            return fsPromises.unlink( path.resolve( path.join(folderPath, fileFullname) ) )
+              .then(
+                resolve=>{
+                  return fileFullname
+                }
+              ).catch(
+                error=>{
+                  return false
+                }
+              )
+
+          if(stats.isDirectory())
+            return false
         }
-        //
-        if(stats.isDirectory()) return 'directory'
-      }
-    })
+      ).catch(
+
+        error=>{
+          console.log('error: ')
+          console.log(error)
+          return false
+        }
+      )
+  },
+
+  copyFile:(srcFolderPath, destFolderPath, fileFullname)=>{
+
+    let fileNewName = fileFullname
+
+    if( srcFolderPath == destFolderPath )
+      fileNewName = fileFullname + ' ' + settings.dublicateFilePostfix
+      
+    while ( fs.existsSync( path.resolve(path.join(destFolderPath, fileNewName)) ) ) 
+      fileNewName = fileFullname + ' ' + settings.dublicateFilePostfix
+
+    //
+
+    return fsPromises.copyFile( path.resolve(path.join(srcFolderPath, fileFullname)), path.resolve(path.join(destFolderPath, fileNewName)),  constants.COPYFILE_EXCL )
+      .then(resolve => {
+          return fileName
+        }).catch(err => {
+          return false
+        })
+  },
+
+  moveFileTo:(folderPathSrc, folderPathDest, fileFullname)=>{
+
+    if(folderPathSrc == folderPathDest) return false
+
+    api.isFileAsync(folderPathSrc, fileFullname)
+      .then(
+        result_fileFullname=>{
+
+          if(result_fileFullname){
+
+            let fileNewName = fileFullname
+
+            while ( fs.existsSync( path.resolve(path.join(folderPathDest, fileNewName)) ) ) 
+              fileNewName = fileFullname + ' ' + settings.dublicateFilePostfix
+
+            return fsPromises.rename( path.resolve(path.join(folderPathSrc, fileFullname)), path.resolve(path.join(folderPathDest, fileNewName)) )
+              .then(
+        
+                resolve=>{
+                  return api.validate( fileFullname )
+                }
+              ).catch(
+        
+                error=>{
+                  return false
+                }
+              )
+          }else{
+            return false
+          }
+        }
+      )
+  },
+
+  isFileAsync:function(folderPath, fileFullname){
+
+    return fsPromises.stat( path.resolve( path.join(folderPath, fileFullname) ) )
+      .then(
+
+        stats=>{
+
+          console.log('stats: ')
+          console.log(stats)
+          if( stats.isFile() )
+            return fileFullname
+
+          if( stats.isDirectory() )
+            return false
+        }
+      ).catch(
+
+        error=>{
+          console.log('error: ')
+          console.log(error)
+          return false
+        }
+      )
+  },
+
+  convertPathToUrl:(path)=>{
+
+    return pathToFileURL(path, {windows: true})
   },
 
   getFolderNames:(folderPath, cnst)=>{
@@ -214,6 +337,7 @@ const api = {
   },
 
   getImgFileFullnames:(folderPath)=>{
+
     return fs.readdirSync(path.resolve(folderPath), (err, files) => {
       if (err){
         console.log(err)
@@ -246,17 +370,22 @@ const api = {
       if(folderName == '') return api.validate( InPath )
       if(folderName) return api.validate( path.join( InPath, folderName ) )
     }catch(error){
+
       console.log(error)
       return false
     }
   },
 
   renameFolder:(dat)=>{
+
     let newPath = path.join( dat.fullpath.substring(0, dat.fullpath.lastIndexOf('/') ), dat.newName )
+
     try{
+
       fs.renameSync( path.resolve( dat.fullpath ), path.resolve( newPath ) )
       return api.validate( newPath )
     }catch(error){
+
       console.log(error)
       return false
     }
@@ -267,10 +396,12 @@ const api = {
 
     return fsPromises.rmdir(path.resolve(folderPath), { recursive: true, force: true })
       .then(
+
         resolve=>{
           return api.validate( folderPath )
         }
       ).catch(
+
         error=>{
           return false
         }
@@ -279,26 +410,56 @@ const api = {
 
   copyFolder:(folderPathSrc, folderPathDest)=>{
     //
-    if( api.folderIsExist(folderPathSrc) && (folderPathSrc != folderPathDest) ){
-      // console.log('copy folder')
-      // return fsPromises.cp(folderPathSrc, folderPathDest, {recursive: true})
-      return fsPromises.cp(folderPathSrc, folderPathDest, {recursive: true})
-        .then(
-          resolve=>{
-            return api.validate( folderPathSrc )
-          }
-        ).catch(
-          error=>{
-            return false
-          }
-        )
-    }
+    if( !api.folderIsExist(folderPathSrc) && (folderPathSrc == folderPathDest) ) return false
+    // console.log('copy folder')
+    return fsPromises.cp(folderPathSrc, folderPathDest, {recursive: true})
+      .then(
+
+        resolve=>{
+          return api.validate( folderPathSrc )
+        }
+      ).catch(
+
+        error=>{
+          return false
+        }
+      )
+  },
+
+  moveFolder:(folderPathSrc, folderPathDest)=>{
+
+    if(folderPathSrc == folderPathDest) return false
+
+    return fsPromises.rename(folderPathSrc, folderPathDest)
+      .then(
+
+        resolve=>{
+          return api.validate( folderPathSrc )    //
+        }
+      ).catch(
+
+        error=>{
+          return false
+        }
+      )
   },
 
   folderIsExist:(folderPath)=>{
-    // console.log('check folder isExist: ')
-    // console.log(folderPath)
+    // console.log('check folder isExist: ' + folderPath)
     return fs.existsSync(path.resolve(folderPath))
+  },
+
+  checkUniqueFolderName:(path)=>{
+
+    let result = api.folderIsExist(path)
+    
+    let today = new Date().toLocaleString().replaceAll(/[:.]/g, '-').replaceAll(/[,]/g, '')
+
+    if( !result ){
+      return api.validate( path )
+    }else{
+      return api.validate( path + ' ' + today )
+    }
   },
 
   getFileMeta:(InPath, fileFullname)=>{
@@ -331,15 +492,6 @@ const api = {
     return fileStats
   },
 
-  // child(executablePath, function(err, data) {
-  //     if(err){
-  //       console.error(err);
-  //       return;
-  //     }
-  
-  //     console.log(data.toString());
-  // })
-
   openFileInExternalApp:(InPath, fileFullname)=>{
     console.log(InPath)
     shell.openPath( path.resolve( path.join(InPath, fileFullname)) )
@@ -361,9 +513,7 @@ const api = {
   closeProject:function(){
     for (const key in projectsData.data) {
       if(projectsData.data[key].meta.status == 'opened'){
-        //
-        // openProjectId = projectsData.data[key].id
-        //
+
         projectsData.data[key].meta.lastModified = Date.now()
         projectsData.data[key].meta.lastOpened = Date.now()
         projectsData.data[key].meta.status = 'closed'

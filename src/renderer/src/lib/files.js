@@ -9,33 +9,69 @@ export const filesMethods = {
     files: null,  //
     folders: null,
 
+    destFolderID: null,
+    srcFolderID: null,
+    _allowCopyingOrMovingFiles: false,
+
     init:function(dat){
+
+        //  reset
+        this.destFolderID = null
+        this.srcFolderID = null
+        this._allowCopyingOrMovingFiles = false
 
         // console.log(this.localState)
         this.folders = dat.folders
-        console.log(this.folders)
+        // console.log(this.folders)
+    },
 
+    validateFileName:function(name){
+      
+      if ( !name ) return false
+      
+      let _name = name.trim()
+      _name = _name.replace(settings.fileNameRegexp, '')
+      
+      if( (_name.length == 0) && (_name.split(' ').length == _name.length) ) return false
+      
+      return _name
     },
 
     pinSelectedFiles:function(){
+
         this.folders[this.localState.activeFolderIndex].files.forEach(file => {
-            for(let key in this.stateFiles.files){
-                if( (file.id == key) && (this.stateFiles.files[key] == 'SELECTED') ){
+            for(let fileID in this.stateFiles.files){
+
+                if( (file.id == fileID) && (this.stateFiles.files[fileID] == 'SELECTED') ){
+
                     file.isPinned = !file.isPinned
-                    this.stateFiles.files[key] = ''
+                    this.stateFiles.files[fileID] = ''
                 }
             }
         })
+
+        this.countSelectedFiles()
     },
 
-    countSelectedFiles:function(){
+    countSelectedFiles:function(params){
+
         this.stateFiles.numberOfSelectedFiles = 0
-        for (const key in this.stateFiles.files) {
-            if(this.stateFiles.files[key] == 'SELECTED') this.stateFiles.numberOfSelectedFiles++
+
+        for (const fileID in this.stateFiles.files) {
+
+            if( this.stateFiles.files[fileID] == 'SELECTED' ){
+
+                if( this.folders[this.localState.activeFolderIndex].files.find(file => file.id == fileID) || (params == 'all') )
+
+                    this.stateFiles.numberOfSelectedFiles++
+            }
+
+            if(this.stateFiles.files[fileID] == '')
+              delete this.stateFiles.files[fileID]
         }
     },
 
-    clickToFile: function(file_ID){
+    clickToFile:function(file_ID){
         //
         if(this.stateFiles.files[file_ID] == 'SELECTED') {
             this.stateFiles.files[file_ID] = ''
@@ -44,14 +80,41 @@ export const filesMethods = {
               this.stateFiles.files[file_ID] = 'SELECTED'
           }
         }
-        //
+        
         this.countSelectedFiles()
     },
 
-    unselectAllFiles:function(){
+    deselectAllFiles:function(){
+
         this.stateFiles.files = {}
-        //
+        
+        this.stateFiles.numberOfSelectedFiles = 0
+        // this.countSelectedFiles()
+    },
+
+    resetStateAllFiles:function(){
+
+      this.deselectAllFiles()
+    },
+
+    resetStateFiles:function(){
+
+        this.setFilesState( 'SELECTED', '' )
+
+        this.setFilesState( 'COPY FILE', '' )
+
+        this.setFilesState( 'MOVE FILE', '' )
+        
         this.countSelectedFiles()
+
+        this.abortCopyCutOperation()
+    },
+
+    abortCopyCutOperation:function(){
+
+      this.destFolderID = null
+      this.srcFolderID = null
+      this._allowCopyingOrMovingFiles = false
     },
 
     selectAllFilesInGroupMark:function(mark_ID, viewMode){
@@ -98,139 +161,306 @@ export const filesMethods = {
 
     openFile:function(file){
         console.log('OPEN FILE )')
-        //
+        
         window.api.openFileInExternalApp( file.path, `${file.name}.${file.format}` )
     },
 
-    renameFile(file, newName){
+    renameFile:function(file, newName){
+
         window.api.renameFile( file.path ,`${file.name}.${file.format}` , `${newName}.${file.format}` )
-          .then((resolve)=>{
-            if(resolve == undefined){
-              //
-              file.name = newName
-              //
-              this.stateFiles.files[file.id] = ''
+          .then(
+            result=>{
+
+              if(result){
+
+                file.name = newName
+                
+                this.stateFiles.files[file.id] = ''
+              }else{
+
+              }
             }
-        })
+          )
     },
 
     renameFiles:function(dat){
         // console.log(dat)
         //
         if( dat.state == 'start rename' ){
-            for(let key in this.stateFiles.files){
-                if(this.stateFiles.files[key] == 'SELECTED'){
-                    this.stateFiles.files[key] = 'RENAME'
-                }
+            for(let fileID in this.stateFiles.files){
+                if( this.stateFiles.files[fileID] == 'SELECTED' )
+                    if( this.folders[this.localState.activeFolderIndex].files.find(file => file.id == fileID) )
+                        this.stateFiles.files[fileID] = 'RENAME'
             }
         }
         //
         if( dat.state == 'input done' ){
 
-          let newName = dat.newName.replace(settings.fileNameRegexp, '').trim()
-          //
-          if( newName.length > 0 ){
-            //
-            let ch = 0
-            for (const fileID in this.stateFiles.files) {
-              if( this.stateFiles.files[fileID] == 'RENAME' ){
-              //   console.log(this.stateFiles.files[fileID])
-                ch++
-                this.folders[this.localState.activeFolderIndex].files.forEach((file, index) => {
-                  if( file.id == fileID ){
-                    //  For one file
-                    if(ch == 1){
-                      this.renameFile( this.folders[this.localState.activeFolderIndex].files[index], newName )
-                    }
-                    //  For many files
-                    if(ch > 1){
-                      this.renameFile( this.folders[this.localState.activeFolderIndex].files[index], `${newName} ${ch}` )
-                    }
+          let newName = this.validateFileName(dat.newName)
+          
+          if( !newName ) return
+            
+          let ch = 0
+
+          for (const fileID in this.stateFiles.files) {
+            if( this.stateFiles.files[fileID] == 'RENAME' ){
+            //   console.log(this.stateFiles.files[fileID])
+              ch++
+
+              this.folders[this.localState.activeFolderIndex].files.forEach((file, index) => {
+
+                if( file.id == fileID ){
+                  //  For one file
+                  if(ch == 1){
+                    this.renameFile( this.folders[this.localState.activeFolderIndex].files[index], newName )
                   }
-                })
-              }
+                  //  For many files
+                  if(ch > 1){
+                    this.renameFile( this.folders[this.localState.activeFolderIndex].files[index], `${newName} ${ch}` )
+                  }
+                }
+              })
             }
           }
         }
     },
 
+    setFilesState:function(STATEfrom, STATEto){
+
+      this.folders[this.localState.activeFolderIndex].files.forEach(file => {
+          
+        if( this.stateFiles.files.hasOwnProperty(file.id) )
+          if (this.stateFiles.files[file.id] == STATEfrom )
+            this.stateFiles.files[file.id] = STATEto
+      })
+    },
+
     copyFiles:function(){
-        console.log('COPY FILES')
+
+      this.srcFolderID = this.folders[this.localState.activeFolderIndex].id
+
+      this._allowCopyingOrMovingFiles = true
+
+      this.setFilesState( 'SELECTED', 'COPY FILE' )
+
+      console.log('COPY FILE')
     },
 
     cutFiles:function(){
-        console.log('CUT FILES')
+      
+      this.srcFolderID = this.folders[this.localState.activeFolderIndex].id
+
+      this._allowCopyingOrMovingFiles = true
+      
+      this.setFilesState( 'SELECTED', 'MOVE FILE' )
+      
+      //
+      
+      console.log('MOVE FILE')
+    },
+    
+    pasteFiles:function(){
+      //  Для предотсвращения повторного нажатия Ctrl+V
+      if( !this._allowCopyingOrMovingFiles ) return
+      this._allowCopyingOrMovingFiles = false
+
+      this.destFolderID = this.folders[this.localState.activeFolderIndex].id
+
+      let destFolderPath = this.folders[this.localState.activeFolderIndex].path
+
+      if(this.destFolderID == this.srcFolderID){} //
+
+      for (const fileID in this.stateFiles.files) {
+        //   console.log(this.stateFiles.files[fileID])
+        
+        this.folders.forEach(folder => {
+          
+          if(folder.id == this.srcFolderID){
+            folder.files.forEach(file => {
+              
+              if( file.id == fileID ){
+                
+                if( this.stateFiles.files[fileID] == 'COPY FILE' )
+                  this._copyFile(folder.path, destFolderPath ,`${file.name}.${file.format}`, fileID)
+                
+                if( this.stateFiles.files[fileID] == 'MOVE FILE' )
+                  this._moveFile(folder.path, destFolderPath ,`${file.name}.${file.format}`, fileID)
+                }
+              })
+            }
+          })
+        
+      }
+
+      // this.destFolderID = null
+
+      console.log('PASTE FILES')
     },
 
-    deleteFile(file){
-        window.api.deleteFile( `${file.path}/${file.name}.${file.format}` )
-            .then(resolve=>{
-                console.log('resolve')
-                console.log(resolve)
-                    if(resolve == undefined){
-                      file.isDeleted = true
-                      //
-                      this.stateFiles.files[file.id] = ''
-                      //
-                      this.clearDB()
+    _copyFile:function(pathSrc, pathDest, fileFullname, fileID){
+
+      window.api.copyFile( pathSrc, pathDest, fileFullname )
+        .then(
+          result=>{
+            console.log('copied file: ')
+            console.log(result)
+
+            if(result){
+                
+                this.stateFiles.files[fileID] = ''
+
+                //  Coping writed file in db
+                
+                // let writedFile = null
+                
+                // this.folders.forEach(folder => {
+                  
+                //   if( folder.path == result.pathSrc ){
+
+                //     writedFile = folder.files.find( file => `${file.name}.${file.format}` == result.fileFullname )
+                //   }
+                // })
+
+                // this.folders.forEach(folder => {
+                  
+                //   if( folder.path == result.pathDest ){
+
+                //     if(writedFile){
+
+                //       folder.files.push( JSON.parse(JSON.stringify(writedFile)) )
+
+                //       this.stateFiles.files[writedFile.id] = ''
+                //     }
+                //   }
+                // })
+
+            }
+          }
+        )
+    },
+
+    _moveFile:function(pathSrc, pathDest, fileFullname){
+
+      window.api.moveFileTo( pathSrc, pathDest, fileFullname )
+        .then(
+          result=>{
+            console.log('movied file: ')
+            console.log(result_pathDest)
+
+            if(result_fileFullname){
+
+              //  Moving writed file in db
+
+              let writedFile = null
+              
+              this.folders.forEach(folder => {
+                
+                if( folder.path == pathSrc )
+                  writedFile = folder.files.find( file => `${file.name}.${file.format}` == result_fileFullname )  //
+              })
+              //
+              this.folders.forEach(folder => {
+                
+                if( folder.path == pathDest ){
+                  
+                  if(writedFile){
+                    
+                    writedFile.path = pathDest
+                    
+                    folder.files.push( JSON.parse( JSON.stringify(writedFile) ) )
+    
+                    this.stateFiles.files[writedFile.id] = ''
+                  }
+                }
+              })
+            }
+          }
+        )
+    },
+
+    deleteFile:function(file){
+
+        window.api.deleteFile( file.path, `${file.name}.${file.format}` )
+            .then(
+                fileFullname=>{
+                    console.log('deleted file: ' + fileFullname)
+
+                    if(fileFullname){
+                        
+                        this.stateFiles.files[file.id] = ''
+                        
+                        this.eraseFileFromDB(fileFullname)
                     }
-                },
-                reject=>{
-                  console.log('error: ' + reject)
                 }
             )
     },
 
     deleteFiles:function(){
-        // console.log('DELETE FILE')
-        // try{
+
           for (const fileID in this.stateFiles.files) {
-            // console.log('e')
+
             if( this.stateFiles.files[fileID] == 'SELECTED' ){
               // console.log(this.state.files[fileID])
               this.folders[this.localState.activeFolderIndex].files.forEach((file) => {
-                if( file.id == fileID ){
+
+                if( file.id == fileID )
+
                   this.deleteFile( file )
-                }
               })
             }
           }
-        // }catch{
-        //   console.log('error')
-        //   //
-        // }finally{
-        //   //
-        //   this.clearDB()
-        // }
     },
 
-    pasteFiles:function(){
-        console.log('PASTE FILES')
+    eraseFileFromDB:function(fileFullname){
+
+      let index = this.folders[this.localState.activeFolderIndex].files.findIndex( file => fileFullname == `${file.name}.${file.format}` )
+
+      if(index >= 0)
+        this.folders[this.localState.activeFolderIndex].files.splice( index, 1 )
     },
 
-    clearDB:function(){
-        let arrSize = this.folders[this.localState.activeFolderIndex].files.length
-
-        for(let ch = 0; ch < arrSize; ch++){
-            if( !this.folders[this.localState.activeFolderIndex].files[ch].isDeleted ){
-                this.folders[this.localState.activeFolderIndex].files.splice(ch, 1)
-                ch--
-                arrSize--
-            }
-        }
-        
-        console.log('clear')
-        console.log(this.folders[this.localState.activeFolderIndex].files)
-    },
+    writeFileToDB:function(fileFullname){},
 
     deleteMark:function(markID){
+
       if(markID != this.stateFiles.defaults.unmarkedMarkID){
           this.folders.forEach(folder => {
               folder.files.forEach(file => {
                   if(file.markID == markID){file.markID = this.stateFiles.defaults.unmarkedMarkID}
               })
           })
-          // delete this.marks[markID]
       }
-  },
+    },
+
+    getFolderBy:function(cnst, param){
+      
+      if( this.folders.length == 0 )
+        return false
+
+      if( cnst == 'id' )
+        return this.folders.find(folder => folder.id == param)
+
+      if( cnst == 'path' )
+        return this.folders.find(folder => folder.path == param)
+    },
+
+    getFileBy:function(cnst, param){
+
+      if( folder.files.length == 0 )
+        return false
+
+      function _funk(element, index, array){
+
+        if( cnst == 'fullname' )
+          return element.files.find( file => `${file.name}.${file.format}` == param )
+
+        if( cnst == 'path' )
+          return element.files.find( file => file.path == param )
+
+        if( cnst == 'id' )
+          return element.files.find( file => file.id == param )
+      }
+
+      return this.folders.find(_funk)      
+    },
 }

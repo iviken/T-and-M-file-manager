@@ -2,6 +2,7 @@
 const electron = require("electron");
 const preload = require("@electron-toolkit/preload");
 const { platform } = require("node:process");
+const { pathToFileURL } = require("node:url");
 const { shell } = require("electron");
 require("child_process").execFile;
 let path = require("path");
@@ -23,6 +24,7 @@ const settings = {
   sessionBrowserFile: "sessionBrowser.json",
   win32separator: "\\",
   actualSeparator: "/",
+  dublicateFilePostfix: "copy",
   defaults: {
     defaulMarkID: "mark_unmarked"
   }
@@ -46,7 +48,10 @@ function compressSession(projects) {
     projects[key].folders.forEach((folder) => {
       folder.files = folder.files.filter((file) => file.markID != settings.defaults.defaulMarkID || file.isPinned);
       if (folder.files.length == 0) {
-        folder.isEmpty = true;
+        if (!folder.isOpened)
+          folder.isEmpty = true;
+      } else {
+        folder.isEmpty = false;
       }
     });
     if (projects[key].folders.length == 1) {
@@ -73,28 +78,106 @@ const api = {
     if (!api.folderIsExist(InPath)) return;
     let files = fs.readdirSync(path.resolve(InPath));
     let result = [];
-    files.forEach((element) => {
+    files.forEach((file) => {
       result.push({
-        name: path.extname(path.join(InPath, element)),
-        format: path.basename(path.join(InPath, element), path.extname(path.join(InPath, element)))
+        name: path.basename(path.join(InPath, file), path.extname(path.join(InPath, file))),
+        format: path.extname(path.join(InPath, file))
       });
     });
     return result;
   },
   renameFile: (folderPath, oldFileName, newFileName) => {
-    return fsPromises.rename(path.resolve(path.join(folderPath, oldFileName)), path.resolve(path.join(folderPath, newFileName)));
-  },
-  deleteFile: (filePath) => {
-    fs.stat(path.resolve(filePath), (error, stats) => {
-      if (error) {
-        return error;
-      } else {
-        if (stats.isFile()) {
-          return fsPromises.unlink(path.resolve(filePath));
-        }
-        if (stats.isDirectory()) return "directory";
+    return fsPromises.rename(path.resolve(path.join(folderPath, oldFileName)), path.resolve(path.join(folderPath, newFileName))).then(
+      (resolve) => {
+        return newFileName;
       }
+    ).catch(
+      (error) => {
+        return false;
+      }
+    );
+  },
+  deleteFile: (folderPath, fileFullname) => {
+    return fsPromises.stat(path.resolve(path.join(folderPath, fileFullname))).then(
+      (stats) => {
+        console.log("stats: ");
+        console.log(stats);
+        if (stats.isFile())
+          return fsPromises.unlink(path.resolve(path.join(folderPath, fileFullname))).then(
+            (resolve) => {
+              return fileFullname;
+            }
+          ).catch(
+            (error) => {
+              return false;
+            }
+          );
+        if (stats.isDirectory())
+          return false;
+      }
+    ).catch(
+      (error) => {
+        console.log("error: ");
+        console.log(error);
+        return false;
+      }
+    );
+  },
+  copyFile: (srcFolderPath, destFolderPath, fileFullname) => {
+    let fileNewName = fileFullname;
+    if (srcFolderPath == destFolderPath)
+      fileNewName = fileFullname + " " + settings.dublicateFilePostfix;
+    while (fs.existsSync(path.resolve(path.join(destFolderPath, fileNewName))))
+      fileNewName = fileFullname + " " + settings.dublicateFilePostfix;
+    return fsPromises.copyFile(path.resolve(path.join(srcFolderPath, fileFullname)), path.resolve(path.join(destFolderPath, fileNewName)), constants.COPYFILE_EXCL).then((resolve) => {
+      return fileName;
+    }).catch((err) => {
+      return false;
     });
+  },
+  moveFileTo: (folderPathSrc, folderPathDest, fileFullname) => {
+    if (folderPathSrc == folderPathDest) return false;
+    api.isFileAsync(folderPathSrc, fileFullname).then(
+      (result_fileFullname) => {
+        if (result_fileFullname) {
+          let fileNewName = fileFullname;
+          while (fs.existsSync(path.resolve(path.join(folderPathDest, fileNewName))))
+            fileNewName = fileFullname + " " + settings.dublicateFilePostfix;
+          return fsPromises.rename(path.resolve(path.join(folderPathSrc, fileFullname)), path.resolve(path.join(folderPathDest, fileNewName))).then(
+            (resolve) => {
+              return api.validate(fileFullname);
+            }
+          ).catch(
+            (error) => {
+              return false;
+            }
+          );
+        } else {
+          return false;
+        }
+      }
+    );
+  },
+  isFileAsync: function(folderPath, fileFullname) {
+    return fsPromises.stat(path.resolve(path.join(folderPath, fileFullname))).then(
+      (stats) => {
+        console.log("stats: ");
+        console.log(stats);
+        if (stats.isFile())
+          return fileFullname;
+        if (stats.isDirectory())
+          return false;
+      }
+    ).catch(
+      (error) => {
+        console.log("error: ");
+        console.log(error);
+        return false;
+      }
+    );
+  },
+  convertPathToUrl: (path2) => {
+    return pathToFileURL(path2, { windows: true });
   },
   getFolderNames: (folderPath, cnst) => {
     if (cnst != "dont check for existence" || cnst == void 0) {
@@ -165,20 +248,40 @@ const api = {
     );
   },
   copyFolder: (folderPathSrc, folderPathDest) => {
-    if (api.folderIsExist(folderPathSrc) && folderPathSrc != folderPathDest) {
-      return fsPromises.cp(folderPathSrc, folderPathDest, { recursive: true }).then(
-        (resolve) => {
-          return api.validate(folderPathSrc);
-        }
-      ).catch(
-        (error) => {
-          return false;
-        }
-      );
-    }
+    if (!api.folderIsExist(folderPathSrc) && folderPathSrc == folderPathDest) return false;
+    return fsPromises.cp(folderPathSrc, folderPathDest, { recursive: true }).then(
+      (resolve) => {
+        return api.validate(folderPathSrc);
+      }
+    ).catch(
+      (error) => {
+        return false;
+      }
+    );
+  },
+  moveFolder: (folderPathSrc, folderPathDest) => {
+    if (folderPathSrc == folderPathDest) return false;
+    return fsPromises.rename(folderPathSrc, folderPathDest).then(
+      (resolve) => {
+        return api.validate(folderPathSrc);
+      }
+    ).catch(
+      (error) => {
+        return false;
+      }
+    );
   },
   folderIsExist: (folderPath) => {
     return fs.existsSync(path.resolve(folderPath));
+  },
+  checkUniqueFolderName: (path2) => {
+    let result = api.folderIsExist(path2);
+    let today = (/* @__PURE__ */ new Date()).toLocaleString().replaceAll(/[:.]/g, "-").replaceAll(/[,]/g, "");
+    if (!result) {
+      return api.validate(path2);
+    } else {
+      return api.validate(path2 + " " + today);
+    }
   },
   getFileMeta: (InPath, fileFullname) => {
     let fileStats = {
@@ -204,13 +307,6 @@ const api = {
     });
     return fileStats;
   },
-  // child(executablePath, function(err, data) {
-  //     if(err){
-  //       console.error(err);
-  //       return;
-  //     }
-  //     console.log(data.toString());
-  // })
   openFileInExternalApp: (InPath, fileFullname) => {
     console.log(InPath);
     shell.openPath(path.resolve(path.join(InPath, fileFullname)));

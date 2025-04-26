@@ -14,8 +14,8 @@
 		"meta": {
 			"name": "project first",
 			"created": 1742744761272,
-			"lastModified": 1745438236442,
-			"lastOpened": 1745438236442,
+			"lastModified": 1745681188629,
+			"lastOpened": 1745681188629,
 			"isPinned": true,
 			"description": "Descrtiption first of project",
 			"status": "closed"
@@ -46,16 +46,6 @@
 			}
 		},
 		"marks": {
-			"mark_1003": {
-				"id": "mark_1003",
-				"color": "ocean",
-				"descr": "Some text ocean mark 3",
-				"isFolded": {
-					"text": true,
-					"imgs": true
-				},
-				"show": true
-			},
 			"mark_1004": {
 				"id": "mark_1004",
 				"color": "default-color",
@@ -74,17 +64,7 @@
 					"text": true,
 					"imgs": false
 				},
-				"show": false
-			},
-			"mark_1006": {
-				"id": "mark_1006",
-				"color": "ocean",
-				"descr": "Some text mark 6",
-				"isFolded": {
-					"text": true,
-					"imgs": false
-				},
-				"show": false
+				"show": true
 			},
 			"mark_1007": {
 				"id": "mark_1007",
@@ -103,16 +83,6 @@
 				"isFolded": {
 					"text": true,
 					"imgs": false
-				},
-				"show": false
-			},
-			"mark_unmarked": {
-				"id": "mark_unmarked",
-				"color": "default-color",
-				"descr": "--unmarked--",
-				"isFolded": {
-					"text": true,
-					"imgs": true
 				},
 				"show": true
 			},
@@ -145,74 +115,138 @@
 					"imgs": true
 				},
 				"show": true
+			},
+			"mark_6941427": {
+				"id": "mark_6941427",
+				"color": "default-color",
+				"descr": "mark nameqwe",
+				"isFolded": {
+					"text": true,
+					"imgs": true
+				},
+				"show": true
+			},
+			"mark_unmarked": {
+				"id": "mark_unmarked",
+				"color": "default-color",
+				"descr": "--unmarked--",
+				"show": true,
+				"isFolded": {
+					"text": true,
+					"imgs": true
+				}
 			}
 		},
 		"folders": [
 			{
-				"id": "folder_984390",
-				"path": "/Temp/body/11 copy",
+				"id": "folder_2334256",
+				"path": "/Temp/E3",
 				"files": [
 					{
-						"id": "fileID_1109914",
-						"name": "4545t",
-						"format": "txt",
-						"markID": "mark_1004",
+						"id": "fileID_2310744",
+						"name": "CDViewer64",
+						"format": "zip",
+						"markID": "mark_6709164",
 						"isPinned": false,
-						"path": "/Temp/body/11 copy",
+						"path": "/Temp/E3",
 						"meta": {
-							"created": "2025-04-20T22:56:23.176Z",
+							"created": "2025-03-29T18:36:19.673Z",
 							"createdMS": null,
-							"lastEdited": "2025-03-28T21:40:43.528Z",
-							"lastEditedMS": 1743198043527.88,
-							"size": 0,
-							"createdMs": 1745189783176.11
+							"lastEdited": "2021-12-20T11:04:18.000Z",
+							"lastEditedMS": 1639998258000,
+							"size": 151966608,
+							"createdMs": 1743273379672.5896
 						}
 					}
 				],
 				"isOpened": true,
 				"isPinned": false,
-				"displayedOnBar": true
+				"displayedOnBar": true,
+				"isEmpty": false
 			},
 			{
-				"id": "folder_6676127",
-				"path": "/Temp/body/11",
+				"id": "folder_6857682",
+				"path": "/Temp/E3/Bin",
 				"files": [
 					{
-						"id": "fileID_2780853",
-						"name": "4try 2",
-						"format": "txt",
-						"markID": "mark_1007",
+						"id": "fileID_6430530",
+						"name": "fei.inventor.io.stl",
+						"format": "dll",
+						"markID": "mark_1004",
 						"isPinned": false,
-						"path": "/Temp/body/11",
+						"path": "/Temp/E3/Bin",
 						"meta": {
-							"created": "2025-04-20T22:56:23.173Z",
+							"created": "2021-12-20T05:04:06.705Z",
 							"createdMS": null,
-							"lastEdited": "2025-03-28T21:40:43.528Z",
-							"lastEditedMS": 1743198043527.88,
-							"size": 0,
-							"createdMs": 1745189783173.1167
+							"lastEdited": "2017-09-13T18:43:44.000Z",
+							"lastEditedMS": 1505328224000,
+							"size": 62464,
+							"createdMs": 1639976646704.85
 						}
 					},
 					{
-						"id": "fileID_4419288",
-						"name": "4545t",
-						"format": "txt",
-						"markID": "mark_6709164",
+						"id": "fileID_7146953",
+						"name": "data",
+						"format": "epf",
+						"markID": "mark_3844523",
 						"isPinned": false,
-						"path": "/Temp/body/11",
+						"path": "/Temp/E3/Bin",
 						"meta": {
-							"created": "2025-04-20T22:56:23.176Z",
+							"created": "2024-06-17T17:31:01.704Z",
 							"createdMS": null,
-							"lastEdited": "2025-03-28T21:40:43.528Z",
-							"lastEditedMS": 1743198043527.88,
-							"size": 0,
-							"createdMs": 1745189783176.11
+							"lastEdited": "2024-06-06T11:26:46.034Z",
+							"lastEditedMS": 1717673206033.8826,
+							"size": 53212,
+							"createdMs": 1718645461703.922
+						}
+					},
+					{
+						"id": "fileID_1807892",
+						"name": "fei_boost_date_time-mt",
+						"format": "dll",
+						"markID": "mark_1005",
+						"isPinned": false,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2025-03-28T21:55:13.955Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T17:36:54.000Z",
+							"lastEditedMS": 1505324214000,
+							"size": 63488,
+							"createdMs": 1743198913954.8506
 						}
 					}
 				],
 				"isOpened": false,
 				"isPinned": false,
-				"displayedOnBar": false
+				"displayedOnBar": true,
+				"isEmpty": false
+			},
+			{
+				"id": "folder_3633786",
+				"path": "/Temp/E3/Locale",
+				"files": [
+					{
+						"id": "fileID_5173462",
+						"name": "LocaleEncodingMapping",
+						"format": "txt",
+						"markID": "mark_1004",
+						"isPinned": false,
+						"path": "/Temp/E3/Locale",
+						"meta": {
+							"created": "2024-06-17T17:31:08.408Z",
+							"createdMS": null,
+							"lastEdited": "2021-12-20T04:28:19.272Z",
+							"lastEditedMS": 1639974499272.0808,
+							"size": 2312,
+							"createdMs": 1718645468408.338
+						}
+					}
+				],
+				"isOpened": false,
+				"isPinned": false,
+				"displayedOnBar": false,
+				"isEmpty": false
 			}
 		]
 	}

@@ -1,21 +1,16 @@
 <script>
-import { RouterLink } from 'vue-router';
-// import { useRouter  } from 'vue-router';
+import { RouterLink } from 'vue-router'
 
 export default {
+
   components:{
     RouterLink
   },
-//   setup() {
-//     const router = useRouter();
-//     const routes = router.options.routes;
 
-//     return {
-//       routes,
-//     };
-//   },
   methods: {
+
     changeState(stateConst){
+
         switch (stateConst){
             case 'CLOSE_PROJ':
                 this.state.active = 'BROWSER'
@@ -49,12 +44,15 @@ export default {
     closeApp() {
         window.api.close()
     },
+
     minimizeApp() {
         window.api.minimize()
     },
+
     maximizeApp() {
         window.api.maximize()
     },
+
     getActualProjectName(){
         for (const key in this.fullData) {
             if(this.fullData[key].meta.status == 'opened'){
@@ -63,6 +61,7 @@ export default {
             }
         }
     },
+
     checkIfAtLeastOneProjectOpen(){
         for (const key in this.fullData) {
             if( this.fullData[key].meta.status == 'opened' ){
@@ -72,6 +71,7 @@ export default {
         }
     },
   },
+
   beforeMount() {
     this.fullData = window.api.getProjectData()
     //
@@ -85,12 +85,14 @@ export default {
         this.state.active = 'BROWSER'
     }
   },
+
   beforeUpdate() {
     //
     this.projectName =  this.getActualProjectName()
     //
     this.checkIfAtLeastOneProjectOpen()
   },
+
   mounted(){
     this.$nextTick(function () {
         window.addEventListener('resize', (e) => {
@@ -104,26 +106,22 @@ export default {
         // this.projectName = window.api.getProjectName()  //  TO DO
     })
   },
+
   computed:{
   },
+
   data(){
     return{
+        projectName: 'project Name',
+        fullData: null,
         state: {
             active: null,
             // active: 'BROWSER',
             windowIsMaximized: true,
             atLeastOneProjectOpen: true,
         },
-        projectName: 'project Name',
-        fullData: null,
     }
   },
-//   beforeRouteEnter(to, from, next){
-//     this.state.active = 'PROJECTS'
-//     to({name: 'Browser-projects'})
-//     from({name: 'ProjectsList' })
-//     next({name: 'Browser-projects'})
-//   }
 }
 </script>
 

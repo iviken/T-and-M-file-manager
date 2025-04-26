@@ -1,31 +1,34 @@
 const defaults = {
-    defaultMarksColor: 'default-color'
+    defaultMarksColor: 'default-color',
+    unmarkedMarkID: 'mark_unmarked',
 }
 
 export const marksMethods = {
 
     stateFiles: null,
     marks: null,
+
     state: {
         markRenameID: null,
-        // showColorPicker: null,
         newName: null,
     },
 
     checkIfAtLeastOneFileSelected:function(){
-        this.stateFiles.atLeastOneFileSelected = false
+        
+        // this.stateFiles.atLeastOneFileSelected = false
+        let atLeastOneFileSelected = false
         for (const key in this.stateFiles.files) {
-            if(this.stateFiles.files[key] == 'SELECTED') this.stateFiles.atLeastOneFileSelected = true
+            if(this.stateFiles.files[key] == 'SELECTED') atLeastOneFileSelected = true
         }
-        return this.stateFiles.atLeastOneFileSelected
+        return atLeastOneFileSelected
     },
 
     renameMark:function(dat){
-        //
-        // this.checkIfAtLeastOneFileSelected()
-        //
+
         if( !this.checkIfAtLeastOneFileSelected() ){
+
             if(dat.markID != this.stateFiles.defaults.unmarkedMarkID){
+
                 if(dat.state == 'start rename'){
                     this.state.markRenameID = dat.markID
                     //
@@ -57,25 +60,37 @@ export const marksMethods = {
     },
 
     newMark:function(dat){
-        // if(dat.state == 'start create new mark'){
-        //     this.state.showTextarea = true
-        // }
-        // if(dat.state == 'end create new mark'){
-            if(dat.newName.trim().length > 1){
-                let newMarkId = 'mark_' + Math.floor(Math.random()*10000000)
-                this.marks[newMarkId] = {
-                    id: newMarkId, 
-                    color: dat.color ? dat.color : defaults.defaultMarksColor, 
-                    descr: dat.newName, 
-                    isFolded: {text: true, imgs: true}, 
-                    show: true,
-                }
-                // this.state.showTextarea = false
-            }
-        // }
+
+        if(dat.newName.trim().length == 0) return
+
+        //  for put the mark 'unmarked' at the end of the list
+        delete this.marks[defaults.unmarkedMarkID]
+
+        let newMarkId = 'mark_' + Math.floor(Math.random()*10000000)
+
+        this.marks[newMarkId] = {
+
+            id: newMarkId, 
+            color: dat.color ? dat.color : defaults.defaultMarksColor, 
+            descr: dat.newName, 
+            isFolded: {text: true, imgs: true}, 
+            show: true,
+        }
+        
+        //  ..put the mark 'unmarked' at the end of the list
+        this.marks[defaults.unmarkedMarkID] = {
+
+            id: defaults.unmarkedMarkID,
+            color: defaults.defaultMarksColor,
+            descr: "--unmarked--",
+            isFolded: {text: true, imgs: true},
+            show: true,
+        }
     },
 
     setMarkToFiles:function(files, mark_ID){
+
+        if( !this.checkIfAtLeastOneFileSelected() ) return
         // console.log(stateFiles.files)
         files.forEach(file => {
             for(let key in this.stateFiles.files){

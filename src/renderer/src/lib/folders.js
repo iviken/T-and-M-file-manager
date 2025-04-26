@@ -5,6 +5,7 @@ const settings = {
     actualSeparator: '/',
     excludedFolders: ['Recovery', 'System Volume Information', 'PerfLogs', 'Config.Msi', '$SysReset', '$Recycle.Bin', 'OneDriveTemp'],
     maxTabs: 10,    //  maxFoldersOnBar
+    forcedFolderUpdate: false,
 }
 
 const defaults = {
@@ -120,16 +121,16 @@ const paths = {
 const helpers = {
   
   validateFolderAndFileName:function(name){
-    //
+    
     if ( !name ) return false
-    //
+    
     let _name = name.trim()
     _name = _name.replace(settings.folderNameRegexp, '')
     //
     if( settings.excludedFolders.includes(_name) ) return false
     //
     if( (_name.length == 0) && (_name.split(' ').length == _name.length) ) return false
-    //
+    
     return _name
   },
 }
@@ -145,34 +146,40 @@ export const folders = {
 
   init:function(dat){   //  {folders, localState}
 
-    this.folders = dat.folders
+    //  Reset all states before re-initialization
+    this.deletingQueue = new Set()
+    this.copyCutQueue= []
+    this.isDeleteSrcFolder= null
+    navigation.init()
+    history.init()
 
+    //  Get source
+    this.folders = dat.folders
     this.localState = dat.localState
-    //  Open at least one folder
-    // let activeFolder = db_foldersCollectionMethods.getOpenedFolder(this.folders)
-    // //  If all folders are closed, open first
-    // //      -- AT LEAST ONE FOLDER MUST BE ADDED TO THE DB ! --
-    // this.localState.activeFolderIndex = activeFolder.index == null ? 0 : activeFolder.index
-    // //  Open
-    // db_folderMethods.set_(this.folders[this.localState.activeFolderIndex], 'open')
-    // db_folderMethods.set_(this.folders[this.localState.activeFolderIndex], 'pin on bar')
-    
-    // history.add(this.folders[this.localState.activeFolderIndex])
 
     //      -- AT LEAST ONE FOLDER MUST BE ADDED TO THE DB ! 
+    //  Open at least one folder
+    //  'safe' mode will open first folder if all folders are closed
     let activeFolder = db_foldersCollectionMethods.getOpenedFolder(this.folders, 'safe')
 
     this.clickToFolder( activeFolder.folder )
 
     db_folderMethods.set_(this.folders[this.localState.activeFolderIndex], 'pin on bar')
-    //
-    // tabs.init(this.folders)
+    
+    foldersCollectionMethods.refreshFolders( history.actual(this.folders).path, 'refresh' )
+  },
 
-    // console.log('active index: ')
-    // console.log(this.localState.activeFolderIndex)
-    // console.log(this.folders[this.localState.activeFolderIndex])
-    //
-    navigation.init(this.folders)
+  clickOnTheDirectoryInTheFolderTree:function(folderName, LEVEL){
+
+    // console.log(folderName)
+    // console.log(LEVEL)
+    // console.log(history.actual(this.folders).path)
+
+    if(LEVEL == 'child level')
+      this.clickToFolder( {path: `${history.actual(this.folders).path}${settings.actualSeparator}${folderName}`} )
+
+    if(LEVEL == 'this level')
+      this.clickToFolder( {path: `${paths.getParentFolderPath( history.actual(this.folders).path )}${settings.actualSeparator}${folderName}`} )
   },
 
   clickToFolder:function(folder, cnst){
@@ -214,7 +221,7 @@ export const folders = {
       //  if now deletion of external folder does not occur
       if( this._isDeletionOfExternalFolder() ) return
 
-      let pathTo = navigation.checkTheNameMatches( history.actual(this.folders).path, 'path' )
+      let pathTo = window.api.checkUniqueFolderName( history.actual(this.folders).path )
       // console.log('path to: ')
       // console.log(pathTo)
       
@@ -224,7 +231,7 @@ export const folders = {
 
             db_foldersCollectionMethods.rename( this.folders, pathFrom, paths.getFolderName(pathTo) )
 
-            navigation.addInTheFoldersList( paths.getFolderName(pathTo) )
+            foldersCollectionMethods.refreshFolders( pathTo, 'copy folder' )
             
             // this.copyCutQueue.delete( pathFrom )
 
@@ -301,7 +308,8 @@ export const folders = {
 
     let oldPath = history.actual(this.folders).path
     //  Проверяем на совпадение нового имени с уже имеющимися и меняем его
-    newName = navigation.checkTheNameMatches( `${paths.getParentFolderPath(oldPath)}${settings.actualSeparator}${newName}`, 'name' )
+    newName = window.api.checkUniqueFolderName( `${paths.getParentFolderPath(oldPath)}${settings.actualSeparator}${newName}` )
+    newName = paths.getFolderName( newName )
 
     let newPath = window.api.renameFolder( {fullpath: oldPath, newName: newName} )
 
@@ -309,7 +317,9 @@ export const folders = {
 
       db_foldersCollectionMethods.rename( this.folders, oldPath, paths.getFolderName(newPath) )
       
-      navigation.replaceInTheList( oldPath, newName )
+      foldersCollectionMethods.refreshFolders( oldPath, 'rename folder', newName )
+
+      // console.log( history.actual(this.folders) )
 
       return true
     }
@@ -415,7 +425,8 @@ export const folders = {
 
   refreshDisplayedFolders:function(){
 
-    navigation._refreshDisplayedFolders(this.folders)
+    // navigation._refreshDisplayedFolders(this.folders)
+    foldersCollectionMethods.refreshFolders( history.actual(this.folders).path, 'refresh' )
   },
 
   getActiveFolderName:function(){
@@ -451,9 +462,13 @@ const navigation = {
   foldersList: null,
   subfoldersList: null,
 
-  init:function(folders){
+  init:function(){
     
-    this._refreshDisplayedFolders(folders)
+    //  reset
+    this.foldersList = null
+    this.subfoldersList = null
+
+    // this._refreshDisplayedFolders(folders)
   },
   
   switchTo:function(folders, path, cnst, params, mode){   //  return opened folder index
@@ -471,11 +486,6 @@ const navigation = {
           db_folderMethods.set_(history.actual( folders ), 'unpin on bar')
           db_folderMethods.set_(result.folder, 'pin on bar')
         }
-        
-        // if(mode == 'new tab'){
-          
-        //   db_folderMethods.set_(result.folder, 'pin on bar')
-        // }
       }
       // 
       history.add(result.folder)
@@ -556,44 +566,24 @@ const navigation = {
     }
   },
 
-  replaceInTheList:function(path, name){
+  replaceInTheList:function(oldName, newName){
 
-    let list = this.deleteFromList( paths.validate(path) )
+    // console.log(oldName)
+    // console.log(newName)
 
-    list.push(name)
+    let index = this.foldersList.indexOf( oldName )
+    
+    if(this.foldersList.length > 1)
+      if(index >= 0)
+        this.foldersList[index] = newName
+
+    if(this.foldersList.length == 1)
+      this.foldersList = [newName]
   },
 
   addInTheFoldersList:function(name){
 
     this.foldersList.push( name )
-  },
-
-  checkTheNameMatches:function(path, params){
-
-    foldersCollectionMethods.refreshFolders( path, 'forced' )
-
-    let name = paths.getFolderName(path)
-
-    function correctName(_name){
-      
-      if( navigation.foldersList.some(folderName => folderName == _name) ){   //
-
-        return correctName(`${_name} copy`)
-      }else{
-        return _name
-      }
-    }
-
-    if(params == 'path')
-      return `${paths.getParentFolderPath(path)}${settings.actualSeparator}${correctName(name)}`
-
-    if(params == 'name')
-      return correctName(name)
-  },
-
-  _refreshDisplayedFolders:function(folders){
-
-    foldersCollectionMethods.refreshFolders( history.actual(folders).path, 'forced' )
   },
 }
 
@@ -607,9 +597,9 @@ const tabs = {
 
     let displayedOnBarFolder = folders.findLast( folder => folder.displayedOnBar && !folder.isOpened )
 
-    console.log('last tabs path:')
-    console.log(openedFolder)
-    console.log(displayedOnBarFolder)
+    // console.log('last tabs path:')
+    // console.log(openedFolder)
+    // console.log(displayedOnBarFolder)
     let nextFolderIndex = navigation.switchTo(folders, displayedOnBarFolder.path, null, null, 'tab')
 
     db_folderMethods.set_( openedFolder, 'unpin on bar' )
@@ -658,6 +648,12 @@ const tabs = {
 const history = {
 
   id_pull: [],
+
+  init:function(){
+
+    //  reset
+    this._clear()
+  },
 
   previous:function(folders){
 
@@ -713,7 +709,7 @@ const history = {
     }
   },
 
-  clear:function(){
+  _clear:function(){
     this.id_pull = []
   },
 
@@ -728,6 +724,7 @@ const db_foldersCollectionMethods = {
     clearNonExistFolders:function(folders){
 
       let arrSize = folders.length
+
       for(let ch = 0; ch < arrSize; ch++){
         if( !folders[ch].isExist ){
           folders.splice(ch, 1)
@@ -738,10 +735,10 @@ const db_foldersCollectionMethods = {
     },
     
     pushNew:function(folders, path){
+
         folders.push(
             {
-                id: 'folder_' + Math.floor(Math.random()*10000000),
-                // path: path, 
+                id: 'folder_' + Math.floor(Math.random()*10000000000000),
                 path: paths.validate(path), 
                 files: [],
                 isOpened: false,
@@ -754,11 +751,16 @@ const db_foldersCollectionMethods = {
     },
     
     searchPathAndGetFolderID:function(folders, path){
+
       let res = false
+
       folders.forEach((folder, index) => {
+
         res = db_folderMethods.is_( folder, 'are the paths the same', path )
-        if( res ) return {id: folder.id, index: index}
+        if( res ) 
+          return {id: folder.id, index: index}
       })
+
       if( !res ) return {id: null, index: null}
     },
 
@@ -769,7 +771,6 @@ const db_foldersCollectionMethods = {
       folders.forEach((folder, index) => {
         // console.log(folder.path + ':  ' + path)
         if( db_folderMethods.is_( folder, 'are the paths the same', {path: path} ) )
-          
           result =  {folder: folder, index: index}
       })
 
@@ -798,7 +799,7 @@ const db_foldersCollectionMethods = {
     },
 
     delete:function(folders, path){
-      //
+      
       folders = folders.filter(i=>!i.path.startsWith(path))
       // folders.forEach(folder => {
       //   //  this
@@ -817,16 +818,23 @@ const db_foldersCollectionMethods = {
     },
 
     getOpenedFolder:function(folders, cnst){
+
+      let result = {folder: null, index: null}
+
+      if(cnst == 'safe')
+        result = {folder: folders[0], index: 0}
+
       folders.forEach((folder, index) => {
-        if(folder.isOpened) return {folder: folder, index: index}
+        if(folder.isOpened) 
+          result = {folder: folder, index: index}
       })
 
-      if(!cnst) return {folder: null, index: null}
-      if(cnst == 'safe') return {folder: folders[0], index: 0}
+      return result
     },
     
     closeAll:function(folders){
-      folders.forEach((folder, index) => {
+      
+      folders.forEach(folder => {
         folder.isOpened = false
       })
     },
@@ -878,10 +886,11 @@ const foldersCollectionMethods = {
         }
     },
 
-    refreshFolders:function(path, cnst){
+    refreshFolders:function(path, cnst, data){
 
-      // console.log('refreshing path: ')
-      // console.log(path)
+      console.log('refreshing path: ')
+      console.log(path)
+      console.log(cnst)
 
       function sublist(path, cnst){
         navigation.subfoldersList = window.api.getFolderNames(path, cnst) || []
@@ -894,21 +903,25 @@ const foldersCollectionMethods = {
         navigation.foldersList = navigation.foldersList.filter( i=>!settings.excludedFolders.includes(i) ) || []
         // console.log(navigation.foldersList)
       }
-      //
-      if( !paths.isImmediateChild(path) )
-        cnst = 'forced'
-      //
-      if( paths.isCommonParent(path) )
-        cnst = 'common parent'
-      //
-      if( paths.isParent(path) )
-        cnst = 'go parent'
+
+      if( cnst == undefined ){
+        //
+        if( !paths.isImmediateChild(path) )
+          cnst = 'forced'
+        //
+        if( paths.isCommonParent(path) )
+          cnst = 'common parent'
+        //
+        if( paths.isParent(path) )
+          cnst = 'go parent'
+      }
 
       //
-      if( (cnst == 'forced') || (navigation.foldersList == null) || (navigation.subfoldersList == null) ){
+      if( (cnst == 'forced') || (navigation.foldersList == null) || (navigation.subfoldersList == null) || (cnst == 'refresh') || settings.forcedFolderUpdate ){
 
         sublist(path)
         list(path)
+        return
       }
 
       //  Для уменьшения нагрузки на диск
@@ -964,6 +977,19 @@ const foldersCollectionMethods = {
         navigation.foldersList = structuredClone( navigation.subfoldersList )
         navigation.foldersList.push( paths.getFolderName(path) )
         navigation.subfoldersList = []
+      }
+
+      //
+      if( cnst == 'rename folder' ){
+
+        // list(path, 'dont check for existence')
+        navigation.replaceInTheList( paths.getFolderName(path), data )
+      }
+
+      //
+      if( cnst == 'copy folder'){
+
+        navigation.addInTheFoldersList( paths.getFolderName(path) )
       }
     },
 
@@ -1065,8 +1091,8 @@ const filesCollectionMethods = {
 
       let readDirResult = window.api.getFileFullnames( history.actual(folders.folders).path )
 
-      console.log('readDirResult')
-      console.log(readDirResult)
+      // console.log('readDirResult')
+      // console.log(readDirResult)
 
       history.actual(folders.folders).files = history.actual(folders.folders).files.filter(file => readDirResult.includes(`${file.name}.${file.format}`))
 

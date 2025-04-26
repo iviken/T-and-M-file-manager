@@ -1,6 +1,6 @@
 <script>
 export default {
-  components:{},
+
   props:{
     stateFiles:{
         type: Object,
@@ -35,6 +35,7 @@ export default {
         required: true
     },
   },
+
   methods: {
       // unfoldMarks:function(){
         //     this.state.marksBoxIsFolded = !this.state.marksBoxIsFolded
@@ -52,6 +53,8 @@ export default {
     clickOnTab(dat){
         //
         this.foldersMethods2.clickOnTab(dat.path)
+        //
+        this.filesMethods.countSelectedFiles()
         //  For 'ALL (folders)' tab
         this.localState.showFilesFromAllFoldersOption = false 
     },
@@ -73,8 +76,12 @@ export default {
         return _size
     },
     filesFromAllFolders:function(){
+
         this.localState.showFilesFromAllFoldersOption = true
+
         this.folders.forEach(element=>{element.isOpened = false})
+
+        this.filesMethods.countSelectedFiles('all')
 
         //  Отменяет переключение между вкладками задач и маркировки при нахождении в режиме отображ. всех файлов
         if(this.localState.showFilesFromAllFoldersOption){
@@ -111,7 +118,7 @@ export default {
             if(!this.localState.showFilesFromAllFoldersOption){
                 this.marksMethods.setMarkToFiles( this.folders[this.localState.activeFolderIndex].files, markID )
                 //
-                this.filesMethods.unselectAllFiles()
+                this.filesMethods.resetStateFiles()
             }else{
                 let _allFiles = []
                 for (const key in this.folders) {
@@ -119,7 +126,7 @@ export default {
                 }
                 this.marksMethods.setMarkToFiles( _allFiles, markID )
                 //
-                this.filesMethods.unselectAllFiles()
+                this.filesMethods.deselectAllFiles()
             }
         }
     },
@@ -135,6 +142,7 @@ export default {
     },
     dblclickOnMarkItem(){},
   },
+
   mounted(){
     this.$nextTick(function () {
         // Проверка ширины элемента после обновления
@@ -147,6 +155,7 @@ export default {
         // })
     })
   },
+
   data(){
     return{
         settings:{
@@ -159,14 +168,13 @@ export default {
         state:{
             marksBoxIsFolded: true,
             markNewName: 'mark name',
-            // markRenameID: null,
             showTextarea: false,
             showColorPicker: false,
             selectedColorOnColorPicker: null,
-            // renamigMark: false,
         },
     }
   },
+
   computed:{
     numberOfFoldersDisplayedOnTheBar(){
         let count = 0
@@ -175,7 +183,12 @@ export default {
         })
         return count
     },
-  }
+  },
+
+  beforeUpdate(){
+
+    this.filesMethods.countSelectedFiles()
+  },
 }
 </script>
 
@@ -301,10 +314,6 @@ export default {
     }
 
     .info{
-        position: absolute;
-        top: 0px;
-        left: 400px;
-        height: $bar-height;
     }
     .info-text{
         color: var(--text);

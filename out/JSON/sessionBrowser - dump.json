@@ -93,10 +93,6 @@
                 "displayedOnBar": true,
                 "files": [
                     {"id": 100, "name": "file (1)", "format": "js",   "markID": "mark_1000",     "isPinned": false, "path": "/Temp/E3/Log", "meta":{"created": 156456, "lastEdited": 165447, "size": 100256}},
-                    {"id": 101, "name": "file (2)", "format": "ini",  "markID": "mark_1000",     "isPinned": true,  "path": "/Temp/E3/Log", "meta":{"created": 156456, "lastEdited": 165489, "size": 10024436}},
-                    {"id": 109, "name": "file (10)", "format": "png", "markID": "mark_1000",     "isPinned": false, "path": "/Temp/E3/Log", "meta":{"created": 156422, "lastEdited": 165489, "size": 100256}},
-                    {"id": 131, "name": "file (7)", "format": "scss", "markID": "mark_1000",     "isPinned": false, "path": "/Temp/E3/Log", "meta":{"created": 156456, "lastEdited": 165489, "size": 140256}},
-                    {"id": 132, "name": "file (7)", "format": "scss", "markID": "mark_1000",     "isPinned": false, "path": "/Temp/E3/Log", "meta":{"created": 156456, "lastEdited": 165489, "size": 140256}},
                     {"id": 133, "name": "file (7)", "format": "scss", "markID": "mark_1000",     "isPinned": false, "path": "/Temp/E3/Log", "meta":{"created": 156456, "lastEdited": 165489, "size": 140256}}
                 ]
             }

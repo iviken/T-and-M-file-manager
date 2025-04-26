@@ -1,12 +1,11 @@
 <script>
 import FileComponent from './FileComponent.vue'
 
-// import { filesMethods } from '../lib/files.js'
-
 export default {
   components:{
     FileComponent
   },
+
   props:{
     files:{
         type: Object,
@@ -17,6 +16,10 @@ export default {
         required: true
     },
     state:{     //  stateFiles
+        type: Object,
+        required: true
+    },
+    localState:{
         type: Object,
         required: true
     },
@@ -33,10 +36,13 @@ export default {
         required: true
     }
   },
+
   methods: {
     foldMark: function(mark_ID){
+
       this.marks[mark_ID].isFolded[this.viewMode] = !this.marks[mark_ID].isFolded[this.viewMode]
     },
+
     singleMarkMode: function(mark_ID){
       //
       this.marks[mark_ID].isFolded[this.viewMode] = true
@@ -44,45 +50,54 @@ export default {
       this.singleDisplayMarkMode.isEnabled = !this.singleDisplayMarkMode.isEnabled
       this.singleDisplayMarkMode.mark_id = mark_ID
     },
+
     singleMarkModeFilter:function(dat){  //  marks
       //  Show one mark group only - mode
       if(!this.singleDisplayMarkMode.isEnabled){
+
+        // if()
         return dat
       }else{
+
         return {[this.singleDisplayMarkMode.mark_id]: dat[this.singleDisplayMarkMode.mark_id]}      //        !!!
       }
     },
+
     filterMark:function(mark){
+
       let _mark = {text: false, imgs: false}
 
-      //    Sorted by files type: images or others and extract marks
-      this.files.forEach(element => {
+      //    Sorted files by type: images or others format and marking
+      this.files.forEach(file => {
 
-        if( this.fileImgMask.includes(element.format) ){
-          if(mark.id == element.markID){
-            if(!element.isPinned){
+        if( this.fileImgMask.includes(file.format) ){
+          if(mark.id == file.markID){
+            if(!file.isPinned){
               _mark.imgs = true
             }
           }
         }
 
-        if( !this.fileImgMask.includes(element.format) ){
-          if(mark.id == element.markID){
-            if(!element.isPinned){
+        if( !this.fileImgMask.includes(file.format) ){
+          if(mark.id == file.markID){
+            if(!file.isPinned){
               _mark.text = true
             }
           }
         }
 
       })
-
-      //
+      
       return _mark[this.viewMode]
     },
+
     countUnpinBlockHeight:function(){
+
       this.unpinHeightBlock = document.querySelector('._component').clientHeight - document.querySelector('._left-field').clientHeight
     },
+
     foldPin:function(){
+
       this.inputSettings.pinFilesIsFolded[this.viewMode] = !this.inputSettings.pinFilesIsFolded[this.viewMode]
       //
       if( this.inputSettings.pinFilesIsFolded[this.viewMode] ){
@@ -90,6 +105,7 @@ export default {
       }
     },
   },
+
   computed:{
     isThereAtLeastOneAttachedFile(){
       return this.files
@@ -100,6 +116,7 @@ export default {
     //   return document.querySelector('._component').clientHeight - document.querySelector('._left-field').clientHeight
     // },
   },
+
   data(){
     return{
       displayedMarks: {text:[], imgs:[]},
@@ -109,6 +126,7 @@ export default {
       unpinHeightBlock: 600,
     }
   },
+
   beforeUpdate(){
     //
     // this.refreshFiles()
@@ -118,6 +136,7 @@ export default {
     // this.unpinHeightBlock = document.querySelector('._component').clientHeight - 50 - this.countFiles[this.viewMode].pin * this.settings.textFileBtnHeight_px - 200
     this.countUnpinBlockHeight()
   },
+
   beforeMount(){},
 }
 </script>
@@ -127,12 +146,12 @@ export default {
   <div 
     class="h100 focus _component" 
     tabindex="0" 
-    @keyup.esc="filesMethods.unselectAllFiles()" 
+    @keyup.esc="filesMethods.resetStateFiles()" 
     @keyup.f2="filesMethods.renameFiles( {state: 'start rename'} )" 
     @keyup.delete="filesMethods.deleteFiles()"
-    @keyup.ctrl.c="filesMethods.copyFiles()"
-    @keyup.ctrl.v="filesMethods.pasteFiles()"
-    @keyup.ctrl.x="filesMethods.cutFiles()"
+    @keyup.ctrl.c="!localState.showFilesFromAllFoldersOption && filesMethods.copyFiles()"
+    @keyup.ctrl.x="!localState.showFilesFromAllFoldersOption && filesMethods.cutFiles()"
+    @keyup.ctrl.v="!localState.showFilesFromAllFoldersOption && filesMethods.pasteFiles()"
     @keyup.ctrl.d="filesMethods.pinSelectedFiles()"
   >
 
