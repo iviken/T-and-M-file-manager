@@ -519,6 +519,8 @@ const api = {
         projectsData.data[key].meta.status = 'closed'
       }
     }
+
+    //  And save?
   },
   openProject:function(proj_id){
     projectsData.data[proj_id].meta.status = 'opened'

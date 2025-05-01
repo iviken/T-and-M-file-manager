@@ -65,15 +65,18 @@ export default {
 <template>
 
     <div @keyup.up="moveTask('up')" @keyup.down="moveTask('down')" class="task-component focus" tabindex="0">
+
         <div class="section on-col">
         
             <div class="pin-block scrollY on-col">
                 <label v-for="task in data" :key="task.id">
                     <div v-if="task.isPinned">
 
-                        <input type="radio" v-model="selectedTaskId" :value="task.id">
-        
-                        <TaskItem :task="task" :selected="task.id == selectedTaskId" :class="{selected: (!task.isDone && task.isSelected)}" @deleteTask="deleteTask"/>
+                        <div class="on-row">
+                            <input type="radio" v-model="selectedTaskId" :value="task.id" class="hide">
+            
+                            <TaskItem :task="task" :selected="task.id == selectedTaskId" :class="{selected: (!task.isDone && task.isSelected)}" @deleteTask="deleteTask"/>
+                        </div>
         
                         <div v-for="subtask in task.subtasks" class="sub" v-if="!task.isFolded">
                             <TaskItem :task="subtask" :selected="subtask.id == selectedSubTaskId" :class="{selected: (!subtask.isDone && subtask.isSelected)}" @deleteTask="deleteTask"/>
@@ -90,12 +93,12 @@ export default {
                     <div v-if="!task.isPinned" class="on-col">
 
                         <div class="on-row">
-                            <input type="radio" v-model="selectedTaskId" :value="task.id">
+                            <input type="radio" v-model="selectedTaskId" :value="task.id" class="hide">
                             
                             <TaskItem :task="task" :selected="task.id == selectedTaskId" :class="{selected: (!task.isDone && task.isSelected)}" @deleteTask="deleteTask"/>
                         </div>
                         
-                        <div v-for="subtask in task.subtasks" class="sub" v-if="!task.isFolded">
+                        <div v-if="!task.isFolded" v-for="subtask in task.subtasks" class="sub">
                             <TaskItem :task="subtask" :selected="subtask.id == selectedSubTaskId" :class="{selected: (!subtask.isDone && subtask.isSelected)}" @deleteTask="deleteTask"/>
                         </div>
                         
@@ -106,23 +109,19 @@ export default {
             
             <div class="empty1"></div>
             
-            <div>
-                <input type="text" v-model="newTaskValue" class="rename" @keyup.enter="createNewTask()"></input>
+            <div class="create">
+                <input type="text" v-model="newTaskValue" class="create-input t-task w100 focus" @keyup.enter="createNewTask()"></input>
             </div>
 
         </div>
+        
     </div>
 
 </template>
 
 <style scoped lang="scss">
-    // @use '../scss/tasks.scss' as *;
-    // .task-component{
-    //     padding-bottom: 210px;
-    //     height: auto;
-    // }
     .task-component{
-        // -webkit-mask-image: -webkit-gradient(linear, left 90%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
+        padding-top: var(--content-indent);
     }
 
     // @media screen and (min-height: 100vh) {
@@ -136,23 +135,28 @@ export default {
             height: 200px;
         }
     // }
-
-    // .pin-block{
-    //     padding-bottom: var(--pin-indent-bottom);
-    // }
     .pin-block, .block{
         max-height: 30vh;
     }
     .sub{
         margin-left: 20px;
     }
-    .rename{
-        background-color: antiquewhite;
+    .create{
         padding-left: 20px;
+    }
+    .create-input{
+        background: inherit;
+        border: solid 0px;
+        // color: var(--pure-white);
+    }
+    .create-input:focus{
+        background: var(--grad-editing-task);
+        border: solid 0px;
+        color: var(--pure-white);
     }
 
     .selected{
-        background-color: aquamarine;
+        background: var(--grad-selected-task);
     }
 
     .focus:focus{

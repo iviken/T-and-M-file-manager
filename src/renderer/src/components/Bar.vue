@@ -162,8 +162,9 @@ export default {
             MaxLenghtOfMarkName: 15,
             maxMarksOnBar: 5,
             maxFoldersOnBar: 6,
-            AvailableMarkColors: ['red', 'green', 'yellow', 'ocean', 'blue', 'orange'],
-            rootFolderTabName: 'root C'
+            availableMarkColors: ['red', 'green', 'yellow', 'ocean', 'blue', 'orange'],
+            rootFolderTabName: 'root C',
+            tabsFolderNameMaxLength: 16,
         },
         state:{
             marksBoxIsFolded: true,
@@ -196,194 +197,304 @@ export default {
 
     <div @keyup.esc="pressEscOnBar()" @keyup.ctrl.t="foldersMethods2.openClosedTab()" tabindex="0" class="bar on-center focus">
 
-        <div class="info on-center">
-            <div v-if="stateFiles.numberOfSelectedFiles > 0" class=" on-row">
+        <div class="info h100 on-center">
+            <div v-if="stateFiles.numberOfSelectedFiles > 0" class="on-row">
                 <span class="info-text">{{ stateFiles.numberOfSelectedFiles }}</span>
-                <span class="info-text">&nbsp;files selected</span>
+                <span v-if="stateFiles.numberOfSelectedFiles == 1" class="info-text">&nbsp;file selected</span>
+                <span v-if="stateFiles.numberOfSelectedFiles > 1" class="info-text">&nbsp;files selected</span>
             </div>
         </div>
 
-        <div v-if="localState.metadataIsHidden" class="on-row">
+        <div v-if="localState.metadataIsHidden" class="bar-block on-row h100">
 
-            <div class="_marks on-row">
-                <div @click="state.marksBoxIsFolded = !state.marksBoxIsFolded" class="item">V</div>
-                <div class="on-row horizontal-scroll-wrapper">
-                    <div @click="newMark({state: 'start create new mark'})" class="item">+</div>
-                    <!-- <div v-if="!state.showTextarea" class="on-row item-box _item-box" tabindex="0" v-scroll="handleScroll"> -->
+            <div class="_marks marks-block on-row h100">
+                <!-- marks menu -->
+                <div @click="state.marksBoxIsFolded = !state.marksBoxIsFolded" class="item hover-item h100 on-center">
+                    <img src="../assets/arc dawn.svg" alt="choose mark" class="arrow-1">
+                </div>
 
-                    <div v-if="!state.showTextarea" class="on-row item-box">
-                        <div v-for="(item, value, index) in marks" class="item mark">
-                            <div v-if="index < settings.maxMarksOnBar">
+                <div class="on-row h100">
+                    <!-- new mark - plus -->
+                    <div @click="newMark({state: 'start create new mark'})" class="item hover-item h100 on-center">
+                        <img src="../assets/plus.svg" alt="create new mark" class="pix-btn-plus-1">
+                    </div>
+                    <!-- new mark - input -->
+                    <div v-if="!state.showTextarea" class="item-box on-row">
+                        <div v-for="(item, value, index) in marks" class="menu h100">
+                            <div v-if="index < settings.maxMarksOnBar" class="item h100 on-center">
                                 <div @click="setMarkToFiles(item.id)" @dblclick="dblclickOnMarkItem()" :class="{hiddenMark: !item.show}">
-                                    <span :class="`${item.color}-text text-nowrap`">{{ shrinkMarkDescription(item.descr) }}</span>
+                                    <span :class="`${item.color}-text`" class="menu-item uppercase t-bar-marks text-nowrap">
+                                        {{ shrinkMarkDescription(item.descr) }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div v-else class="on-row item-box">
+                    <!-- new mark - pic color -->
+                    <div v-else class="item-box on-row h100">
+                        <!-- arrow -->
                         <input type="checkbox" v-model="state.showColorPicker" id="picker" name="picker" class="checkbox">
                         <label for="picker">
-                            <div class="set-color">=</div>
+                            <div class="set-color-btn vertical-center on-center h100">
+                                <img src="../assets/arrow2.svg" alt="set color" class="arrow-3">
+                            </div>
                         </label>
+                        <!-- color picker -->
                         <div v-if="state.showColorPicker" @click="state.showColorPicker = false" class="color-pic on-row">
-                            <div v-for="clr in settings.AvailableMarkColors">
-                                <div @click="state.selectedColorOnColorPicker = clr" :class="`color-pic-${clr}`" class="clr-pic-item h100"></div>
+                            <div v-for="clr in settings.availableMarkColors">
+                                <div @click="state.selectedColorOnColorPicker = clr" :class="`color-pic-${clr}`" class="clr-pic-item clr-pic-box-bar h100"></div>
                             </div>
                         </div>
-                        <div v-else>
-                            <input type="text" v-model="state.markNewName" @keyup.enter="newMark({state: 'end create new mark', newName: state.markNewName, color: state.selectedColorOnColorPicker})" :class="`${state.selectedColorOnColorPicker}-text`" class="input">
+                        <!-- input -->
+                        <div v-else class="input-text-box on-center w100">
+                            <input type="text" v-model="state.markNewName" @keyup.enter="newMark({state: 'end create new mark', newName: state.markNewName, color: state.selectedColorOnColorPicker})" :class="`${state.selectedColorOnColorPicker}-text`" class="input bar-new-mark on-center w100 focus">
                         </div>
                     </div>
 
                 </div>
+
             </div>
 
-            <div class="btns on-row">
-                <div class="item show-tree" v-if="localState.showTasksPanel" @click="switchPannels()">Tree</div>
-                <div class="item show-tree" v-if="localState.showTreePanel" @click="switchPannels()">Tasks</div>
-                <div class="item pin-this" @click="filesMethods.pinSelectedFiles()">Pin</div>
-            </div>
-
-            <div class="folders on-row">
-                <div v-if="numberOfFoldersDisplayedOnTheBar > 1" :class="{activeTab: localState.showFilesFromAllFoldersOption}">
-                    <span class="item" @click="filesFromAllFolders()">ALL</span>
+            <div class="btns on-row h100">
+                <div class="item show-tree h100 on-center" v-if="localState.showTasksPanel" @click="switchPannels()">
+                    <img src="../assets/tree.svg" alt="Folders tree" class="pix-btn">
                 </div>
-                <div v-for="(item, index) in folders" class="on-row">
-                    <div v-if="item.displayedOnBar" @click="clickOnTab({id: item.id, index: index, path: item.path})" @dblclick="foldersMethods2.closeTab()" :class="{activeTab: item.isOpened}">
-                        <span v-if="item.path != ''" class="item">{{ item.path.split('/')[ item.path.split('/').length - 1 ] }}</span>
-                        <span v-else class="item">{{ settings.rootFolderTabName }}</span>
+                <div class="item show-tree h100 on-center" v-if="localState.showTreePanel" @click="switchPannels()">
+                    <img src="../assets/tasks.svg" alt="Tasks" class="pix-btn">
+                </div>
+                <div class="item pin-this h100 on-center" @click="filesMethods.pinSelectedFiles()">
+                    <img v-if="filesMethods.checkIsAtLeastOneSelectedFilePinned()" src="../assets/unpin.svg" alt="Pin / Unpin selected files" class="pix-btn">
+                    <img v-if="!filesMethods.checkIsAtLeastOneSelectedFilePinned()" src="../assets/pin.svg" alt="Pin / Unpin selected files" class="pix-btn">
+                </div>
+            </div>
+
+            <div class="folders on-row h100">
+                <div v-if="numberOfFoldersDisplayedOnTheBar > 1" class="item h100 on-center">
+                    <span :class="{activeTab: localState.showFilesFromAllFoldersOption}" @click="filesFromAllFolders()" class="uppercase t-bar-folders no-wrap text-nowrap">ALL</span>
+                </div>
+                <div v-for="(item, index) in folders" class="menu on-row h100">
+                    <div v-if="item.displayedOnBar" @click="clickOnTab({id: item.id, index: index, path: item.path})" @dblclick="foldersMethods2.closeTab()" class="item on-center h100">
+                        <span v-if="item.path != ''" :class="{activeTab: item.isOpened}" class="menu-item uppercase t-bar-folders no-wrap text-nowrap">
+                            {{ foldersMethods2.shrinkName( foldersMethods2.getFolderName(item.path), settings.tabsFolderNameMaxLength ) }}
+                        </span>
+                        
+                        <span v-else :class="{activeTab: item.isOpened}" class="menu-item uppercase t-bar-folders no-wrap text-nowrap">{{ settings.rootFolderTabName }}</span>
                     </div>
                 </div>
-                <div v-if="numberOfFoldersDisplayedOnTheBar < settings.maxFoldersOnBar" @click="foldersMethods2.newTab()" class="item">+</div>
+                <div v-if="numberOfFoldersDisplayedOnTheBar < settings.maxFoldersOnBar" @click="foldersMethods2.newTab()" class="item h100 on-center">
+                    <img src="../assets/plus.svg" alt="new tab" class="pix-btn-plus-2">
+                </div>
             </div>
 
         </div>
 
-        <div v-else class="on-row">
-            <span class="meta-item">{{ stateFiles.onFocusFile.name }}</span>
-            <span class="meta-item">Created:&nbsp;</span>
-            <span class="meta-item">{{ stateFiles.onFocusFile.metadata.created.toLocaleString() }}</span>
-            <span class="meta-item">Last edited:&nbsp;</span>
-            <span class="meta-item">{{ stateFiles.onFocusFile.metadata.lastEdited.toLocaleString() }}</span>
-            <span class="meta-item">{{ convertFileSize(stateFiles.onFocusFile.metadata.size) }}</span>
-            <span class="meta-item">{{ stateFiles.onFocusFile.format }}</span>
+        <div v-else class="bar-block on-center h100">
+            <div class="on-row">
+                <span class="meta-item">{{ stateFiles.onFocusFile.name }}</span>
+                <span class="meta-item">Created:&nbsp;</span>
+                <span class="meta-item">{{ stateFiles.onFocusFile.metadata.created.toLocaleString() }}</span>
+                <span class="meta-item">Last edited:&nbsp;</span>
+                <span class="meta-item">{{ stateFiles.onFocusFile.metadata.lastEdited.toLocaleString() }}</span>
+                <span class="meta-item">{{ convertFileSize(stateFiles.onFocusFile.metadata.size) }}</span>
+                <span class="meta-item">{{ stateFiles.onFocusFile.format }}</span>
+            </div>
         </div>
+
+        <div class="search"></div>
 
     </div>
 
+    <!-- marks menu -->
+
     <div @keyup.esc="abortMarkEdit()" @mouseleave="state.marksBoxIsFolded = true" :class="{HIDE: state.marksBoxIsFolded}" class="_marks-unfolded-block on-col focus" tabindex="0">
-        <div v-for="item in marks" class="on-row w100 marks-box__item">
-            <!-- <div class="checkbox" @click="showMarkFilesEverywhere(item.id)"> -->
-            <div>
-                <input type="checkbox" v-model="item.show" class="checkbox-mark-item">
-            </div>
-            <div>
-                <div v-if="marksMethods.state.markRenameID != item.id" @click="setMarkToFiles(item.id)" @dblclick="renameMark({state: 'start rename', markID: item.id})" :class="{hiddenMark: !item.show}">
-                    <span :class="`${item.color}-text text-nowrap`">{{ item.descr }}</span>
+
+        <div :class="`${localState.actualSessionType}-menu-back`" class="marks-menu-box h100 w100">
+
+            <div v-for="item in marks" class="marks-box__item menu on-row w100">
+    
+                <div class="vertical-center checkbox-block menu-item h100">
+                    <input type="checkbox" v-model="item.show" class="checkbox-mark-item">
                 </div>
-                <div v-else>
-                    <input type="text" v-model="state.markNewName" @keyup.enter="renameMark({state: 'end rename', newName: state.markNewName})" :class="`${state.selectedColorOnColorPicker}-text`" class="input">
+    
+                <div v-if="marksMethods.state.markRenameID != item.id" @click="setMarkToFiles(item.id)" @dblclick="renameMark({state: 'start rename', markID: item.id})" :class="{hiddenMark: !item.show}" class="menu-item">
+                    <!-- marks -->
+                    <span :class="`${item.color}-text text-nowrap uppercase`">{{ item.descr }}</span>
                 </div>
-            </div>
-            <div class="on-row">
-                <input type="checkbox" v-model="state.showColorPicker" id="picker" name="picker" class="checkbox">
-                <label for="picker">
-                    <div v-if="item.id != stateFiles.defaults.unmarkedMarkID" @click="marksMethods.state.markRenameID = item.id" class="set-color">=</div>
-                </label>
-                <div v-if="state.showColorPicker && (marksMethods.state.markRenameID == item.id)" @click="state.showColorPicker = false" class="color-pic on-row">
-                    <div v-for="clr in settings.AvailableMarkColors" @click="marksMethods.state.markRenameID = null">
-                        <div @click="item.color = clr" :class="`color-pic-${clr}`" class="clr-pic-item h100"></div>
+                <div v-else class="on-center">
+                    <!-- input -->
+                    <div v-if="!state.showColorPicker">
+                        <input type="text" v-model="state.markNewName" @keyup.enter="renameMark({state: 'end rename', newName: state.markNewName})" :class="`${state.selectedColorOnColorPicker}-text`" class="input marks-box-rename focus w100">
                     </div>
                 </div>
+    
+                <div class="on-row h100 marks-menu-clr-pic">
+                    <!-- color picker -->
+                    <div v-if="state.showColorPicker && (marksMethods.state.markRenameID == item.id)" @click="state.showColorPicker = false" class="color-pic on-row">
+                        <div v-for="clr in settings.availableMarkColors" @click="marksMethods.state.markRenameID = null" class="h100">
+                            <div @click="item.color = clr" :class="`color-pic-${clr}`" class="clr-pic-item clr-pic-box-menu-bar h100"></div>
+                        </div>
+                    </div>
+                    <!-- arrow -->
+                    <div v-if="item.id != stateFiles.defaults.unmarkedMarkID" class="on-row">
+                        <input type="checkbox" v-model="state.showColorPicker" id="picker" name="picker" class="checkbox">
+                        <label for="picker" class="vertical-center">
+                            <div @click="marksMethods.state.markRenameID = marksMethods.state.markRenameID == null ? item.id : null" class="vertical-center set-color hover-item">
+                                <img src="../assets/arrow2.svg" alt="Set marks color" class="marks-menu-arrow rotate180">
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <!-- delete mark -->
+                <div v-if="!state.showColorPicker" class="vertical-center h100">
+                    <div v-if="item.id != stateFiles.defaults.unmarkedMarkID" @click="deleteMark(item.id)" class="delete hover-item">
+                        <img src="../assets/x.svg" alt="delete mark" class="marks-menu-x">
+                    </div>
+                </div>
+                
             </div>
-            <div v-if="item.id != stateFiles.defaults.unmarkedMarkID" @click="deleteMark(item.id)" class="delete item">X</div>
+            
         </div>
+
     </div>
 
 </template>
 
 <style scoped lang="scss">
-    @use '../scss/bar.scss' as *;
+    // @use '../scss/bar.scss' as *;
 
-    $bar-height: 45px;
+    $bar-height: 37px;
+
+    .pix-btn{
+        opacity: .6;
+        width: 14px;
+        height: 14px;
+    }
+    .pix-btn-plus-1{
+        width: 10px;
+        height: 10px;
+    }
+    .pix-btn-plus-2{
+        opacity: .6;
+        width: 10px;
+        height: 10px;
+        // fill: var(--cold-pale);
+        // stroke: var(--cold-pale);
+    }
+    .pix-btn:hover{}
+    .btn-set-color{
+        width: 10px;
+    }
 
     .bar{
         height: $bar-height;
         position: relative;
+        background: var(--grad-bar);
     }
 
-    .info{
+    .bar-block{
+        background: var(--grad-bar-block);
+    }
+
+    .marks-block{
+    }
+    .input-text-box{
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    .bar-new-mark{
+        margin-top: auto;
+        margin-bottom: auto;
+        height: 28px;
+        background: var(--grad-bar-mark-input);
+        border: solid 1px var(--grad-bar-mark-input-border);
+        color: var(--pure-white);   //  ?
+    }
+
+    .menu .menu-item{
+        opacity: .75;
+    }
+    .menu:hover .menu-item{
+        opacity: 1;
+    }
+
+    .info, .search{
+        width: 200px;
+        max-width: 200px;
     }
     .info-text{
         color: var(--text);
     }
-
-    // .horizontal-scroll-wrapper {
-    //     width: 100px;
-    //     height: 300px;
-    //     overflow-y:scroll;
-    //     overflow-x: hidden;
-    //     scroll-behavior: smooth;
-    //     transform: rotate(-90deg);
-    //     transform-origin: right top;
-    // }
-    // .horizontal-scroll-wrapper > div {
-    //     width: 100px;
-    //     height: 100px;
-    //     transform: rotate(90deg);
-    //     transform-origin: right top;
-    // }
     .item-box{
         width: 500px;
         max-width: 550px;   //  !!
-        // overflow-y: hidden;
         overflow-x: hidden;
-        // overflow-x: auto;
-    }
-    .mark{
-        opacity: .7;
-    }
-    .mark:hover{
-        opacity: 1;
     }
     .item, .gap{
-        color: var(--text);
+        padding-left: 12px;
+        padding-right: 12px;
     }
     .item:hover{
-        color: var(--pure-white);
-        background-color: aquamarine;
+        background: var(--grad-mark-button);
+    }
+    .item:hover>img, .item:hover span{
+        opacity: 1;
+    }
+    .hover-item{
+        opacity: .6;
+    }
+    .hover-item:hover{
+        opacity: 1;
     }
 
-    // .mark-rename-box{
-    //     position: relative;
-    // }
-    // .mark-rename-box>.details, .mark-rename-box>input{
-    //     position: absolute;
-    //     top:0px;
-    //     left:0px;
-    // }
-    // .details[open] .summary{
-    //     transform: rotate(90deg);
-    // }
-    // .summary{
-    //     color: aquamarine;
-    // }
-
+    .show-tree, .pin-this{
+        padding-left: 8px;
+        padding-right: 8px;
+    }
     //  BARS ACCORDION
-    .set-color{
-        color:antiquewhite;
+    .set-color-btn{
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .arrow-1{
+        width: 10px;
+        height: 10px;
+    }
+    .marks-menu-arrow, .marks-menu-x{
+        width: 8px;
+        height: 8px;
+    }
+    .arrow-3{
+        opacity: .6;
+        width: 8px;
+        height: 8px;
+    }
+
+    .marks-menu-clr-pic{
+        margin-left: 20px;
     }
     .checkbox{
         visibility: hidden;
     }
     .clr-pic-item{
+        opacity: .7;
+        -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+        mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+    }
+    .clr-pic-item:hover{
+        opacity: 1;
+    }
+    .clr-pic-box-bar{
         width: 40px;
     }
-
-    .activeTab{
-        background-color: aquamarine;
+    .clr-pic-box-menu-bar{
+        width: 25px;
     }
+
+    // .activeTab{
+    //     opacity: 1;
+    //     color: var(--cold-pale);
+    // }
 
     .hiddenMark{
         opacity: .7;
@@ -395,17 +506,43 @@ export default {
         // top: calc( var(--bar-height) + var(--header-height) );
         width: 400px;
         z-index: 1000;
-        background-color: black;
+        box-shadow: var(--shadow-bar-menu);
+    }
+    .marks-menu-box{
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
+    .SESSION-menu-back{
+        background: var(--grad-mark-menu-SESSION-1), var(--grad-mark-menu-2);
+    }
+    .PROJECTS-menu-back{
+        background: var(--grad-mark-menu-PROJECTS-1), var(--grad-mark-menu-2);
+    }
+    .marks-box-rename{
+        height: 26px;
+        background: var(--grad-mark-menu-input);
+        border: solid 1px var(--border-mark-menu-input);
+        color: var(--pure-white);
     }
 
-    @media screen and (min-width: 1501px) {
+    @media screen and (min-width: 1501px) { //  fullscreen
+
+        .bar-block{
+            width: 1000px;
+        }
+
         ._marks-unfolded-block{
             left: 230px;
             // right: 1290px;
         }
     }
     
-    @media screen and (max-width: 1500px) and (min-width: 1001px) {  
+    @media screen and (max-width: 1500px) and (min-width: 1001px) {
+
+        .bar-block{
+            width: 1000px;
+        }
+
         ._marks-unfolded-block{
             left: 100px;
             // right: 800px;
@@ -413,6 +550,11 @@ export default {
     }
     
     @media screen and (max-width: 1000px) {
+
+        .bar-block{
+            width: auto;
+        }
+
         ._marks-unfolded-block{
             left: 0px;
         }
@@ -420,17 +562,29 @@ export default {
     // .marks-box__item:hover{
     //     background-color: aquamarine;
     // }
-    .marks-box__item:hover .delete{
-        opacity: .6;
+    .marks-box__item{
+        margin-top: 7px;
+        margin-bottom: 7px;
     }
-    .delete{
-        opacity: 0;
+    .marks-box__item:hover .delete, .marks-box__item:hover .set-color{
+        // opacity: 1;
+        visibility: visible;
+    }
+    .delete, .set-color{
+        // opacity: 0;
+        padding-left: 10px;
+        padding-right: 10px;
+        visibility: hidden;
+    }
+    .checkbox-block{
+        margin-right: 10px;
     }
 
     .checkbox-mark-item{
+        padding: 4px;
         appearance: none;
-        width: 10pt;
-        height: 10pt;
+        width: 6px;
+        height: 6px;
         opacity: 0;
         // accent-color: var(--text);
         background: var(--text);
@@ -444,6 +598,14 @@ export default {
     .checkbox-mark-item:hover{
         background: var(--text);
         opacity: .3;
+    }
+
+    .vertical-center{
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+    .vertical-center img{
+        display: block;
     }
 
     .meta-item{

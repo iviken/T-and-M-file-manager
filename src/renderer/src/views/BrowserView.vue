@@ -14,7 +14,7 @@ export default {
     },
 
     props:{
-        sessionType:{    
+        sessionType:{       //  
             type: String,
             required: true
         }
@@ -101,9 +101,6 @@ export default {
 
         getProject(){
 
-            console.log('get proj');
-            
-
             if(this.sessionType == 'SESSION'){
 
                 this.fullData = window.api.getSessionData()
@@ -118,35 +115,14 @@ export default {
             }
             // console.log('session type: ' + this.sessionType)
             // console.log(this.fullData)
-
             //  Searching in project status 'opened' for open project
             for (const key in this.fullData) {
                 //  Open project
                 if(this.fullData[key].meta.status == 'opened'){
                     //  Set actual project data (one opened project)
                     this.data = this.fullData[key]
-                    //
-                    // let isAtLeatOneFolderOpen = false
-                    // //  Search opened folder in project
-                    // this.fullData[key].folders.forEach((folder, index) => {
-                    //     if(folder.isOpened){
-                    //         //  Opened folder index for Accordion component :files
-                    //         this.localState.activeFolderIndex = index
-                    //         //
-                    //         isAtLeatOneFolderOpen = true
-                    //         // console.log('folder opened: ' + folder.path)
-                    //     }
-                    // })
-                    // //  Reset opened folder index if is all folders closed
-                    // if( !isAtLeatOneFolderOpen ){
-                    //     this.localState.activeFolderIndex = 0
-                    //     this.fullData[key].folders[0].isOpened = true
-                    // }
-                    // break
                 }
             }
-            //
-            // this.refreshFiles()
             //
             this.resetStateFiles()
             //
@@ -156,15 +132,16 @@ export default {
         imageViewer(){
             //
             this.stateFiles.imageViewerPullFiles = {}
-            //
+            
             let filePullIsEmpty = true
-            //
+            
             this.data.folders.forEach(folder => {
                 folder.files.forEach(file => {
                     for(let key in this.stateFiles.files){
+
                         if( (file.id == key) && (this.stateFiles.files[key] == 'SELECTED') ){
+
                             this.stateFiles.imageViewerPullFiles[key] = file
-                            //
                             filePullIsEmpty = false
                         }
                     }
@@ -183,7 +160,7 @@ export default {
         init(){
 
             this.foldersMethods2 = folders
-            this.foldersMethods2.init( {folders: this.data.folders, localState: this.localState} )
+            this.foldersMethods2.init( {folders: this.data.folders, localState: this.localState, parameters: this.data.parameters} )
             //
             this.filesMethods = filesMethods
             this.filesMethods.localState = this.localState
@@ -201,13 +178,11 @@ export default {
 
     beforeMount() {
 
-        console.log(this.sessionType);
+        // console.log(this.sessionType)
         //
         this.getProject()
-        //
-        // this.init()
 
-        console.log(this.data)
+        // console.log(this.data)
     },
 
     mounted(){
@@ -258,9 +233,9 @@ export default {
             {{ data.folders[localState.activeFolderIndex].path.split('/')[ data.folders[localState.activeFolderIndex].path.split('/').length - 1 ] }}
         </div> -->
 
-        <Bar :stateFiles="stateFiles" :localState="localState" :foldersMethods2="foldersMethods2" :marks="data.marks" :marksMethods="marksMethods" :filesMethods="filesMethods" :folders="data.folders" :inputSettings="settings" />
+        <Bar :stateFiles="stateFiles" :localState="localState" :foldersMethods2="foldersMethods2" :marks="data.marks" :marksMethods="marksMethods" :filesMethods="filesMethods" :folders="data.folders" :inputSettings="settings" class="bar-component"/>
 
-        <div class="page">
+        <div :class="`${localState.actualSessionType}-page`">
 
             <div :class="{collapse: localState.showImageViewer}" class="on-row">
 
@@ -268,10 +243,10 @@ export default {
                 
                 <div class="page-block on-row w100">
                 
-                    <div class="section-left">
-                        <Tasks v-if="localState.showTasksPanel" :data="data.tasks" class="component" />
+                    <div class="tasks-and-tree">
+                        <Tasks v-if="localState.showTasksPanel" :data="data.tasks" class="component tasks" />
 
-                        <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption"  :foldersMethods2="foldersMethods2" :filesMethods="filesMethods" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders" :inputSettings="settings"  :dataSettings="data.parameters" :localState="localState" :projectID="data.id" class="component" />
+                        <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption"  :foldersMethods2="foldersMethods2" :filesMethods="filesMethods" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders" :inputSettings="settings"  :dataSettings="data.parameters" :localState="localState" :projectID="data.id" class="component tree" />
                     </div>
                     
                     <div class="section-right h100">
@@ -326,34 +301,47 @@ export default {
 
 <style scoped lang="scss">
 
-    .page{
-        background: var(--grad-center);
-        padding-top: var(--content-indent);
+    .bar-component{
+    }
+
+    .PROJECTS-page{
+        background: var(--grad-page-PROJECTS);
+    }
+
+    .SESSION-page{
+        background: var(--grad-page-SESSION);
     }
 
     .page-block{
         -webkit-mask-image: -webkit-gradient(linear, left 90%, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
     }
-    .section-left{
-        background: var(--grad-section-left1), var(--grad-section-left2);
+
+    .left-field{
+        background: var(--grad-left-field);
+    }
+    .tasks-and-tree{
+        background: var(--grad-tasks-and-tree-2), var(--grad-tasks-and-tree-3);
     }
     .text-files-component{
-        background: var(--grad-section-right-text-files);
+        background: var(--grad-text-files-1), var(--grad-text-files-2);
     }
     .image-files-component{
-        background: var(--grad-section-right-image-files);
+        background: var(--grad-images-files-1);
+    }
+    .right-fiels{
+        // background: var(--grad-right-field);
     }
 
     .component{
         height: calc( 100vh - var(--header-heigth) - var(--content-indent) - var(--pin-indent-bottom) + 10px );
     }
 
-    @media screen and (min-width: 1501px) {
+    @media screen and (min-width: 1501px) {     //  fullscreen
         
         .page-block{
             width: 1500px;
         }
-        .section-left{
+        .tasks-and-tree{
             width: 420px;
         }
         .text-files-component{
@@ -370,11 +358,11 @@ export default {
         .page-block{
             width: 1200px;
         }
-        .section-left{
+        .tasks-and-tree{
             width: 300px;
         }
         .text-files-component{
-            width: 200px;
+            width: 280px;
         }
         .image-files-component{
             width: 700px;
@@ -387,7 +375,7 @@ export default {
         .page-block{
             width: 1000px;
         }
-        .section-left{
+        .tasks-and-tree{
             width: 300px;
         }
         .text-files-component{
@@ -407,24 +395,10 @@ export default {
     }
 
     .collapse{
-        // visibility:hidden;
-        // visibility: collapse;
         display: none;
     }
 
     .focus:focus{
         outline: none;
     }
-
-    // ._component{
-    //     position: relative;
-    // }
-    // .header-name{
-    //     position: absolute;
-    //     z-index: 9999999;
-    //     width: 80%;
-    //     top: -100px;
-    //     left: 160px;
-    //     text-align: center;
-    // }
 </style>

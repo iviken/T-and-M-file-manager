@@ -36,6 +36,7 @@ export default {
                         this.$router.push({name: 'ProjectsList' })
                     }
                 }
+
                 this.state.active = this.state.active == 'BROWSER' ? 'PROJECTS' : 'BROWSER'
             break   
         }
@@ -73,6 +74,7 @@ export default {
   },
 
   beforeMount() {
+    
     this.fullData = window.api.getProjectData()
     //
     this.projectName =  this.getActualProjectName()

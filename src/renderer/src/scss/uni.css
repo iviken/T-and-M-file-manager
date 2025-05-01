@@ -62,24 +62,24 @@
     font-weight: bold;
 }
 .text-nowrap{
-    text-wrap: nowrap;
+    text-wrap: nowrap !important;
 }
 /* VISIBILITY */
 .hide-overflow{
     overflow: hidden;
 }
-.HIDE{
-    display: none;
-}
-.HIDE-2{
+.HIDE, .HIDE-2, .hide{
     display: none;
 }
 /* EFFECTS */
-.rotate90{
+.rotate90, .rotate-left{
     transform: rotate(90deg);
 }
 .rotate180{
     transform: rotate(180deg);
+}
+.rotate-right{
+    transform: rotate(270deg);
 }
 /* LAYERS */
 .z0{

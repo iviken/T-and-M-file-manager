@@ -23,8 +23,45 @@ body{
 .t-text-file:hover {
     color: var(--pure-white);
 }
+
 .header{
-    color: black;
     font-weight: bold;
     font-size: 18px;
+}
+
+.t-file-name{
+    color: var(--text);
+}
+.t-file-name, .t-file-format{
+    font-size: 15px;
+}
+.t-bar-marks, .t-files-mark{
+    font-size: 16px;
+}
+.t-tree-item, .t-task{
+    color: var(--text);
+    font-size: 16px;
+}
+.t-tree-item:hover, .t-task:hover{
+    color: var(--pure-white);
+}
+
+.t-bar-folders{
+    color: var(--cold-pale);
+    font-size: 16px;
+    font-weight: 600;
+}
+.activeTab{
+    opacity: 1;
+    color: var(--cold-white);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.t-bar-address{
+    font-size: 14px;
+    color: var(--text);
+}
+.t-bar-address:hover{
+    color: var(--pure-white);
 }

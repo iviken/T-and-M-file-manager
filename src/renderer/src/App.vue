@@ -44,7 +44,7 @@
 
   :root{
     --header-heigth: 100px;
-    --content-indent: 80px;
+    --content-indent: 40px;
     --pin-indent-bottom: 50px;
   }
 </style>

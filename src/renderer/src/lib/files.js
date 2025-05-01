@@ -19,8 +19,7 @@ export const filesMethods = {
         this.destFolderID = null
         this.srcFolderID = null
         this._allowCopyingOrMovingFiles = false
-
-        // console.log(this.localState)
+        //  source
         this.folders = dat.folders
         // console.log(this.folders)
     },
@@ -462,5 +461,21 @@ export const filesMethods = {
       }
 
       return this.folders.find(_funk)      
+    },
+
+    checkIsAtLeastOneSelectedFilePinned:function(){
+
+        let filesPinned = 0
+
+        for (const fileID in this.stateFiles.files) {
+
+            if( this.stateFiles.files[fileID] == 'SELECTED' ){
+
+                if( this.folders[this.localState.activeFolderIndex].files.find(file => (file.id == fileID)&&file.isPinned) )
+                    filesPinned++
+            }
+        }
+
+        return filesPinned
     },
 }

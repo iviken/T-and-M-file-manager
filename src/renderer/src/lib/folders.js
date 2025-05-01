@@ -4,8 +4,10 @@ const settings = {
     win32separator: '\\',
     actualSeparator: '/',
     excludedFolders: ['Recovery', 'System Volume Information', 'PerfLogs', 'Config.Msi', '$SysReset', '$Recycle.Bin', 'OneDriveTemp'],
+    excludedFiles: ['desktop.ini'],
     maxTabs: 10,    //  maxFoldersOnBar
     forcedFolderUpdate: false,
+    lengthOfLastWord: 6,
 }
 
 const defaults = {
@@ -116,6 +118,27 @@ const paths = {
     return path.replaceAll(settings.win32separator, settings.actualSeparator)
     // return path
   },
+
+  folderIsSystem(path, cnst){
+
+    if( cnst == undefined)
+      return this.getFolderName(path).startsWith('.')
+
+    if( cnst == 'soft')
+      return settings.excludedFolders.includes( this.getFolderName(path) )
+  },
+
+  pathIsSystem(path, params){   //  params = 'safe' mode serch nearest non-sys folder
+
+    path = this.validate(path)
+
+    if(params == undefined)
+      return path.split(settings.actualSeparator).some(folderName => folderName.startsWith('.'))
+
+    //  Search nearest non-sys parent folder
+    // if(params = 'safe')
+    //   return path.
+  },
 }
 
 const helpers = {
@@ -133,12 +156,26 @@ const helpers = {
     
     return _name
   },
+
+  shrinkName:function(name, maxLength){
+
+    if( maxLength == undefined ) return name
+    if( maxLength < (settings.lengthOfLastWord + 3) ) return name
+
+    if( maxLength >= name.length ) return name
+
+    let lastWord = name.indexOf(' ') > 0 ? name.split(' ')[name.split(' ').length - 1] : name.slice(-1 * settings.lengthOfLastWord)
+    let index = maxLength - lastWord.length - 2
+
+    return `${name.slice(0, index)}...${lastWord}`
+  },
 }
 
 export const folders = {
 
   folders: null,
   localState: null,
+  parameters: null,
 
   deletingQueue: new Set(),
   copyCutQueue: [],
@@ -156,11 +193,19 @@ export const folders = {
     //  Get source
     this.folders = dat.folders
     this.localState = dat.localState
+    this.parameters = dat.parameters
 
     //      -- AT LEAST ONE FOLDER MUST BE ADDED TO THE DB ! 
+
     //  Open at least one folder
-    //  'safe' mode will open first folder if all folders are closed
-    let activeFolder = db_foldersCollectionMethods.getOpenedFolder(this.folders, 'safe')
+    let activeFolder
+    //  & .folder-name
+    //    'safe' mode will open first folder if all folders are closed
+    // if( this.parameters.showFoldersStartingWithDot || (this.parameters.showFoldersStartingWithDot == undefined) )
+      activeFolder = db_foldersCollectionMethods.getOpenedFolder(this.folders, 'safe')
+    //  ! .folder-name
+    // if( !this.parameters.showFoldersStartingWithDot )
+    //   activeFolder = db_foldersCollectionMethods.getOpenedFolder(this.folders, 'exclude dot')
 
     this.clickToFolder( activeFolder.folder )
 
@@ -261,6 +306,9 @@ export const folders = {
   },
 
   deleteFolder:function(path){
+
+    //
+    if( paths.folderIsSystem(path, 'soft') ) return
 
     this.deletingQueue.add( path || history.actual(this.folders).path )
 
@@ -455,6 +503,24 @@ export const folders = {
   },
 
   refreshFiles:function(){},
+
+  // getFolderName:function(path){
+
+  //   return paths.getFolderName(path)
+  // },
+
+  showFoldersStartingWithDot:function(){
+
+    //
+    this.parameters.showFoldersStartingWithDot = !this.parameters.showFoldersStartingWithDot
+    //
+    this.refreshDisplayedFolders()
+  },
+
+  shrinkName:function(name, maxLength){
+
+    return helpers.shrinkName(name, maxLength)
+  },
 }
 
 const navigation = {
@@ -467,8 +533,6 @@ const navigation = {
     //  reset
     this.foldersList = null
     this.subfoldersList = null
-
-    // this._refreshDisplayedFolders(folders)
   },
   
   switchTo:function(folders, path, cnst, params, mode){   //  return opened folder index
@@ -522,7 +586,7 @@ const navigation = {
     console.log(previousPath)
 
     if(previousPath) 
-      return this.switchTo(folders, previousPath)
+      return this.switchTo(folders, previousPath, 'forced')   //
   },
 
   parent:function(folders){
@@ -825,9 +889,15 @@ const db_foldersCollectionMethods = {
         result = {folder: folders[0], index: 0}
 
       folders.forEach((folder, index) => {
-        if(folder.isOpened) 
-          result = {folder: folder, index: index}
+        if(folder.isOpened)
+
+          // if(!folders.parameters.showFoldersStartingWithDot)
+          //   if( paths.folderIsSystem(folder.path) )
+
+              result = {folder: folder, index: index}
       })
+
+      // if() //  TO DO
 
       return result
     },
@@ -843,6 +913,7 @@ const db_foldersCollectionMethods = {
 const foldersCollectionMethods = {
 
     folderIsExist:function(path){
+      
       return window.api.folderIsExist(path)
     },
 
@@ -888,19 +959,35 @@ const foldersCollectionMethods = {
 
     refreshFolders:function(path, cnst, data){
 
-      console.log('refreshing path: ')
-      console.log(path)
-      console.log(cnst)
+      // console.log('refreshing path: ')
+      // console.log(path)
+      // console.log(cnst)
 
       function sublist(path, cnst){
+
         navigation.subfoldersList = window.api.getFolderNames(path, cnst) || []
+        // console.log(navigation.subfoldersList)
+
+        //  Filter folders to starting '.' (hide or system folders)
+        if(!folders.parameters.showFoldersStartingWithDot)
+          if( !paths.getFolderName(path).startsWith('.') )
+            navigation.subfoldersList = navigation.subfoldersList.filter(folderName => !folderName.startsWith('.'))
+
         // console.log(navigation.subfoldersList)
       }
       
       function list(path, cnst){
+
         navigation.foldersList =  window.api.getFolderNames( paths.getParentFolderPath(path), cnst ) || []
         //  exclude hidden (system) folders
         navigation.foldersList = navigation.foldersList.filter( i=>!settings.excludedFolders.includes(i) ) || []
+        // console.log(navigation.foldersList)
+        
+        //  Filter folders to starting '.' (hide or system folders)
+        if(!folders.parameters.showFoldersStartingWithDot)
+          if( !( paths.getFolderName( paths.getParentFolderPath(path) ).startsWith('.') ) )
+            navigation.foldersList = navigation.foldersList.filter(folderName => ( !folderName.startsWith('.') || (folderName == paths.getFolderName(path)) ) )
+
         // console.log(navigation.foldersList)
       }
 
@@ -919,6 +1006,8 @@ const foldersCollectionMethods = {
       //
       if( (cnst == 'forced') || (navigation.foldersList == null) || (navigation.subfoldersList == null) || (cnst == 'refresh') || settings.forcedFolderUpdate ){
 
+        console.log(cnst)
+        
         sublist(path)
         list(path)
         return
@@ -1091,6 +1180,8 @@ const filesCollectionMethods = {
 
       let readDirResult = window.api.getFileFullnames( history.actual(folders.folders).path )
 
+      readDirResult = readDirResult.filter( filename => !settings.excludedFiles.includes(filename) )
+
       // console.log('readDirResult')
       // console.log(readDirResult)
 
@@ -1109,7 +1200,7 @@ const filesCollectionMethods = {
 
       history.actual(folders.folders).files.push(
         {
-          id: 'fileID_' + Math.floor(Math.random()*10000000),
+          id: 'fileID_' + Math.floor(Math.random()*100000000000000),
           name: fullname.slice( 0, fullname.lastIndexOf('.') ),       //      To Do
           format: fullname.slice( fullname.lastIndexOf('.') + 1 ), 
           markID: defaults.defaulMarkID, 

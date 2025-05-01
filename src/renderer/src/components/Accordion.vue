@@ -37,7 +37,8 @@ export default {
     }
   },
 
-  methods: {
+  methods:{
+
     foldMark: function(mark_ID){
 
       this.marks[mark_ID].isFolded[this.viewMode] = !this.marks[mark_ID].isFolded[this.viewMode]
@@ -107,6 +108,7 @@ export default {
   },
 
   computed:{
+
     isThereAtLeastOneAttachedFile(){
       return this.files
         .filter( (file)=>this.viewMode == 'imgs' ? this.fileImgMask.includes(file.format) : !this.fileImgMask.includes(file.format) )
@@ -144,7 +146,7 @@ export default {
 <template>
 
   <div 
-    class="h100 focus _component" 
+    class="h100 focus _component accordion" 
     tabindex="0" 
     @keyup.esc="filesMethods.resetStateFiles()" 
     @keyup.f2="filesMethods.renameFiles( {state: 'start rename'} )" 
@@ -156,57 +158,66 @@ export default {
   >
 
     <div class="on-row">
-      <div @click="foldPin()" class="left-field _left-field">
-        <div v-if="isThereAtLeastOneAttachedFile" :class="{pinActive: inputSettings.pinFilesIsFolded[viewMode]}">Pin</div>
+
+      <div @click="foldPin()" class="left-field _left-field on-row">
+        <div class="w100"></div>
+        <div v-if="isThereAtLeastOneAttachedFile" :class="{pinActive: inputSettings.pinFilesIsFolded[viewMode]}">
+          <img src="../assets/pin.svg" alt="" class="pix-btn pin">
+        </div>
       </div>
-      <div v-if="!inputSettings.pinFilesIsFolded[viewMode]">
-        <div :class="`${viewMode}`">
-          <div v-for="fileItem in files">
-            <div v-if="fileItem.isPinned" @click="filesMethods.clickToFile(fileItem.id)" @mouseenter.ctrl="filesMethods.readMetadata(fileItem)" @dblclick="filesMethods.openFile(fileItem)">
-              <FileComponent :file="fileItem" :viewMode="viewMode" :state="state" :pixHeight="inputSettings.imagesHeight" :filesMethods="filesMethods" />
+
+      <div v-if="!inputSettings.pinFilesIsFolded[viewMode]" class="w100">
+        <div :class="`${viewMode}`" class="w100">
+          <div v-for="fileItem in files" class="file w100">
+            <div v-if="fileItem.isPinned" @click="filesMethods.clickToFile(fileItem.id)" @mouseenter.ctrl="filesMethods.readMetadata(fileItem)" @dblclick="filesMethods.openFile(fileItem)" class="w100">
+              <FileComponent :file="fileItem" :viewMode="viewMode" :state="state" :pixHeight="inputSettings.imagesHeight" :filesMethods="filesMethods" class="file-component" />
             </div>
           </div>
         </div>
       </div>
+
     </div>
     
-     <div class="scrollY unpin-block" :style="`height: ${unpinHeightBlock}px;`">
+    <div class="scrollY unpin-block" :style="`height: ${unpinHeightBlock}px;`">
 
-      <div v-for="markItem in singleMarkModeFilter(marks)">
+      <div v-for="markItem in singleMarkModeFilter(marks)" class="unpin-sub-block">
       
         <div v-if="markItem.show">
       
-         <div v-if="filterMark(markItem)" class="on-row" :id="`${markItem.id}`">
-         
-           <div :class="`${markItem.color}-back`" class="left-field" @click="foldMark(markItem.id)"></div>
-         
-           <div class="on-col">
-         
-             <div @click="foldMark(markItem.id)" @dblclick="singleMarkMode(markItem.id)">
-               <span :class="`${markItem.color}-text`">
-                 {{ markItem.descr }}
-               </span>
-             </div>
-           
-             <div @keyup.ctrl.a="filesMethods.selectAllFilesInGroupMark(markItem.id, this.viewMode)" :class="`${viewMode}`" tabindex="0" class="focus">
-              <div v-for="fileItem in files" v-if="markItem.isFolded[viewMode]">
-                <div v-if="!fileItem.isPinned && (fileItem.markID == markItem.id)">
-                  <div @click="filesMethods.clickToFile(fileItem.id)" @mouseenter.shift="filesMethods.readMetadata(fileItem)" @dblclick="filesMethods.openFile(fileItem)">
-                    <FileComponent 
-                      :file="fileItem" 
-                      :state="state"
-                      :viewMode="viewMode" 
-                      :pixHeight="inputSettings.imagesHeight"
-                      :filesMethods="filesMethods"
+          <div v-if="filterMark(markItem)" class="on-row" :id="`${markItem.id}`">
+          
+            <div class="left-field left-field-gradient" @click="foldMark(markItem.id)">
+              <div :class="`${markItem.color}-back`" class="h100 w100"></div>
+            </div>
+          
+            <div class="on-col">
+          
+              <div @click="foldMark(markItem.id)" @dblclick="singleMarkMode(markItem.id)">
+                <span :class="`${markItem.color}-text uppercase t-files-mark mark-name`">
+                  {{ markItem.descr }}
+                </span>
+              </div>
+            
+              <div @keyup.ctrl.a="filesMethods.selectAllFilesInGroupMark(markItem.id, this.viewMode)" :class="`${viewMode}`" tabindex="0" class="focus w100">
+                <div v-for="fileItem in files" v-if="markItem.isFolded[viewMode]" class="file w100">
+                  <div v-if="!fileItem.isPinned && (fileItem.markID == markItem.id)" class="w100">
+                    <div @click="filesMethods.clickToFile(fileItem.id)" @mouseenter.shift="filesMethods.readMetadata(fileItem)" @dblclick="filesMethods.openFile(fileItem)" class="w100">
+                      <FileComponent 
+                        :file="fileItem" 
+                        :state="state" 
+                        :viewMode="viewMode" 
+                        :pixHeight="inputSettings.imagesHeight" 
+                        :filesMethods="filesMethods" 
+                        class="file-component"
                       />
+                    </div>
                   </div>
                 </div>
               </div>
-             </div>
-         
-           </div>
-         
-         </div>
+          
+            </div>
+          
+          </div>
       
         </div>
       
@@ -214,7 +225,7 @@ export default {
 
       <div class="empty-block"></div>
 
-     </div>
+    </div>
 
   </div>
 
@@ -222,28 +233,55 @@ export default {
 
 <style scoped lang="scss">
   // @use '../scss/textFiles.scss' as *;
+  .pix-btn{
+    opacity: .6;
+    width: 14px;
+    height: 14px;
+  }
+  .pin{
+    width: 10px;
+  }
+
+  .accordion{
+    padding-top: var(--content-indent);
+  }
+
   .focus:focus{
     outline: none;
   }
+
   .left-field{
     width: 50px;
-    opacity: .4;
+    min-width: 50px;
   }
   .left-field:hover{
-    opacity: .6;
+  }
+  .left-field-gradient{
+    opacity: .15;
+    -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+    mask-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+    filter: blur(5px);
+  }
+  .left-field-gradient:hover{
+    opacity: .4;
   }
 
   .pinActive{
-    color:aquamarine;   //
+    // color:aquamarine;   //
+    opacity: .6;
   }
   // .pin-block{
   //   height: fit-content;
   // }
   .unpin-block{
+    margin-top: 15px;
     // max-height: 65vh;
     // height: 50vh;
     // height: fit-content;
     // display: inline-block;
+  }
+  .unpin-sub-block{
+    margin-top: 16px;
   }
 
   .item{
@@ -251,6 +289,17 @@ export default {
   }
   .item:hover{
     color: var(--pure-white);
+  }
+
+  .mark-name{
+    opacity: .7;
+  }
+  .mark-name:hover{
+    opacity: 1;
+  }
+  .file{
+    // padding-top: 3px;
+    // padding-bottom: 3px;
   }
 
   .text{
@@ -265,5 +314,9 @@ export default {
 
   .empty-block{
     height: 200px;
+  }
+
+  .file-component{
+    overflow: hidden;
   }
 </style>
