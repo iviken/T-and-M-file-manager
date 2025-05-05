@@ -177,7 +177,6 @@ export default {
     },
 
     beforeMount() {
-
         // console.log(this.sessionType)
         //
         this.getProject()
@@ -222,7 +221,7 @@ export default {
 
 <template>
 
-    <div class="on-col focus" @keyup.space="imageViewer()" @keyup.f5="foldersMethods2.refreshFiles()" tabindex="0">
+    <div class="on-col focus" @keyup.alt.exact="imageViewer()" @keyup.f5="foldersMethods2.refreshFiles()" tabindex="0">
 
         <!-- <div v-if="sessionType == 'PROJECTS'" class="header-name uppercase">
             <span class="header">{{ data.meta.name }}</span>

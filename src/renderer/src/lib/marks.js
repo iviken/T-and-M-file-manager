@@ -1,5 +1,6 @@
 const defaults = {
     defaultMarksColor: 'default-color',
+    unmarkedColor: 'unmarked-color',
     unmarkedMarkID: 'mark_unmarked',
 }
 
@@ -15,7 +16,6 @@ export const marksMethods = {
 
     checkIfAtLeastOneFileSelected:function(){
         
-        // this.stateFiles.atLeastOneFileSelected = false
         let atLeastOneFileSelected = false
         for (const key in this.stateFiles.files) {
             if(this.stateFiles.files[key] == 'SELECTED') atLeastOneFileSelected = true
@@ -81,7 +81,7 @@ export const marksMethods = {
         this.marks[defaults.unmarkedMarkID] = {
 
             id: defaults.unmarkedMarkID,
-            color: defaults.defaultMarksColor,
+            color: defaults.unmarkedColor,
             descr: "--unmarked--",
             isFolded: {text: true, imgs: true},
             show: true,

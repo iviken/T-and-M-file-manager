@@ -144,7 +144,7 @@ export default {
 
                     <div v-if="hoverOnProject_ID != null" class="info">
                         <div v-if="fullData[hoverOnProject_ID].meta.isPinned">
-                            <span class="project-description">
+                            <span class="t-project-descr project-description">
                                 {{ fullData[hoverOnProject_ID].meta.description }}
                             </span>
                         </div>
@@ -155,18 +155,18 @@ export default {
                 <div class="pin-list right-side">
                 
                     <div class="w100 on-col">
-                        <div v-for="(item, index) in sortProjects" class="projects-list__item w100">
+                        <div v-for="(item, index) in sortProjects" class="w100">
                             <div v-if="item.meta.isPinned">
 
-                                <div v-if="item.id != renamingProjectID" class="on-row" :class="{active: item.id == selectedProjectID}">
+                                <div v-if="item.id != renamingProjectID" :class="{active: item.id == selectedProjectID}" class="projects-list__item on-row">
 
                                     <div class="pin-logo">
                                         <!-- <span v-if="!index"> -->
                                             <img src="../assets/pin.svg" class="pix-btn">
                                         <!-- </span> -->
                                     </div>
-                                    <div @mouseleave="hoverOnProject_ID = null" @mouseenter="hoverOnProject_ID = item.id" class="projects-list__name text-left on-row item">
-                                        <span @click="selectedProjectID = renamingProjectID ? selectedProjectID : item.id" @dblclick="openProject(item.id)" class="item-name project-name uppercase">{{ item.meta.name }}</span>
+                                    <div @mouseleave="hoverOnProject_ID = null" @mouseenter="hoverOnProject_ID = item.id" class="projects-list__name on-row item">
+                                        <span @click="selectedProjectID = renamingProjectID ? selectedProjectID : item.id" @dblclick="openProject(item.id)" class="item-name t-project-name uppercase">{{ item.meta.name }}</span>
                                         <!-- <span><img src="../assets/up dawn.svg" class="item__icon"></span> -->
                                          <div class="btn on-center">
                                              <span @click="deleteProject(item.id)"><img src="../assets/x.svg" class="item__icon"></span>
@@ -178,8 +178,8 @@ export default {
 
                                 </div>
                                 
-                                <div v-if="item.id == renamingProjectID">
-                                    <input type="text" v-model="renamedValue" :id="`${item.id}`" @keyup.enter="renameProject({state: 'input-end'})" class="rename-inputbox" />
+                                <div v-if="item.id == renamingProjectID" class="rename-box">
+                                    <input type="text" v-model="renamedValue" :id="`${item.id}`" @keyup.enter="renameProject({state: 'input-end'})" class="item-name t-project-name t-project-renaming rename-inputbox focus w100" />
                                 </div>
 
                             </div>
@@ -198,7 +198,7 @@ export default {
 
                     <div v-if="hoverOnProject_ID != null" class="info">
                         <div v-if="!fullData[hoverOnProject_ID].meta.isPinned">
-                            <span class="project-description">
+                            <span class="t-project-descr project-description">
                                 {{ fullData[hoverOnProject_ID].meta.description }}
                             </span>
                         </div>
@@ -209,15 +209,15 @@ export default {
                 <div class="unpin-list right-side">
             
                     <div class="w100 on-col">
-                        <div v-for="(item, index) in sortProjects" class="projects-list__item w100">
+                        <div v-for="(item, index) in sortProjects" class="w100">
                             <div v-if="!item.meta.isPinned">
 
-                                <div v-if="item.id != renamingProjectID" class="on-row" :class="{active: item.id == selectedProjectID}">
+                                <div v-if="item.id != renamingProjectID" :class="{active: item.id == selectedProjectID}" class="projects-list__item on-row">
 
                                     <!-- <div class="pin-logo"><span v-if="!index"><img src="../assets/pin.svg" class=""></span></div> -->
                                     <div class="pin-logo"><span></span></div>
-                                    <div @mouseleave="hoverOnProject_ID = null" @mouseenter="hoverOnProject_ID = item.id" class="projects-list__name text-left on-row item">
-                                        <span class="item-name project-name uppercase" @click="selectedProjectID = renamingProjectID ? selectedProjectID : item.id" @dblclick="openProject(item.id)">{{ item.meta.name }}</span>
+                                    <div @mouseleave="hoverOnProject_ID = null" @mouseenter="hoverOnProject_ID = item.id" class="projects-list__name item on-row">
+                                        <span class="item-name t-project-name uppercase" @click="selectedProjectID = renamingProjectID ? selectedProjectID : item.id" @dblclick="openProject(item.id)">{{ item.meta.name }}</span>
                                         <!-- <span><img src="../assets/up dawn.svg" class="item__icon"></span> -->
                                         <div class="btn on-center">
                                             <span @click="deleteProject(item.id)"><img src="../assets/x.svg" class="item__icon"></span>
@@ -229,8 +229,8 @@ export default {
 
                                 </div>
                                 
-                                <div v-if="item.id == renamingProjectID">
-                                    <input type="text" v-model="renamedValue" :id="`${item.id}`" @keyup.enter="renameProject({state: 'input-end'})" class="rename-inputbox" />
+                                <div v-if="item.id == renamingProjectID" class="rename-box">
+                                    <input type="text" v-model="renamedValue" :id="`${item.id}`" @keyup.enter="renameProject({state: 'input-end'})" class="item-name t-project-name t-project-renaming uppercase rename-inputbox focus w100" />
                                 </div>
 
                             </div>
@@ -248,17 +248,17 @@ export default {
                     <div class="w100"></div>
 
                     <div v-if="hoverOnCreateNewProject" class="info">
-                        <span class="project-description">Create new project from opened folders. Your marks and tasks will remain.</span>
+                        <span class="t-project-descr project-description">Create new project from opened folders. Your marks and tasks will remain.</span>
                     </div>
 
                 </div>
 
                 <div class="new-list right-side">
                     <div class="w100">
-                        <div @mouseleave="hoverOnCreateNewProject = false" @mouseenter="hoverOnCreateNewProject = true" class="projects-list__item w100 on-row">
-                            <div class="new-proj-logo on-center"><img src="../assets/plus.svg" class="pix-btn"></div>
-                            <div class="create w100 text-left" @click="createNewProjectFromOpenedFolders()">
-                                <span class="project-name uppercase">Create new project</span>
+                        <div @mouseleave="hoverOnCreateNewProject = false" @mouseenter="hoverOnCreateNewProject = true" class="w100 on-row">
+                            <div class="new-proj-logo"><img src="../assets/plus.svg" class="pix-btn"></div>
+                            <div class="create w100" @click="createNewProjectFromOpenedFolders()">
+                                <span class="t-project-name uppercase">Create new project</span>
                             </div>
                         </div>
                     </div>
@@ -280,6 +280,9 @@ export default {
         width: 10px;
         height: 10px;
     }
+    // .btn:hover{
+    //     opacity: 1;     
+    // }
 
     .projects-list-component{
         height: 90vh;
@@ -308,7 +311,16 @@ export default {
     }
     .right-side{
         width: 65%;
-        // padding-left: 65px;
+    }
+
+    .projects-list__item{
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+
+    .new-proj-logo{
+        margin-top: auto;
+        margin-bottom: auto;
     }
 
     .pin-block{
@@ -325,10 +337,13 @@ export default {
         width: 350px;
     }
 
+    .rename-box{
+        padding-left: 65px;
+        background: var(--grad-projects-list-rename);
+    }
     .rename-inputbox{
         border: solid 0px;
-        background-color: inherit;
-        color: var(--pure-white);
+        background-color: rgba(0,0,0,0);
     }
 
     @media screen and (min-width: 1501px) {     //  fullscreen
@@ -342,10 +357,6 @@ export default {
     @media screen and (max-width: 1000px) {
 
     }
-    // .left{
-    //     width: 600px;
-    //     color: var(--text);
-    // }
 
     .active{
         background: var(--grad-projects-list-selected);
@@ -353,14 +364,6 @@ export default {
 
     .item:hover .item-name{
         margin-right: 20px;
-        color: var(--pure-white);
-    }
-    
-    .create{
-        color: var(--text);
-    }
-    .create:hover span{
-        color: var(--pure-text);
     }
 
     .focus:focus{

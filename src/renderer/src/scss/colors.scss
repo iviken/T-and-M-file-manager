@@ -5,11 +5,19 @@
     --green: rgba(62,133,47,1);
     --yellow: rgba(175,168,62,1);
     --ocean: rgba(115,208,212,1);
-    --blue: rgba(46,51,200,1);
+    --blue: rgb(88, 92, 209);
     --orange: rgba(205,133,40,1);
+
+    --unmarked: #b6d7ffff;
+
     --pale-white: #92acd418;
     --pale-white2: #b6d7ffbe;
-    
+    --cold-pale: #5d6a87ff;
+    --cold-white: #9baddbff;
+    --text: #b2b2b2ff;
+
+    --transparent: rgba(0,0,0,0);
+
     --ini: rgba(62,133,47,1);
     --vue: rgb(0, 160, 99);
     --js: rgba(175,168,62,1);
@@ -19,15 +27,17 @@
     --md: rgb(118, 109, 244);
     --bat: rgb(255, 255, 255);
 
-    --red-mark-legend: #e55ce0ff;   //
+    --pdf: rgb(183, 41, 41);
+    --torrent: rgb(17, 103, 0);
 
-    --text: #999999ff;
-    --head-name: rgba(0,0,0,0);
+    --7z: rgb(255, 238, 0);
+    --rar: rgb(255, 238, 0);
+    --zip: rgb(255, 238, 0);
 
-    --cold-pale: #5d6a87ff;
-    --cold-white: #9baddbff;
+    // --red-mark-legend: #e55ce0ff;   //
     
-    --head-btn-bgcolor-close-hover: rgba(34,34,41,1);
+    --head-btn-bgcolor-close-hover: red;
+    // --head-btn-bgcolor-close-hover: rgba(34,34,41,1);
     --head-btn-bgcolor-hover: rgba(34,34,41,.63);
     --head-btn-color: rgba(34,34,41,1);
     --head-btn-color2: rgba(255,255,255,.5);
@@ -35,12 +45,17 @@
     --head-btn-color-hover2: white;
 
     --shadow: 0 -15px 21px 0 #000;
-    --image-file-shadow: 0px 0px 30px 0px rgba(0, 0, 0, .5);
+    --shadow-image-file: 0px 0px 30px 0px rgba(0, 0, 0, 1);
     --shadow-bar-menu: 5px 0 30px 0 #000;
 
     --grad-fieldset-red: linear-gradient(90deg, rgba(37, 44, 58, 0) 0%, rgba(212, 37, 179, 0) 4.99%, #d425b30c 45.53%, rgba(0, 0, 0, 0) 100%);
     
     --grad-border-fieldset-green: linear-gradient(90deg, rgba(49,173,49,1) 0%, rgba(49,173,49,0) 12%, rgba(49,173,49,0) 100%);
+
+    //  Common
+
+    --grad-renaming: rgba(146, 192, 255, 0.38);
+    --grad-selected: linear-gradient(90deg, rgba(146, 192, 255, 0) 0%, rgba(146, 192, 255, 0.18) 49.29%, rgba(146, 192, 255, 0.15) 100%);
     
     //  <Project List View>
     
@@ -51,8 +66,9 @@
     
     --grad-projects-list-right-shadow: linear-gradient(-90deg, rgba(0, 0, 0, 0) 98.18%, rgba(0, 0, 0, 0.25) 100%);
 
-    --grad-project-hover: linear-gradient(90deg, rgba(34, 36, 41, 0) 0%, #222429 48.96%, rgba(34, 36, 41, 0) 100%); //
+    // --grad-project-hover: linear-gradient(90deg, rgba(34, 36, 41, 0) 0%, #222429 48.96%, rgba(34, 36, 41, 0) 100%); //
     --grad-projects-list-selected: linear-gradient(90deg, rgba(146, 192, 255, 0.25) 0%, rgba(146, 192, 255, 0.11) 48.16%, rgba(146, 192, 255, 0) 100%);
+    --grad-projects-list-rename: linear-gradient(90deg, rgba(146, 192, 255, 0.25) 0%, rgba(146, 192, 255, 0.11) 48.16%, rgba(146, 192, 255, 0) 100%);
 
     //  <Browser View>
 
@@ -65,57 +81,58 @@
 
     --grad-left-field: linear-gradient(90deg, rgba(97, 134, 197, 0.08) 0%, rgba(116, 146, 188, 0) 89.57%);
     
-    --grad-tasks-and-tree-2: linear-gradient(90deg, rgba(118, 163, 188, 0) 95.95%, rgba(126, 202, 255, 0.03) 100%);
+    --grad-tasks-and-tree-2: linear-gradient(92deg, rgba(118, 163, 188, 0) 95.95%, rgba(126, 202, 255, 0.03) 100%);
     --grad-tasks-and-tree-3: linear-gradient(-92deg, rgba(138, 187, 255, 0.03) 0%, rgba(145, 173, 255, 0) 51.88%);
 
-    --grad-text-files-1: linear-gradient(90deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0) 14.24%);
-    --grad-text-files-2: linear-gradient(154deg, rgba(22, 22, 22, 0) 13.42%, rgba(70, 72, 93, 0.09) 26.37%, rgba(10, 10, 15, 0.43) 99.75%);
-
-    --grad-images-files-1: linear-gradient(-88deg, rgba(0, 0, 0, 0) 95.95%, rgba(0, 0, 0, 0.21) 100%);
-
     //  <Bar>
-
+    
     --grad-bar-block: linear-gradient(90deg, #0e1219 0%, rgba(14, 18, 25, 0) 12.5%);
     --grad-mark-button: linear-gradient(-90deg, rgba(123, 159, 221, 0) 0%, rgba(105, 134, 188, 0.31) 100%);
-
+    
     --grad-bar-mark-input:  rgba(0, 0, 0, 0.35);
     --grad-bar-mark-input-border: #000;
 
+    --grad-bar-search: rgba(146, 191, 255, 0.114);
+    
     //  Mark menu
-
+    
     --grad-mark-menu-SESSION-1: linear-gradient(90deg, #1e1e22 0%, #343b42 29.51%, #3c3f46 54.17%, #131313 100%);
     --grad-mark-menu-PROJECTS-1: linear-gradient(90deg, #2c2c33 0%, #25252c 100%);
     --grad-mark-menu-2: linear-gradient(315deg, rgba(0, 0, 0, 0.44) 0%, rgba(0, 0, 0, 0) 50.69%);
-
+    
     --grad-mark-menu-input: #1b1b21;
     --border-mark-menu-input: #2a2e35;
-
+    
     //  <Accordion>
+    
+    --grad-text-files-1: linear-gradient(88deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0) 14.24%);
+    --grad-text-files-2: linear-gradient(154deg, rgba(22, 22, 22, 0) 13.42%, rgba(70, 72, 93, 0.09) 26.37%, rgba(10, 10, 15, 0.43) 99.75%);
+
+    --grad-images-files-1: linear-gradient(-92deg, rgba(0, 0, 0, 0) 95.95%, rgba(0, 0, 0, 0.21) 100%);
 
     //  <Tasks>
     
-    --grad-selected-task: linear-gradient(90deg, rgba(146, 192, 255, 0) 0%, rgba(146, 192, 255, 0.18) 49.29%, rgba(146, 192, 255, 0.15) 100%);
-    --grad-editing-task: rgba(146, 192, 255, 0.38);
+    // --grad-selected-task: linear-gradient(90deg, rgba(146, 192, 255, 0) 0%, rgba(146, 192, 255, 0.18) 49.29%, rgba(146, 192, 255, 0.15) 100%);
     
     //  <Tree>
     
-    --grad-active-folder: linear-gradient(90deg, rgba(146, 192, 255, 0) 0%, rgba(146, 192, 255, 0.18) 49.29%, rgba(146, 192, 255, 0.15) 100%);
+    // --grad-selected-folder: linear-gradient(90deg, rgba(146, 192, 255, 0) 0%, rgba(146, 192, 255, 0.18) 49.29%, rgba(146, 192, 255, 0.15) 100%);
     --grad-copy-cut-colder: gray;
     --grad-renaming-folder: gray;
     
     //  <File>
 
-    --grad-selected-text-file: linear-gradient(90deg, rgba(146, 192, 255, 0) 0%, rgba(146, 192, 255, 0.1) 51.84%, rgba(146, 192, 255, 0.08) 100%);
-    --grad-select-renaming-text-file-input: rgba(0, 0, 0, 0);
+    // --grad-selected-text-file: linear-gradient(90deg, rgba(146, 192, 255, 0) 0%, rgba(146, 192, 255, 0.1) 51.84%, rgba(146, 192, 255, 0.08) 100%);
+    // --grad-select-renaming-text-file-input: rgba(0, 0, 0, 0);
     --grad-select-copy-cut-text-file: gray;
 
-    --grad-selected-img-file: linear-gradient(90deg, rgba(104, 134, 181, 0.5) 0%, #000 67.88%);
-    --grad-select-renaming-img-file: linear-gradient(90deg, #1b1b21 0%, #2a2e39 100%);
-    --grad-select-renaming-img-file-input: rgba(0, 0, 0, 0);
+    --grad-selected-img-file: linear-gradient(90deg, rgba(146, 192, 255, 0) 0%, rgba(146, 192, 255, 0.25) 100%);
+    // --grad-select-renaming-img-file: rgba(146, 192, 255, 0.38);
+    // --grad-select-renaming-img-file: linear-gradient(90deg, #1b1b21 0%, #2a2e39 100%);
+    // --grad-select-renaming-img-file-input: rgba(146, 192, 255, 0.38);
     --grad-select-copy-cut-img-file: gray;
     //  ---
 
-    // --grad-select-file: linear-gradient(90deg, rgba(255,255,255,.53) 0%, rgba(255,255,255,0.2) 100%);   //?
     --grad-red: linear-gradient(90deg, rgba(215,75,186,.53) 0%, rgba(215,75,186,0.2) 100%);
     --grad-green: linear-gradient(90deg, rgba(62,133,47,.53) 0%, rgba(62,133,47,0.2) 100%);
     --grad-yellow: linear-gradient(90deg, rgba(175,168,62,.53) 0%, rgba(175,168,62,0.2) 100%);
@@ -131,8 +148,8 @@
     --grad-field-green--close: linear-gradient(-90deg, rgba(62,133,47,.54) 0%, rgba(62,133,47,0) 10%);
     --grad-field-yellow--close: linear-gradient(-90deg, rgba(175,168,62,.54) 0%, rgba(175,168,62,0) 10%);
 
-    --font-color--file-name: rgba(255,255,255,.43);
-    --font-color--file-format--green: rgba(150,222,171,1);
+    // --font-color--file-name: rgba(255,255,255,.43);
+    // --font-color--file-format--green: rgba(150,222,171,1);
 }
 /* #### */
 
@@ -185,7 +202,10 @@
     background-color: transparent;
 }
 .default-color-back{
-    background-color: var(--pale-white);
+    background-color: var(--cold-white);
+}
+.unmarked-color-back{
+    background-color: var(--unmarked);
 }
 
 .white-back-hover:hover{
@@ -263,7 +283,10 @@
     color: var(--white);
 }
 .default-color-text{
-    color: var(--pale-white2);
+    color: var(--cold-white);
+}
+.unmarked-color-text{
+    color: var(--unmarked);
 }
 
 .border-right--red{
@@ -351,33 +374,54 @@
 
 /* FONTS */
 .file-name{
-    color: var(--font-color--file-name)
+    color: var(--font-color--file-name);
 }
 
 // FORMATS
-.ini{
-    color: var(--ini)
+.format-ini{
+    color: var(--ini);
 }
-.js{
-    color: var(--js)
+.format-js{
+    color: var(--js);
 }
-.json{
-    color: var(--json)
+.format-json{
+    color: var(--json);
 }
-.bat{
-    color: var(--bat)
+.format-bat{
+    color: var(--bat);
 }
-.vue{
-    color: var(--vue)
+.format-vue{
+    color: var(--vue);
 }
-.css{
-    color: var(--css)
+.format-css{
+    color: var(--css);
 }
-.scss{
-    color: var(--scss)
+.format-scss{
+    color: var(--scss);
 }
-.md{
-    color: var(--md)
+.format-md{
+    color: var(--md);
+}
+
+.format-7z{
+    color: var(--7z);
+}
+.format-zip{
+    color: var(--zip);
+}
+.format-rar{
+    color: var(--rar);
+}
+
+.format-pdf{
+    color: var(--pdf);
+}
+.format-torrent{
+    color: var(--torrent);
+}
+
+.format-default{
+    color: var(--cold-pale);
 }
 
 //  LAYER - BAR

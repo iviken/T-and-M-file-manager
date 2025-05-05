@@ -1,5 +1,5 @@
 const settings = {
-    fileImgMask: ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'svg'],
+    fileImgMask: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'BMP', 'svg', 'SVG', 'ico', 'ICO', 'tiff', 'TIFF', 'webp', 'eps', 'EPS'],
     fileNameRegexp: /[\\\/<>:\"\*\?\|]/g,
 }
 
@@ -99,6 +99,8 @@ export const filesMethods = {
     resetStateFiles:function(){
 
         this.setFilesState( 'SELECTED', '' )
+
+        this.setFilesState( 'RENAME', '' )
 
         this.setFilesState( 'COPY FILE', '' )
 
@@ -477,5 +479,45 @@ export const filesMethods = {
         }
 
         return filesPinned
+    },
+
+    selectFilesBy:function(dat, folderIndex){
+
+      // console.log(dat)
+
+      function _funk(folders, stateFiles, params){   //  params: {partName, value, state}
+
+        folders[folderIndex].files.forEach(file => {
+        
+            if( file[params.partName].toLowerCase().startsWith(params.value) )
+              if( (stateFiles.files[file.id] != 'RENAME') || (stateFiles.files[file.id] != 'COPY FILE') || (stateFiles.files[file.id] != 'MOVE FILE') )
+                stateFiles.files[file.id] = params.state
+        })
+      }
+
+      dat.value = dat.value.trim().toLowerCase()
+
+      if(dat.value.length == 0) return false
+      if(dat.value.startsWith('/')) return false
+
+      if(folderIndex == undefined) folderIndex = this.localState.activeFolderIndex
+
+      //  reset
+      if(dat.value.length > 1)
+        if(dat.params == 'name')
+          _funk( this.folders, this.stateFiles, {partName: 'name', value: dat.value.slice(0, -1), state: ''} )
+        if(dat.params == 'format')
+          _funk( this.folders, this.stateFiles, {partName: 'format', value: dat.value.slice(0, -1), state: ''} )
+        
+      //  search
+      if(dat.params == 'name')
+        _funk( this.folders, this.stateFiles, {partName: 'name', value: dat.value, state: 'SELECTED'} )
+      if(dat.params == 'format')
+        _funk( this.folders, this.stateFiles, {partName: 'format', value: dat.value, state: 'SELECTED'} )
+    },
+
+    isAPicture:function(format){
+
+      return settings.fileImgMask.includes(format)
     },
 }

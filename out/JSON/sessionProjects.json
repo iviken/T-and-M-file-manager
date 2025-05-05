@@ -7,16 +7,16 @@
 				"imgs": false,
 				"text": false
 			},
-			"imagesHeight": 125,
+			"imagesHeight": 150,
 			"pinFoldersIsFolded": false,
 			"foldersIsFolded": true,
-			"showFoldersStartingWithDot": true
+			"showFoldersStartingWithDot": false
 		},
 		"meta": {
 			"name": "project first",
 			"created": 1742744761272,
-			"lastModified": 1746129300599,
-			"lastOpened": 1746129300599,
+			"lastModified": 1746482634203,
+			"lastOpened": 1746482634203,
 			"isPinned": true,
 			"description": "Descrtiption first of project",
 			"status": "closed"
@@ -27,11 +27,11 @@
 				"name": "new task",
 				"descr": "",
 				"status": "undone",
-				"isPinned": true,
+				"isPinned": false,
 				"isFolded": false,
 				"subtasksAvailability": false,
 				"subtasks": {},
-				"isSelected": false,
+				"isSelected": true,
 				"isDone": false
 			},
 			"task_2782949": {
@@ -39,13 +39,149 @@
 				"name": "new task uy",
 				"descr": "",
 				"isDone": false,
-				"isSelected": false,
+				"isSelected": true,
 				"isPinned": false,
-				"isFolded": false,
+				"isFolded": true,
 				"subtasksAvailability": true,
 				"subtasks": {
-					"sub9219119": {
-						"id": "sub9219119",
+					"sub9875011": {
+						"id": "sub9875011",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub9349047": {
+						"id": "sub9349047",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub9741933": {
+						"id": "sub9741933",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub4571180": {
+						"id": "sub4571180",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub9356027": {
+						"id": "sub9356027",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub6164969": {
+						"id": "sub6164969",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub3597069": {
+						"id": "sub3597069",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub6108105": {
+						"id": "sub6108105",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub5792757": {
+						"id": "sub5792757",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub278480": {
+						"id": "sub278480",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub6983055": {
+						"id": "sub6983055",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub2752635": {
+						"id": "sub2752635",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub1787135": {
+						"id": "sub1787135",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub1338705": {
+						"id": "sub1338705",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub8236898": {
+						"id": "sub8236898",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub1083036": {
+						"id": "sub1083036",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub8714281": {
+						"id": "sub8714281",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub9797588": {
+						"id": "sub9797588",
 						"name": "new sub-task",
 						"descr": "description...",
 						"isDone": false,
@@ -59,11 +195,140 @@
 				"name": "new task gh",
 				"descr": "",
 				"isDone": false,
-				"isSelected": true,
-				"isPinned": false,
+				"isSelected": false,
+				"isPinned": true,
 				"isFolded": true,
-				"subtasksAvailability": false,
-				"subtasks": {}
+				"subtasksAvailability": true,
+				"subtasks": {
+					"sub8136315": {
+						"id": "sub8136315",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub6606050": {
+						"id": "sub6606050",
+						"name": "new sub-task fdgfwefgawhtrwfew5rgwgrfewhtrw fgsdfvg sfsg fdsg fsfgfsgfs gfsdg",
+						"descr": "description...",
+						"isDone": true,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub1461525": {
+						"id": "sub1461525",
+						"name": "new sub-tasksefaddsafdadsadfsd",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub4227156": {
+						"id": "sub4227156",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub2124581": {
+						"id": "sub2124581",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub2642403": {
+						"id": "sub2642403",
+						"name": "new sub-taskfsd ds",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub268934": {
+						"id": "sub268934",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub2272140": {
+						"id": "sub2272140",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub2989440": {
+						"id": "sub2989440",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub1448794": {
+						"id": "sub1448794",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub4596146": {
+						"id": "sub4596146",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub7905936": {
+						"id": "sub7905936",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub8281655": {
+						"id": "sub8281655",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub5976275": {
+						"id": "sub5976275",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub8356048": {
+						"id": "sub8356048",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					},
+					"sub6197385": {
+						"id": "sub6197385",
+						"name": "new sub-task",
+						"descr": "description...",
+						"isDone": false,
+						"isSelected": false,
+						"subtasksAvailability": false
+					}
+				}
 			}
 		},
 		"marks": {
@@ -97,15 +362,55 @@
 				},
 				"show": true
 			},
-			"mark_unmarked": {
-				"id": "mark_unmarked",
-				"color": "default-color",
-				"descr": "--unmarked--",
-				"show": true,
+			"mark_6212237": {
+				"id": "mark_6212237",
+				"color": "green",
+				"descr": "mark name",
 				"isFolded": {
 					"text": true,
 					"imgs": true
-				}
+				},
+				"show": true
+			},
+			"mark_5167624": {
+				"id": "mark_5167624",
+				"color": "blue",
+				"descr": "mark name",
+				"isFolded": {
+					"text": true,
+					"imgs": true
+				},
+				"show": true
+			},
+			"mark_2188758": {
+				"id": "mark_2188758",
+				"color": "default-color",
+				"descr": "mark name",
+				"isFolded": {
+					"text": true,
+					"imgs": true
+				},
+				"show": true
+			},
+			"mark_6568315": {
+				"id": "mark_6568315",
+				"color": "default-color",
+				"descr": "mark name u",
+				"isFolded": {
+					"text": true,
+					"imgs": true
+				},
+				"show": true
+			},
+			"mark_unmarked": {
+				"id": "mark_unmarked",
+				"color": "unmarked-color",
+				"descr": "--unmarked--",
+				"isFolded": {
+					"text": true,
+					"imgs": true
+				},
+				"show": true
 			}
 		},
 		"folders": [
@@ -132,7 +437,7 @@
 				],
 				"isOpened": false,
 				"isPinned": false,
-				"displayedOnBar": true,
+				"displayedOnBar": false,
 				"isEmpty": false
 			},
 			{
@@ -180,12 +485,508 @@
 							"size": 62464,
 							"createdMs": 1639976646704.85
 						}
+					},
+					{
+						"id": "fileID_1022493943166",
+						"name": "fei_boost_filesystem-mt",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2024-06-17T17:30:53.954Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T17:36:54.000Z",
+							"lastEditedMS": 1505324214000,
+							"size": 135680,
+							"createdMs": 1718645453954.062
+						}
+					},
+					{
+						"id": "fileID_49069858562691",
+						"name": "fei_boost_system-mt",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2024-06-17T17:30:53.923Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T17:36:56.000Z",
+							"lastEditedMS": 1505324216000,
+							"size": 25088,
+							"createdMs": 1718645453922.7837
+						}
+					},
+					{
+						"id": "fileID_63926753270828",
+						"name": "fei_imageAccess",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2024-06-17T17:30:53.935Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T17:36:54.000Z",
+							"lastEditedMS": 1505324214000,
+							"size": 20584960,
+							"createdMs": 1718645453934.5652
+						}
+					},
+					{
+						"id": "fileID_74804711508306",
+						"name": "fei_proxy_ippro51",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2025-03-28T21:56:44.588Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T18:09:28.000Z",
+							"lastEditedMS": 1505326168000,
+							"size": 10984960,
+							"createdMs": 1743199004588.219
+						}
+					},
+					{
+						"id": "fileID_46941698074341",
+						"name": "fei_proxy_porosity",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2021-12-20T05:04:06.056Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T18:09:30.000Z",
+							"lastEditedMS": 1505326170000,
+							"size": 104960,
+							"createdMs": 1639976646056.3254
+						}
+					},
+					{
+						"id": "fileID_29250191278229",
+						"name": "fei_proxy_ServiceHandler",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2024-06-17T17:30:53.946Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T18:09:30.000Z",
+							"lastEditedMS": 1505326170000,
+							"size": 145408,
+							"createdMs": 1718645453946.275
+						}
+					},
+					{
+						"id": "fileID_3500577418080",
+						"name": "fei_proxy_VisilogAPI",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2024-06-17T17:30:53.945Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T18:09:30.000Z",
+							"lastEditedMS": 1505326170000,
+							"size": 211456,
+							"createdMs": 1718645453945.256
+						}
+					},
+					{
+						"id": "fileID_83157497878842",
+						"name": "fei_proxy_VisilogProxy",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2024-06-17T17:30:53.933Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T18:09:30.000Z",
+							"lastEditedMS": 1505326170000,
+							"size": 457216,
+							"createdMs": 1718645453933.3987
+						}
+					},
+					{
+						"id": "fileID_73532857827474",
+						"name": "fei_proxy_VlgUtil",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2024-06-17T17:30:53.952Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T18:09:30.000Z",
+							"lastEditedMS": 1505326170000,
+							"size": 3385344,
+							"createdMs": 1718645453951.986
+						}
+					},
+					{
+						"id": "fileID_91110107848477",
+						"name": "ImageViz",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2024-06-17T17:30:53.914Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T18:14:36.000Z",
+							"lastEditedMS": 1505326476000,
+							"size": 5007872,
+							"createdMs": 1718645453913.7397
+						}
+					},
+					{
+						"id": "fileID_70903633485072",
+						"name": "InventorAlgorithms",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2025-03-28T23:36:13.134Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T18:05:16.000Z",
+							"lastEditedMS": 1505325916000,
+							"size": 185856,
+							"createdMs": 1743204973134.1016
+						}
+					},
+					{
+						"id": "fileID_76669358629036",
+						"name": "InventorBase",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2024-06-17T17:30:53.871Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T17:30:04.000Z",
+							"lastEditedMS": 1505323804000,
+							"size": 983040,
+							"createdMs": 1718645453870.6008
+						}
+					},
+					{
+						"id": "fileID_48619267966155",
+						"name": "InventorGui",
+						"format": "dll",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Temp/E3/Bin",
+						"meta": {
+							"created": "2024-06-17T17:30:53.873Z",
+							"createdMS": null,
+							"lastEdited": "2017-09-13T17:58:58.000Z",
+							"lastEditedMS": 1505325538000,
+							"size": 444416,
+							"createdMs": 1718645453872.5913
+						}
 					}
 				],
+				"isOpened": false,
+				"isPinned": false,
+				"displayedOnBar": false,
+				"isEmpty": false
+			},
+			{
+				"id": "folder_3222642108888",
+				"path": "/Users/Nike/Documents/Criterion Games/Need for Speed(TM) Hot Pursuit/Save/Default",
+				"files": [
+					{
+						"id": "fileID_33310541897915",
+						"name": "controls",
+						"format": "NFS11Save",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Users/Nike/Documents/Criterion Games/Need for Speed(TM) Hot Pursuit/Save/Default",
+						"meta": {
+							"created": "2024-06-21T15:57:22.762Z",
+							"createdMS": null,
+							"lastEdited": "2024-06-20T13:24:14.831Z",
+							"lastEditedMS": 1718889854830.8333,
+							"size": 2513,
+							"createdMs": 1718985442762.1702
+						}
+					}
+				],
+				"isOpened": false,
+				"isPinned": false,
+				"displayedOnBar": false,
+				"isEmpty": false
+			},
+			{
+				"id": "folder_6720815105323",
+				"path": "/Users/Nike/Documents/athens",
+				"files": [
+					{
+						"id": "fileID_58992602508881",
+						"name": "1731799955436-Nike-index.transit",
+						"format": "bkp",
+						"markID": "mark_4874505",
+						"isPinned": false,
+						"path": "/Users/Nike/Documents/athens",
+						"meta": {
+							"created": "2024-11-16T23:32:35.443Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-16T23:32:35.443Z",
+							"lastEditedMS": 1731799955442.6948,
+							"size": 22078,
+							"createdMs": 1731799955442.6948
+						}
+					},
+					{
+						"id": "fileID_546946755215",
+						"name": "1731800103807-Nike-index.transit",
+						"format": "bkp",
+						"markID": "mark_6941427",
+						"isPinned": false,
+						"path": "/Users/Nike/Documents/athens",
+						"meta": {
+							"created": "2024-11-16T23:35:03.810Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-16T23:35:03.810Z",
+							"lastEditedMS": 1731800103810.3293,
+							"size": 21973,
+							"createdMs": 1731800103810.3293
+						}
+					},
+					{
+						"id": "fileID_2717881802633",
+						"name": "1731800122720-Nike-index.transit",
+						"format": "bkp",
+						"markID": "mark_6941427",
+						"isPinned": false,
+						"path": "/Users/Nike/Documents/athens",
+						"meta": {
+							"created": "2024-11-16T23:35:22.725Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-16T23:35:22.725Z",
+							"lastEditedMS": 1731800122725.0542,
+							"size": 21973,
+							"createdMs": 1731800122725.0542
+						}
+					},
+					{
+						"id": "fileID_27394875231421",
+						"name": "1731800050751-Nike-index.transit",
+						"format": "bkp",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Users/Nike/Documents/athens",
+						"meta": {
+							"created": "2024-11-16T23:34:10.753Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-16T23:34:10.753Z",
+							"lastEditedMS": 1731800050753.372,
+							"size": 21818,
+							"createdMs": 1731800050753.372
+						}
+					},
+					{
+						"id": "fileID_7426916470753",
+						"name": "1731802374973-Nike-index.transit",
+						"format": "bkp",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Users/Nike/Documents/athens",
+						"meta": {
+							"created": "2024-11-17T00:12:54.975Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-17T00:12:54.975Z",
+							"lastEditedMS": 1731802374975.2278,
+							"size": 22622,
+							"createdMs": 1731802374975.2278
+						}
+					},
+					{
+						"id": "fileID_27127462155582",
+						"name": "1731802411722-Nike-index.transit",
+						"format": "bkp",
+						"markID": "mark_6709164",
+						"isPinned": false,
+						"path": "/Users/Nike/Documents/athens",
+						"meta": {
+							"created": "2024-11-17T00:13:31.726Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-17T00:13:31.726Z",
+							"lastEditedMS": 1731802411725.5803,
+							"size": 22651,
+							"createdMs": 1731802411725.5803
+						}
+					},
+					{
+						"id": "fileID_2683180990188",
+						"name": "1731802427571-Nike-index.transit",
+						"format": "bkp",
+						"markID": "mark_6709164",
+						"isPinned": false,
+						"path": "/Users/Nike/Documents/athens",
+						"meta": {
+							"created": "2024-11-17T00:13:47.580Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-17T00:13:47.580Z",
+							"lastEditedMS": 1731802427579.8027,
+							"size": 22651,
+							"createdMs": 1731802427579.8027
+						}
+					},
+					{
+						"id": "fileID_1900390137122",
+						"name": "1731802678256-Nike-index.transit",
+						"format": "bkp",
+						"markID": "mark_6709164",
+						"isPinned": false,
+						"path": "/Users/Nike/Documents/athens",
+						"meta": {
+							"created": "2024-11-17T00:17:58.262Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-17T00:17:58.262Z",
+							"lastEditedMS": 1731802678261.5383,
+							"size": 22651,
+							"createdMs": 1731802678261.5383
+						}
+					}
+				],
+				"isOpened": false,
+				"isPinned": false,
+				"displayedOnBar": false,
+				"isEmpty": false
+			},
+			{
+				"id": "folder_7570264516726",
+				"path": "/Users/Nike/Documents/artbooks",
+				"files": [
+					{
+						"id": "fileID_19090759943150",
+						"name": "Assassins Creed Limited Edition Art Book",
+						"format": "pdf",
+						"markID": "mark_4874505",
+						"isPinned": false,
+						"path": "/Users/Nike/Documents/artbooks",
+						"meta": {
+							"created": "2024-12-01T23:52:30.989Z",
+							"createdMS": null,
+							"lastEdited": "2012-03-13T09:33:32.000Z",
+							"lastEditedMS": 1331631212000,
+							"size": 115209518,
+							"createdMs": 1733097150989.3372
+						}
+					},
+					{
+						"id": "fileID_34470303262912",
+						"name": "Diluvion Artbook",
+						"format": "pdf",
+						"markID": "mark_4874505",
+						"isPinned": false,
+						"path": "/Users/Nike/Documents/artbooks",
+						"meta": {
+							"created": "2024-12-01T23:52:29.794Z",
+							"createdMS": null,
+							"lastEdited": "2017-02-02T09:52:46.000Z",
+							"lastEditedMS": 1486029166000,
+							"size": 121935105,
+							"createdMs": 1733097149793.7588
+						}
+					}
+				],
+				"isOpened": false,
+				"isPinned": false,
+				"displayedOnBar": false,
+				"isEmpty": false
+			},
+			{
+				"id": "folder_8632841556298",
+				"path": "/Users/Nike/Documents/Zettlr Tutorial",
+				"files": [
+					{
+						"id": "fileID_18141947651138",
+						"name": "LaTeX Guide",
+						"format": "md",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Users/Nike/Documents/Zettlr Tutorial",
+						"meta": {
+							"created": "2025-01-11T16:17:43.461Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-22T21:29:29.706Z",
+							"lastEditedMS": 1732310969705.777,
+							"size": 950,
+							"createdMs": 1736612263460.9834
+						}
+					},
+					{
+						"id": "fileID_39683754634878",
+						"name": "references",
+						"format": "json",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Users/Nike/Documents/Zettlr Tutorial",
+						"meta": {
+							"created": "2025-01-11T16:17:43.459Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-22T21:29:29.720Z",
+							"lastEditedMS": 1732310969719.9033,
+							"size": 680,
+							"createdMs": 1736612263458.978
+						}
+					},
+					{
+						"id": "fileID_87546400160776",
+						"name": "split-view-intro",
+						"format": "md",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Users/Nike/Documents/Zettlr Tutorial",
+						"meta": {
+							"created": "2025-01-11T16:17:43.478Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-22T21:29:29.724Z",
+							"lastEditedMS": 1732310969723.9697,
+							"size": 864,
+							"createdMs": 1736612263478.0195
+						}
+					},
+					{
+						"id": "fileID_22495600269432",
+						"name": "zettlr",
+						"format": "png",
+						"markID": "mark_unmarked",
+						"isPinned": true,
+						"path": "/Users/Nike/Documents/Zettlr Tutorial",
+						"meta": {
+							"created": "2025-01-11T16:17:48.857Z",
+							"createdMS": null,
+							"lastEdited": "2024-11-22T21:29:29.731Z",
+							"lastEditedMS": 1732310969731.0164,
+							"size": 1479,
+							"createdMs": 1736612268856.542
+						}
+					}
+				],
+				"isOpened": false,
+				"isPinned": false,
+				"displayedOnBar": false,
+				"isEmpty": false
+			},
+			{
+				"id": "folder_7626930264010",
+				"path": "/Users/Nike/Documents/КиМ/print - salon",
+				"files": [],
 				"isOpened": true,
 				"isPinned": false,
-				"displayedOnBar": true,
-				"isEmpty": false
+				"displayedOnBar": true
 			}
 		]
 	},
@@ -215,7 +1016,7 @@
 		"marks": {
 			"mark_unmarked": {
 				"id": "mark_unmarked",
-				"color": "default-color",
+				"color": "unmarked-color",
 				"descr": "--unmarked--",
 				"isFolded": {
 					"text": false,
@@ -246,6 +1047,186 @@
 							"lastEditedMS": 1718646236504.6165,
 							"size": 32686,
 							"createdMs": 1718646236504.6165
+						}
+					}
+				],
+				"isEmpty": false
+			},
+			{
+				"id": "folder_2843643",
+				"path": "/Temp/E3/Setting",
+				"files": [
+					{
+						"id": "fileID_5390307",
+						"name": "E3DeviceDefaultSettings",
+						"format": "xml",
+						"markID": "mark_1002",
+						"isPinned": false,
+						"path": "/Temp/E3/Setting",
+						"meta": {
+							"created": "2024-06-17T17:30:54.023Z",
+							"createdMS": null,
+							"lastEdited": "2021-12-20T04:34:05.532Z",
+							"lastEditedMS": 1639974845532.2014,
+							"size": 363637,
+							"createdMs": 1718645454023.3997
+						}
+					},
+					{
+						"id": "fileID_2057099",
+						"name": "E3DeviceName",
+						"format": "xml",
+						"markID": "mark_1000",
+						"isPinned": false,
+						"path": "/Temp/E3/Setting",
+						"meta": {
+							"created": "2024-06-17T17:31:03.737Z",
+							"createdMS": null,
+							"lastEdited": "2021-12-20T04:34:05.511Z",
+							"lastEditedMS": 1639974845511.2593,
+							"size": 1226,
+							"createdMs": 1718645463736.7656
+						}
+					},
+					{
+						"id": "fileID_4657220",
+						"name": "E3EngineDefaultStyleSettings",
+						"format": "xml",
+						"markID": "mark_1000",
+						"isPinned": false,
+						"path": "/Temp/E3/Setting",
+						"meta": {
+							"created": "2024-06-17T17:30:58.244Z",
+							"createdMS": null,
+							"lastEdited": "2021-12-20T04:34:05.519Z",
+							"lastEditedMS": 1639974845519.2368,
+							"size": 39113,
+							"createdMs": 1718645458244.0537
+						}
+					}
+				],
+				"isOpened": false,
+				"isPinned": false,
+				"displayedOnBar": true,
+				"isEmpty": false
+			},
+			{
+				"id": "folder_1364392911701",
+				"path": "/Temp/E3",
+				"files": [
+					{
+						"id": "fileID_2124996",
+						"name": "CDViewer64",
+						"format": "zip",
+						"markID": "mark_1002",
+						"isPinned": false,
+						"path": "/Temp/E3",
+						"meta": {
+							"created": "2025-03-29T18:36:19.673Z",
+							"createdMS": null,
+							"lastEdited": "2021-12-20T11:04:18.000Z",
+							"lastEditedMS": 1639998258000,
+							"size": 151966608,
+							"createdMs": 1743273379672.5896
+						}
+					}
+				],
+				"isOpened": false,
+				"isPinned": false,
+				"displayedOnBar": true,
+				"isEmpty": false
+			}
+		]
+	},
+	"proj_56136580577": {
+		"id": "proj_56136580577",
+		"headerPicture": {},
+		"parameters": {
+			"pinFilesIsFolded": {
+				"imgs": false,
+				"text": false
+			},
+			"imagesHeight": 125,
+			"pinFoldersIsFolded": false,
+			"foldersIsFolded": false,
+			"showFoldersStartingWithDot": true
+		},
+		"meta": {
+			"name": "give a name to your project",
+			"created": 1746203302315,
+			"lastModified": 1746203302315,
+			"lastOpened": 1746203302315,
+			"isPinned": false,
+			"description": "",
+			"status": "closed"
+		},
+		"tasks": {},
+		"marks": {
+			"mark_unmarked": {
+				"id": "mark_unmarked",
+				"color": "unmarked-color",
+				"descr": "--unmarked--",
+				"isFolded": {
+					"text": false,
+					"imgs": false
+				},
+				"show": true
+			}
+		},
+		"folders": [
+			{
+				"id": "default__fold_001",
+				"path": "/Temp/E3/Log",
+				"isOpened": true,
+				"isPinned": true,
+				"displayedOnBar": true,
+				"files": [
+					{
+						"id": "fileID_3381558",
+						"name": "VTDebug",
+						"format": "txt",
+						"markID": "mark_1000",
+						"isPinned": false,
+						"path": "/Temp/E3/Log",
+						"meta": {
+							"created": "2024-06-17T17:43:56.505Z",
+							"createdMS": null,
+							"lastEdited": "2024-06-17T17:43:56.505Z",
+							"lastEditedMS": 1718646236504.6165,
+							"size": 32686,
+							"createdMs": 1718646236504.6165
+						}
+					},
+					{
+						"id": "fileID_41115421053771",
+						"name": "GNLOG202406_Ez3D-i64",
+						"format": "log",
+						"markID": "mark_1002",
+						"isPinned": true,
+						"path": "/Temp/E3/Log",
+						"meta": {
+							"created": "2024-06-17T17:30:54.065Z",
+							"createdMS": null,
+							"lastEdited": "2024-06-17T17:30:54.065Z",
+							"lastEditedMS": 1718645454064.741,
+							"size": 103,
+							"createdMs": 1718645454064.741
+						}
+					},
+					{
+						"id": "fileID_11451125616086",
+						"name": "NDLOG202406_Ez3D-i64",
+						"format": "log",
+						"markID": "mark_1002",
+						"isPinned": false,
+						"path": "/Temp/E3/Log",
+						"meta": {
+							"created": "2024-06-17T17:30:54.064Z",
+							"createdMS": null,
+							"lastEdited": "2024-06-17T17:30:54.064Z",
+							"lastEditedMS": 1718645454063.7546,
+							"size": 0,
+							"createdMs": 1718645454063.7546
 						}
 					}
 				],

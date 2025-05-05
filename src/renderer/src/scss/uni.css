@@ -1,4 +1,5 @@
 /* FLEX */
+
 .on-row{
     display: flex;
     flex-direction: row;
@@ -11,6 +12,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.on-left{
+    display: flex;
+    align-items: start;
+    justify-content: left;
 }
 .on-right{
     display: flex;
@@ -26,7 +32,11 @@
 .wrap{
     flex-wrap: wrap;
 }
+.no-wrap{
+    flex-wrap: nowrap;
+}
 /* SIZES */
+
 .w100{
     width: 100%;
 }
@@ -38,11 +48,15 @@
     width: fit-content;
     height: fit-content;
 }
+
 /* BORDERS */
+
 .circle{
     border-radius: 50%;
 }
+
 /* TEXT & FONT */
+
 .text-center{
     text-align: center;
 }
@@ -64,14 +78,18 @@
 .text-nowrap{
     text-wrap: nowrap !important;
 }
+
 /* VISIBILITY */
+
 .hide-overflow{
     overflow: hidden;
 }
 .HIDE, .HIDE-2, .hide{
     display: none;
 }
+
 /* EFFECTS */
+
 .rotate90, .rotate-left{
     transform: rotate(90deg);
 }
@@ -81,7 +99,9 @@
 .rotate-right{
     transform: rotate(270deg);
 }
+
 /* LAYERS */
+
 .z0{
     position: absolute;
     top: 0px;
@@ -99,7 +119,9 @@
     top: 0px;
     left: 0px;
 }
+
 /* INTERACTIONS */
+
 .no-user-select{
     user-select: none;
 }

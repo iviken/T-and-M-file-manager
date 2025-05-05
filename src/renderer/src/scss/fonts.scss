@@ -6,62 +6,105 @@
 body{
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
-// TEXT FILES
-.t-legend {
-    font-size: 10pt;
-    letter-spacing: .54px;
-}
-// .t-legend:hover {
-//     font-weight: bolder;
-// }
-.t-text-file {
-    color: var(--text);
-    letter-spacing: 2.67pt;
-    font-weight: 700;
-    font-size: 14px;
-}
-.t-text-file:hover {
+
+//  COLOR
+
+.t-file-renaming, .t-task-renaming, .t-tree-renaming, .t-project-renaming{
     color: var(--pure-white);
 }
 
-.header{
-    font-weight: bold;
-    font-size: 18px;
+.t-file-name:hover, .t-task:hover, .t-tree-item:hover, .t-project-name:hover{
+    color: var(--pure-white);
 }
 
-.t-file-name{
+.t-file-name, .t-tree-item, .t-task{
     color: var(--text);
-}
-.t-file-name, .t-file-format{
-    font-size: 15px;
-}
-.t-bar-marks, .t-files-mark{
-    font-size: 16px;
-}
-.t-tree-item, .t-task{
-    color: var(--text);
-    font-size: 16px;
-}
-.t-tree-item:hover, .t-task:hover{
-    color: var(--pure-white);
 }
 
 .t-bar-folders{
     color: var(--cold-pale);
-    font-size: 16px;
-    font-weight: 600;
-}
-.activeTab{
-    opacity: 1;
-    color: var(--cold-white);
-    font-size: 16px;
-    font-weight: 600;
 }
 
-.t-bar-address{
-    font-size: 14px;
+.t-bar-search{
+    color: var(--pale-white2);
+}
+
+.tActiveTab{
+    color: var(--cold-white);
+}
+
+.t-tree-address{
     color: var(--text);
 }
-.t-bar-address:hover{
+.t-tree-address:hover{
     color: var(--pure-white);
+}
+
+//      -----
+
+//      <Project list>
+
+.t-project-name{
+    color: var(--text);
+}
+.t-project-descr{
+    color: var(--text);
+}
+
+//      <BrowserView>
+
+//  <Header>
+
+.t-header{
+    font-weight: bold;
+    font-size: 18px;
+}
+
+//  <Accordion>
+
+.t-file-name, .t-file-format{
+    letter-spacing: 1px;
+    // letter-spacing: 2.67px;
+    font-weight: 200;
+    font-size: 14px;
+}
+.t-files-mark{
+    letter-spacing: 0.88px;
+    font-size: 16px;
+}
+
+//  <Tree> <Tasks>
+
+.t-tree-item, .t-task{
+    letter-spacing: 2.67px;
+    font-weight: 300;
+    font-size: 14px;
+}
+
+.t-tree-address{
+    letter-spacing: 1.88px;
+    font-size: 14px;
+}
+
+//  <Bar>
+
+.t-bar-folders, .t-bar-marks, .tActiveTab{
+    letter-spacing: 1.88px;
+    font-weight: 400;
+    font-size: 16px;
+}
+.t-bar-search{
+
+}
+
+//      <Project list>
+
+.t-project-name{
+    letter-spacing: 2.67px;
+    font-size: 16px;
+}
+.t-project-descr{
+    opacity: .8;
+    letter-spacing: 2.67px;
+    font-size: 14px;
 }

@@ -70,8 +70,8 @@ export default {
     },
     convertFileSize:function(num){
         let _size = 0
-        if( num < 1000000 ){ _size = Math.floor(Number(num) / 1024) + 'Kb' }
-        if( num >= 1000000 ){ _size = Math.floor(Number(num) / 1024 / 1024) + 'Mb' }
+        if( num < 1000000 ){ _size = Math.floor(Number(num) / 1024) + ' Kb' }
+        if( num >= 1000000 ){ _size = Math.floor(Number(num) / 1024 / 1024) + ' Mb' }
         
         return _size
     },
@@ -141,6 +141,27 @@ export default {
         if( this.localState.renamigMark ) this.state.showTextarea = false
     },
     dblclickOnMarkItem(){},
+    search(){   //  search files in current folder
+
+        this.state.searchValue = this.state.searchValue.trim()
+
+        if( this.state.searchValue.length == 0 ) return
+
+        if( this.state.searchValue.startsWith('/') ) return // TO DO - search folders
+
+        if( this.state.searchValue.startsWith(this.state.searchFilesByFormatMask) )    //  search by format
+            this.filesMethods.selectFilesBy( {params: 'format', value: this.state.searchValue.slice(1)} )
+
+        if( !this.state.searchValue.startsWith(this.state.searchFilesByFormatMask) )
+            this.filesMethods.selectFilesBy( {params: 'name', value: this.state.searchValue} )
+
+    },
+    searchAll(){
+
+        if(this.state.searchValue.trim().length == 0) return
+
+        if(this.state.searchValue.trim().startsWith('/')) return // TO DO - search folders
+    },
   },
 
   mounted(){
@@ -168,10 +189,12 @@ export default {
         },
         state:{
             marksBoxIsFolded: true,
-            markNewName: 'mark name',
+            markNewName: '',
             showTextarea: false,
             showColorPicker: false,
             selectedColorOnColorPicker: null,
+            searchValue: '',
+            searchFilesByFormatMask: '.'
         },
     }
   },
@@ -197,6 +220,8 @@ export default {
 
     <div @keyup.esc="pressEscOnBar()" @keyup.ctrl.t="foldersMethods2.openClosedTab()" tabindex="0" class="bar on-center focus">
 
+        <!-- Info -->
+
         <div class="info h100 on-center">
             <div v-if="stateFiles.numberOfSelectedFiles > 0" class="on-row">
                 <span class="info-text">{{ stateFiles.numberOfSelectedFiles }}</span>
@@ -205,20 +230,30 @@ export default {
             </div>
         </div>
 
+        <!-- Bar -->
+
         <div v-if="localState.metadataIsHidden" class="bar-block on-row h100">
+            
+            <!-- Marks -->
 
             <div class="_marks marks-block on-row h100">
-                <!-- marks menu -->
+
+                <!-- marks menu icon -->
+
                 <div @click="state.marksBoxIsFolded = !state.marksBoxIsFolded" class="item hover-item h100 on-center">
                     <img src="../assets/arc dawn.svg" alt="choose mark" class="arrow-1">
                 </div>
 
                 <div class="on-row h100">
-                    <!-- new mark - plus -->
+
+                    <!-- marks menu: new mark - plus -->
+
                     <div @click="newMark({state: 'start create new mark'})" class="item hover-item h100 on-center">
                         <img src="../assets/plus.svg" alt="create new mark" class="pix-btn-plus-1">
                     </div>
-                    <!-- new mark - input -->
+
+                    <!-- marks menu: new mark - input -->
+
                     <div v-if="!state.showTextarea" class="item-box on-row">
                         <div v-for="(item, value, index) in marks" class="menu h100">
                             <div v-if="index < settings.maxMarksOnBar" class="item h100 on-center">
@@ -230,7 +265,9 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <!-- new mark - pic color -->
+
+                    <!-- marks menu: new mark - pic color -->
+
                     <div v-else class="item-box on-row h100">
                         <!-- arrow -->
                         <input type="checkbox" v-model="state.showColorPicker" id="picker" name="picker" class="checkbox">
@@ -239,15 +276,19 @@ export default {
                                 <img src="../assets/arrow2.svg" alt="set color" class="arrow-3">
                             </div>
                         </label>
-                        <!-- color picker -->
+
+                        <!-- marks menu: color picker -->
+
                         <div v-if="state.showColorPicker" @click="state.showColorPicker = false" class="color-pic on-row">
                             <div v-for="clr in settings.availableMarkColors">
                                 <div @click="state.selectedColorOnColorPicker = clr" :class="`color-pic-${clr}`" class="clr-pic-item clr-pic-box-bar h100"></div>
                             </div>
                         </div>
-                        <!-- input -->
+
+                        <!-- marks menu: input -->
+
                         <div v-else class="input-text-box on-center w100">
-                            <input type="text" v-model="state.markNewName" @keyup.enter="newMark({state: 'end create new mark', newName: state.markNewName, color: state.selectedColorOnColorPicker})" :class="`${state.selectedColorOnColorPicker}-text`" class="input bar-new-mark on-center w100 focus">
+                            <input type="text" placeholder="new mark name" v-model="state.markNewName" @keyup.enter="newMark({state: 'end create new mark', newName: state.markNewName, color: state.selectedColorOnColorPicker})" :class="`${state.selectedColorOnColorPicker}-text`" class="input bar-new-mark on-center uppercase w100 focus">
                         </div>
                     </div>
 
@@ -255,38 +296,69 @@ export default {
 
             </div>
 
+            <!-- Btns on center -->
+
             <div class="btns on-row h100">
+
+                <!-- Btns: tree -->
+
                 <div class="item show-tree h100 on-center" v-if="localState.showTasksPanel" @click="switchPannels()">
                     <img src="../assets/tree.svg" alt="Folders tree" class="pix-btn">
                 </div>
+
+                <!-- Btns: tasks -->
+                 
                 <div class="item show-tree h100 on-center" v-if="localState.showTreePanel" @click="switchPannels()">
                     <img src="../assets/tasks.svg" alt="Tasks" class="pix-btn">
                 </div>
+
+                <!-- Btns: pin -->
+
                 <div class="item pin-this h100 on-center" @click="filesMethods.pinSelectedFiles()">
                     <img v-if="filesMethods.checkIsAtLeastOneSelectedFilePinned()" src="../assets/unpin.svg" alt="Pin / Unpin selected files" class="pix-btn">
                     <img v-if="!filesMethods.checkIsAtLeastOneSelectedFilePinned()" src="../assets/pin.svg" alt="Pin / Unpin selected files" class="pix-btn">
                 </div>
             </div>
 
+            <!-- Folders -->
+
             <div class="folders on-row h100">
+
+                <!-- Folders: all btn -->
+
                 <div v-if="numberOfFoldersDisplayedOnTheBar > 1" class="item h100 on-center">
-                    <span :class="{activeTab: localState.showFilesFromAllFoldersOption}" @click="filesFromAllFolders()" class="uppercase t-bar-folders no-wrap text-nowrap">ALL</span>
+                    <span :class="{tActiveTab: localState.showFilesFromAllFoldersOption}" @click="filesFromAllFolders()" class="menu-item uppercase t-bar-folders text-nowrap">ALL</span>
                 </div>
+
+                <!-- Folders: tabs -->
+
                 <div v-for="(item, index) in folders" class="menu on-row h100">
+
                     <div v-if="item.displayedOnBar" @click="clickOnTab({id: item.id, index: index, path: item.path})" @dblclick="foldersMethods2.closeTab()" class="item on-center h100">
-                        <span v-if="item.path != ''" :class="{activeTab: item.isOpened}" class="menu-item uppercase t-bar-folders no-wrap text-nowrap">
+
+                        <span v-if="item.path != ''" :class="{tActiveTab: item.isOpened}" class="menu-item uppercase t-bar-folders text-nowrap">
                             {{ foldersMethods2.shrinkName( foldersMethods2.getFolderName(item.path), settings.tabsFolderNameMaxLength ) }}
                         </span>
+
+                        <!-- root path -->
                         
-                        <span v-else :class="{activeTab: item.isOpened}" class="menu-item uppercase t-bar-folders no-wrap text-nowrap">{{ settings.rootFolderTabName }}</span>
+                        <span v-else :class="{tActiveTab: item.isOpened}" class="menu-item uppercase t-bar-folders text-nowrap">
+                            {{ settings.rootFolderTabName }}
+                        </span>
                     </div>
+
                 </div>
+
+                <!-- Folders: new tab (+) -->
+
                 <div v-if="numberOfFoldersDisplayedOnTheBar < settings.maxFoldersOnBar" @click="foldersMethods2.newTab()" class="item h100 on-center">
                     <img src="../assets/plus.svg" alt="new tab" class="pix-btn-plus-2">
                 </div>
             </div>
 
         </div>
+
+        <!-- Metadata -->
 
         <div v-else class="bar-block on-center h100">
             <div class="on-row">
@@ -296,11 +368,15 @@ export default {
                 <span class="meta-item">Last edited:&nbsp;</span>
                 <span class="meta-item">{{ stateFiles.onFocusFile.metadata.lastEdited.toLocaleString() }}</span>
                 <span class="meta-item">{{ convertFileSize(stateFiles.onFocusFile.metadata.size) }}</span>
-                <span class="meta-item">{{ stateFiles.onFocusFile.format }}</span>
+                <span class="meta-item uppercase">{{ stateFiles.onFocusFile.format }}</span>
             </div>
         </div>
 
-        <div class="search"></div>
+        <!-- Search -->
+
+        <div class="search on-center">
+            <input type="text" placeholder="search" v-model="state.searchValue" @input="search()" @keyup.enter="searchAll()" @click="state.searchValue = ''" id="search" class="search-input t-bar-search on-center focus w100">
+        </div>
 
     </div>
 
@@ -316,25 +392,32 @@ export default {
                     <input type="checkbox" v-model="item.show" class="checkbox-mark-item">
                 </div>
     
+                <!-- marks menu: mark -->
+
                 <div v-if="marksMethods.state.markRenameID != item.id" @click="setMarkToFiles(item.id)" @dblclick="renameMark({state: 'start rename', markID: item.id})" :class="{hiddenMark: !item.show}" class="menu-item">
-                    <!-- marks -->
                     <span :class="`${item.color}-text text-nowrap uppercase`">{{ item.descr }}</span>
                 </div>
+
+                <!-- marks menu: input -->
+
                 <div v-else class="on-center">
-                    <!-- input -->
                     <div v-if="!state.showColorPicker">
-                        <input type="text" v-model="state.markNewName" @keyup.enter="renameMark({state: 'end rename', newName: state.markNewName})" :class="`${state.selectedColorOnColorPicker}-text`" class="input marks-box-rename focus w100">
+                        <input type="text" placeholder="mark name" v-model="state.markNewName" @keyup.enter="renameMark({state: 'end rename', newName: state.markNewName})" :class="`${state.selectedColorOnColorPicker}-text`" class="input marks-box-rename uppercase focus w100">
                     </div>
                 </div>
     
                 <div class="on-row h100 marks-menu-clr-pic">
-                    <!-- color picker -->
+
+                    <!-- marks menu: color picker -->
+
                     <div v-if="state.showColorPicker && (marksMethods.state.markRenameID == item.id)" @click="state.showColorPicker = false" class="color-pic on-row">
                         <div v-for="clr in settings.availableMarkColors" @click="marksMethods.state.markRenameID = null" class="h100">
                             <div @click="item.color = clr" :class="`color-pic-${clr}`" class="clr-pic-item clr-pic-box-menu-bar h100"></div>
                         </div>
                     </div>
-                    <!-- arrow -->
+
+                    <!-- marks menu: arrow -->
+
                     <div v-if="item.id != stateFiles.defaults.unmarkedMarkID" class="on-row">
                         <input type="checkbox" v-model="state.showColorPicker" id="picker" name="picker" class="checkbox">
                         <label for="picker" class="vertical-center">
@@ -344,9 +427,11 @@ export default {
                         </label>
                     </div>
                 </div>
-                <!-- delete mark -->
+
+                <!-- marks menu: delete mark -->
+
                 <div v-if="!state.showColorPicker" class="vertical-center h100">
-                    <div v-if="item.id != stateFiles.defaults.unmarkedMarkID" @click="deleteMark(item.id)" class="delete hover-item">
+                    <div v-if="item.id != stateFiles.defaults.unmarkedMarkID" @click="deleteMark(item.id)" class="vertical-center delete hover-item">
                         <img src="../assets/x.svg" alt="delete mark" class="marks-menu-x">
                     </div>
                 </div>
@@ -421,8 +506,12 @@ export default {
         width: 200px;
         max-width: 200px;
     }
+    .search-input{
+        background: var(--grad-bar-search);
+        border: solid 1px var(--cold-pale);
+    }
     .info-text{
-        color: var(--text);
+        color: var(--cold-pale);
     }
     .item-box{
         width: 500px;
@@ -490,11 +579,6 @@ export default {
     .clr-pic-box-menu-bar{
         width: 25px;
     }
-
-    // .activeTab{
-    //     opacity: 1;
-    //     color: var(--cold-pale);
-    // }
 
     .hiddenMark{
         opacity: .7;
@@ -565,13 +649,12 @@ export default {
     .marks-box__item{
         margin-top: 7px;
         margin-bottom: 7px;
+        margin-left: 14px;
     }
     .marks-box__item:hover .delete, .marks-box__item:hover .set-color{
-        // opacity: 1;
         visibility: visible;
     }
     .delete, .set-color{
-        // opacity: 0;
         padding-left: 10px;
         padding-right: 10px;
         visibility: hidden;
@@ -609,7 +692,7 @@ export default {
     }
 
     .meta-item{
-        color: var(--text);
+        color: var(--cold-pale);
         padding-right: 10px;
         padding-left: 10px;
     }

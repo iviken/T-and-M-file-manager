@@ -68,49 +68,89 @@ export default {
 
         <div class="section on-col">
         
-            <div class="pin-block scrollY on-col">
-                <label v-for="task in data" :key="task.id">
-                    <div v-if="task.isPinned">
+            <!-- pin block -->
 
-                        <div class="on-row">
-                            <input type="radio" v-model="selectedTaskId" :value="task.id" class="hide">
-            
-                            <TaskItem :task="task" :selected="task.id == selectedTaskId" :class="{selected: (!task.isDone && task.isSelected)}" @deleteTask="deleteTask"/>
-                        </div>
-        
-                        <div v-for="subtask in task.subtasks" class="sub" v-if="!task.isFolded">
-                            <TaskItem :task="subtask" :selected="subtask.id == selectedSubTaskId" :class="{selected: (!subtask.isDone && subtask.isSelected)}" @deleteTask="deleteTask"/>
-                        </div>
-        
-                    </div>
-                </label>
-            </div>
+            <div class="pin-block on-row">
 
-            <div class="empty1"></div>
-        
-            <div class="block scrollY">
-                <label v-for="task in data" :key="task.id">
-                    <div v-if="!task.isPinned" class="on-col">
+                <!-- left field -->
 
-                        <div class="on-row">
-                            <input type="radio" v-model="selectedTaskId" :value="task.id" class="hide">
-                            
-                            <TaskItem :task="task" :selected="task.id == selectedTaskId" :class="{selected: (!task.isDone && task.isSelected)}" @deleteTask="deleteTask"/>
-                        </div>
-                        
-                        <div v-if="!task.isFolded" v-for="subtask in task.subtasks" class="sub">
-                            <TaskItem :task="subtask" :selected="subtask.id == selectedSubTaskId" :class="{selected: (!subtask.isDone && subtask.isSelected)}" @deleteTask="deleteTask"/>
-                        </div>
-                        
-                    </div>
-                </label>
+                <div class="left-field">
+                    <img src="../assets/pin.svg" alt="" class="pix-btn">
+                </div>
+
+                <div class="scrollY on-col w100">
+
+                    <label v-for="task in data" :key="task.id">
+                        <div v-if="task.isPinned">
+    
+                            <!-- tasks -->
+
+                            <div class="on-row">
+                                <input type="radio" v-model="selectedTaskId" :value="task.id" class="hide">
                 
+                                <TaskItem :task="task" :selected="task.id == selectedTaskId" :class="{selected: (!task.isDone && task.isSelected)}" @deleteTask="deleteTask"/>
+                            </div>
+
+                            <!-- subtasks -->
+            
+                            <div v-for="subtask in task.subtasks" class="sub" v-if="!task.isFolded">
+                                <TaskItem :task="subtask" :selected="subtask.id == selectedSubTaskId" :class="{selected: (!subtask.isDone && subtask.isSelected)}" @deleteTask="deleteTask"/>
+                            </div>
+            
+                        </div>
+                    </label>
+
+                </div>
+
             </div>
+
+            <div class="empty1"></div>
+
+            <!-- unpin block -->
+
+            <div class="block on-row">
+
+                <!-- left field -->
+
+                <div class="left-field"></div>
+            
+                <div class="scrollY on-col w100">
+                    
+                    <label v-for="task in data" :key="task.id">
+                        
+                        <div v-if="!task.isPinned" class="on-col">
+
+                            <!-- tasks -->
+    
+                            <div class="on-row">
+                                <!-- &#9724; &#9723;s -->
+                                <input type="radio" v-model="selectedTaskId" :value="task.id" class="hide">
+                                
+                                <TaskItem :task="task" :selected="task.id == selectedTaskId" :class="{selected: (!task.isDone && task.isSelected)}" @deleteTask="deleteTask"/>
+                            </div>
+
+                            <!-- sub-tasks -->
+                            
+                            <div v-if="!task.isFolded" v-for="subtask in task.subtasks" class="sub">
+                                <TaskItem :task="subtask" :selected="subtask.id == selectedSubTaskId" :class="{selected: (!subtask.isDone && subtask.isSelected)}" @deleteTask="deleteTask"/>
+                            </div>
+                            
+                        </div>
+
+                    </label>
+                    
+                </div>
+
+            </div>
+
             
             <div class="empty1"></div>
             
-            <div class="create">
-                <input type="text" v-model="newTaskValue" class="create-input t-task w100 focus" @keyup.enter="createNewTask()"></input>
+            <!-- create new task btn -->
+
+            <div class="create on-row">
+                <div class="left-field"></div>
+                <input type="text" placeholder="new task" v-model="newTaskValue" @keyup.enter="createNewTask()" class="create-input t-task uppercase w100 focus"></input>
             </div>
 
         </div>
@@ -120,20 +160,32 @@ export default {
 </template>
 
 <style scoped lang="scss">
+
     .task-component{
         padding-top: var(--content-indent);
     }
 
     // @media screen and (min-height: 100vh) {
-        .section{
-            // height: calc( 100vh - var(--header-heigth) - var(--content-indent) - var(--pin-indent-bottom) + 10px );
-        }
-        .empty1{
-            height: 50px;
-        }
-        .empty2{
-            height: 200px;
-        }
+    .section{
+        // height: calc( 100vh - var(--header-heigth) - var(--content-indent) - var(--pin-indent-bottom) + 10px );
+    }
+
+    .left-field{
+        width: 20px;
+    }
+
+    .pix-btn{
+        opacity: .6;
+        width: 10px;
+        height: 10px;
+    }
+
+    .empty1{
+        height: 50px;
+    }
+    .empty2{
+        height: 200px;
+    }
     // }
     .pin-block, .block{
         max-height: 30vh;
@@ -141,22 +193,24 @@ export default {
     .sub{
         margin-left: 20px;
     }
+
     .create{
         padding-left: 20px;
     }
     .create-input{
-        background: inherit;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        opacity: .8;
+        background-color: rgba(0,0,0,0);
         border: solid 0px;
-        // color: var(--pure-white);
     }
     .create-input:focus{
-        background: var(--grad-editing-task);
-        border: solid 0px;
-        color: var(--pure-white);
+        opacity: 1;
+        background: var(--grad-renaming);
     }
 
     .selected{
-        background: var(--grad-selected-task);
+        background: var(--grad-selected);
     }
 
     .focus:focus{

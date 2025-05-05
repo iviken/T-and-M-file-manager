@@ -21,3 +21,14 @@ ul, li{
 a{
     text-decoration: none;
 }
+
+input[type="text"]{
+    font-family: inherit;
+    // font-size: inherit;
+    // font-weight: inherit;
+    // letter-spacing: inherit;
+    border-radius: 0px;
+    -webkit-border-radius: 0px; //закругление углов (Google Chrome)
+    -moz-border-radius: 0px; //закругление углов (FireFox)
+    -khtml-border-radius: 0px; //закругление углов (Safari)
+}

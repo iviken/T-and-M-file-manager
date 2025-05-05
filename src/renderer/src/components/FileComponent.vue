@@ -26,17 +26,22 @@ export default {
 
   methods:{
     
-    shrinkName:function(name){
+    shrinkName:function(name, format){
 
-      if( this.settings.maxNameLength >= name.length){
+      if(format == undefined) format = ''
+
+      if( this.settings.maxNameLength >= (name.length + format.length) ){
 
         return name
       }else{
 
         let lastWord = name.indexOf(' ') > 0 ? name.split(' ')[name.split(' ').length - 1] : name.slice(-1 * this.settings.lengthOfLastWord)
-        let index = this.settings.maxNameLength - lastWord.length - 2
+        if(lastWord.length > this.settings.lengthOfLastWord)
+          lastWord = lastWord.slice( -1 * this.settings.lengthOfLastWord )
+
+        let index = this.settings.maxNameLength - lastWord.length - format.length
   
-        return `${name.slice(0, index)}...${lastWord}`
+        return `${name.slice(0, index)}..${lastWord}`
       }
     },
   },
@@ -45,10 +50,9 @@ export default {
     return{
       renamedValue: '',
       settings:{
-        fileImgMask: ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'svg'],
         fileNameRegexp: /[\\\/<>:\"\*\?\|]/g,
-        maxNameLength: 24,
-        lengthOfLastWord: 6,
+        maxNameLength: 27,
+        lengthOfLastWord: 8,
         actualSeparator: '/',
       },
     }
@@ -58,35 +62,35 @@ export default {
 
 <template>
 
-        <div :class="`${state.files[file.id]}-${viewMode} ${viewMode}-file w100`">
+  <!-- text file -->
 
-          <div v-if="( !settings.fileImgMask.includes(file.format) ) && (viewMode != 'imgs')" class="text w100">
+  <div v-if="( !filesMethods.isAPicture(file.format) ) && (viewMode != 'imgs')" :class="`${state.files[file.id]}-text`" class="text-file w100">
 
-            <div v-if="state.files[file.id] != 'RENAME'" class="on-row">
-              <span class="item-name t-file-name text-nowrap">{{ shrinkName(file.name) }}</span>
-              <span :class="`${file.format}`" class="t-file-format text-nowrap">&nbsp;{{ file.format }}</span>
-            </div>
+    <div v-if="state.files[file.id] != 'RENAME'" class="on-row">
+      <span class="item-name t-file-name text-nowrap">{{ shrinkName(file.name, file.format) }}</span>
+      <span class="format-default">
+        <span :class="`format-${file.format}`" class="t-file-format text-nowrap">&nbsp;{{ file.format }}</span>
+      </span>
+    </div>
 
-            <div v-if="state.files[file.id] == 'RENAME'">
-              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename-text-input w100" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(this.settings.fileNameRegexp, '').trim()} )"></input>
-            </div>
+    <div v-if="state.files[file.id] == 'RENAME'" class="rename-text w100">
+      <input type="text" placeholder="file name" v-model="renamedValue" :id="`${file.id}`" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(this.settings.fileNameRegexp, '').trim()} )" class="item-name rename-input-text t-file-renaming text-nowrap focus w100"></input>
+    </div>
 
-          </div>
-          
-          <div v-if="( settings.fileImgMask.includes(file.format) ) && (viewMode == 'imgs')" :style="`height:${pixHeight}px;`" class="img-box">
-            
-            <div v-if="state.files[file.id] != 'RENAME'">
-              <!-- <img src="../assets/gallery/file (3).png" class="img"> -->
-              <img :src="`file://C:${file.path}${settings.actualSeparator}${file.name}.${file.format}`" class="img">
-            </div>
+  </div>
 
-            <div v-if="state.files[file.id] == 'RENAME'" class="rename-img on-center h100 w100">
-              <input type="text" v-model="renamedValue" :id="`${file.id}`" class="rename-imgs-input" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(this.settings.fileNameRegexp, '').trim()} )"></input>
-            </div>
+  <!-- image file -->
 
-          </div>
+  <div v-if="( filesMethods.isAPicture(file.format) ) && (viewMode == 'imgs')" :class="`${state.files[file.id]}-imgs`" class="img-box shadow on-center">
+    
+    <!-- <img src="../assets/gallery/file (3).png" :style="`height:${pixHeight}px;`" class="img"> -->
+    <img :src="`file://C:${file.path}${settings.actualSeparator}${file.name}.${file.format}`" :style="`height:${pixHeight}px;`" :class="`opacity-${state.files[file.id]}-imgs`" class="img">
 
-        </div>
+    <div v-if="state.files[file.id] == 'RENAME'" class="rename-img on-center h100 w100">
+      <input type="text" placeholder="file name" v-model="renamedValue" :id="`${file.id}`" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(this.settings.fileNameRegexp, '').trim()} )" class="rename-input-imgs t-file-name t-file-renaming text-nowrap focus w100"></input>
+    </div>
+
+  </div>
 
 </template>
 
@@ -97,6 +101,10 @@ export default {
     padding-bottom: 3px;
   }
 
+  .text{
+    // width: 1fr;
+    flex: 1 1 100%;
+  }
   .text span:nth-child(2){
     opacity: 0;
   }
@@ -106,56 +114,76 @@ export default {
 
   .item-name{
     padding-left: 20px;
-    // color: var(--text);
-  }
-  .item-name:hover{
-    color: var(--pure-white);
   }
 
   .img-box{
-    padding: 20px;
+    position: relative;
+  }
+  .opacity-RENAME-imgs{
+    opacity: 12;
   }
   .img{
-    height: 100%;
-    width: auto;
-    box-shadow: var(--image-file-shadow);
-    transition: .25s;
+    transition: .10s;
+    z-index: 0;
   }
   .img:hover{
-    transform: scale(1.2);
-    transition: .25s;
+    transform: scale(1.05);
+    transition: .05s;
+  }
+  .shadow{
+    box-shadow: var(--shadow-image-file);
   }
 
-  .rename-text-input{
-    // background-color: antiquewhite;
-    background: var(--grad-select-renaming-text-file-input);
-    border: solid 0px black;
-    color: var(--pure-white);
-  }
-  .rename-imgs-input{
-    // background-color: antiquewhite;
-    background: var(--grad-select-renaming-img-file-input);
+  .rename-input-imgs{
+    opacity: .8;
     border: solid 0px;
-    color: var(--pure-white);
+    background: var(--transparent);
+  }
+  .rename-input-text{
+    opacity: .8;
+    border: solid 0px;
+    background: var(--grad-renaming);
+  }
+  .rename-input-imgs:focus, .rename-input-text:focus{
+    opacity: 1;
+  }
+  .rename-text{
+    // background: var();
   }
   .rename-img{
-    background: var(--grad-select-renaming-img-file);
+    position: absolute;
+    z-index: 1;
   }
 
   .SELECTED-text{
-    // background-color: aquamarine;
-    background: var(--grad-selected-text-file);
+    background: var(--grad-selected);
+  }
+  .RENAME-imgs{
+    border: 16px solid var(--grad-renaming);
+    margin: 0px;
+    // transition: .25s;
   }
   .SELECTED-imgs{
-    background: var(--grad-selected-img-file);
+    border: 16px solid skyblue;
+    border-image: var(--grad-selected-img-file);
+    border-image-slice: 1;
+    margin: 0px;
+    // transition: .25s;
+  }
+  .undefined-imgs, .-imgs{
+    margin: 16px;
+    // transition: .25s;
   }
 
   .COPY-text, .CUT-text{
-    // background-color: azure;
     background: var(--grad-select-copy-cut-text-file);
   }
 
   .COPY-imgs, .CUT-imgs{
-    background: var(--grad-select-copy-cut-img-file);
+    // background: var(--grad-select-copy-cut-img-file);
+  }
+
+  .focus:focus{
+    outline: none;
   }
 </style>

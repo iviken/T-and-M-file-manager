@@ -7,7 +7,7 @@
 				"imgs": false,
 				"text": false
 			},
-			"imagesHeight": 125,
+			"imagesHeight": 75,
 			"pinFoldersIsFolded": false,
 			"foldersIsFolded": false,
 			"showFoldersStartingWithDot": true
@@ -166,7 +166,7 @@
 			},
 			"mark_unmarked": {
 				"id": "mark_unmarked",
-				"color": "default-color",
+				"color": "unmarked-color",
 				"descr": "--unmarked--",
 				"isFolded": {
 					"text": true,
@@ -179,7 +179,7 @@
 			{
 				"id": "default__fold_001",
 				"path": "/Temp/E3/Log",
-				"isOpened": true,
+				"isOpened": false,
 				"isPinned": true,
 				"displayedOnBar": true,
 				"files": [
@@ -289,7 +289,7 @@
 				],
 				"isOpened": false,
 				"isPinned": false,
-				"displayedOnBar": true,
+				"displayedOnBar": false,
 				"isEmpty": false
 			},
 			{
@@ -317,6 +317,14 @@
 				"isPinned": false,
 				"displayedOnBar": true,
 				"isEmpty": false
+			},
+			{
+				"id": "folder_1102999926726",
+				"path": "/Users/Nike/Downloads",
+				"files": [],
+				"isOpened": true,
+				"isPinned": false,
+				"displayedOnBar": true
 			}
 		]
 	}

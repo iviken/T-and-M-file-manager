@@ -92,7 +92,12 @@ export default {
 
         <div v-if="!isRemaned" @keyup.ctrl.d="pinTask(task.id)" class="task-block list-item w100 on-row focus" tabindex="0">
 
+            <!-- done -->
+
             <div v-if="!task.subtasksAvailability" @click="checkToTask(task.id)" class="btn check-box"><div class="check"></div></div>
+
+            <!-- fold / unfold -->
+
             <div v-if="task.subtasksAvailability" @click="foldTask()" class="btn fold-box on-center">
                 <div>
                     <img src="../assets/arc dawn.svg" alt="fold task" class="pix-btn">
@@ -101,18 +106,26 @@ export default {
 
             <div class="w100 on-row">
 
+                <!-- task text -->
+                
                 <div @click="selectTask(task.id)" @dblclick="renameTask({state: 'input-start', name: task.name})" class="task">
                     <span :class="{done: task.isDone}" class="uppercase t-task">{{ task.name }}</span>
                 </div>
-                <!-- <div class="btn up-dawn" v-if="task.status!='active'">**</div> -->
+
+                <!-- pin -->
+
                 <div v-if="(task.id.indexOf('sub') != 0)&&(!task.isDone)" @click="pinTask()" class="pin btn-opacity on-center">
                     <img v-if="!task.isPinned" src="../assets/pin.svg" alt="Pin this task" class="btn pix-btn">
                     <img v-if="task.isPinned" src="../assets/unpin.svg" alt="Pin this task" class="btn pix-btn">
                 </div>
 
+                <!-- x -->
+
                 <div v-if="task.isDone" @click="this.$emit('deleteTask', this.task)" class="delete btn-opacity">
                     <span class="btn">x</span>
                 </div>
+
+                <!-- + -->
 
                 <div v-if="task.id.indexOf('sub')!=0" class="btn-opacity">
                     <div v-if="!task.isDone" @click="addSubTask()" class="btn add">+</div>
@@ -122,8 +135,10 @@ export default {
 
         </div>
 
-        <div v-else class="rename w100">
-            <input type="text" v-model="renamedValue" :id="`${task.id}`" @keyup.esc="isRemaned = false" @keyup.enter="renameTask({state: 'input-done'})" class="rename-input focus w100"></input>
+        <!-- rename -->
+
+        <div v-else class="list-item rename-box w100">
+            <input type="text" placeholder="task description" v-model="renamedValue" :id="`${task.id}`" @keyup.esc="isRemaned = false" @keyup.enter="renameTask({state: 'input-done'})" class="rename-input t-task t-task-renaming uppercase focus w100"></input>
         </div>
 
 </template>
@@ -134,9 +149,8 @@ export default {
         padding-bottom: 2px;
     }
     .pix-btn{
-        // opacity: .6;
-        width: 10px;
-        height: 10px;
+        width: 12px;
+        height: 12px;
     }
     .pix-btn:hover{
         opacity: .8;
@@ -167,12 +181,8 @@ export default {
         border: solid 2px var(--text);
     }
     .task{
-        // color: var(--text);
         margin-right: 20px;
     }
-    // .task-block:hover{
-    //     // color: var(--pure-white);
-    // }
     .task-block:hover .btn{
         opacity: 1;
     }
@@ -183,15 +193,16 @@ export default {
     .done{
         text-decoration:line-through;
     }
-    .rename{
-        // background-color: antiquewhite;
-        background: var(--grad-editing-task);
+    .rename-box{
         padding-left: 20px;
     }
     .rename-input{
-        background-color: inherit;
+        opacity: .8;
         border: solid 0px;
-        color: var(--pure-white);
+        background: var(--grad-renaming);
+    }
+    .rename-input:focus{
+        opacity: 1;
     }
 
     .focus:focus{

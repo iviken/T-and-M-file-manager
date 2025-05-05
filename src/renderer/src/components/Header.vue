@@ -128,13 +128,23 @@ export default {
 </script>
 
 <template>
+
     <div class="header w100 drag">
         <div class="header__box w100 h100">
+
+            <!-- custom title bar -->
+
             <div class="header__btns w100 on-row">
+
+                <!-- left btns -->
 
                 <div class="header__btns-left on-row no-drag">
 
+                    <!-- Left btns: logo -->
+
                     <button class="btn-logo btn-logo1 header__btn bold" @click="changeState('GO_BROWS/PROJ')">M&T</button>
+
+                    <!-- Left btns: close session -->
 
                     <RouterLink v-if="state.active == 'PROJECTS'" :to="{name: 'ProjectsList'}" active-class="">
                         <button class="header__btn header__btns-close-project" @click="changeState('CLOSE_PROJ')">
@@ -147,9 +157,13 @@ export default {
                         </button>
                     </RouterLink>
 
+                    <!-- Left btns: help (F1) -->
+
                     <RouterLink :to="{name: 'Help'}" active-class="">
                         <button class="header__btns-go-help header__btn bold">F1</button>
                     </RouterLink>
+
+                    <!-- Left btns: Unsplash -->
 
                     <RouterLink :to="{name: 'Unsplash'}" active-class="">
                         <button class="header__btn-unsplash header__btn">
@@ -163,12 +177,20 @@ export default {
 
                 </div>
 
+                <!-- project title -->
+
                 <div class="header__name w100 text-center on-center">
                     <div class="no-drag">
-                        <span v-if="state.active == 'PROJECTS'">
+
+                        <!-- project name -->
+
+                        <span v-if="state.active == 'PROJECTS'" class="t-header uppercase text-nowrap">
                             {{ projectName }}
                         </span>
-                        <span v-if="state.active == 'BROWSER'">
+
+                        <!-- free browse title -->
+
+                        <span v-if="state.active == 'BROWSER'" class="t-header uppercase text-nowrap">
                             BROWSE
                         </span>
                         <!-- <input type="text" value="dfds" class="text-center header__name-input"> -->
@@ -176,7 +198,12 @@ export default {
                     </div>
                 </div>
 
+                <!-- right btns -->
+
                 <div class="header__btns-right on-row no-drag">
+
+                    <!-- Right btns: minimize -->
+
                     <button class="header__btns-minimize header__btn" @click="minimizeApp()">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18px" height="18px">
                             <path d="m 5.7298514,24.930294
@@ -189,6 +216,9 @@ export default {
                         Z" />
                         </svg>
                     </button>
+
+                    <!-- Right btns: maximize / restore -->
+
                     <button class="header__btns-resize header__btn" @click="maximizeApp()">
                         <svg v-if="!state.windowIsMaximized" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18px" height="18px">
                             <path d="M 9.2094529,41.205509
@@ -216,17 +246,22 @@ export default {
                                 z" />
                         </svg>
                     </button>
+
+                    <!-- Right btns: close app -->
+
                     <button class="header__btns-close header__btn" @click="closeApp()">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18px" height="18px">
                             <path
                                 d="M 39.486328 6.9785156 A 1.50015 1.50015 0 0 0 38.439453 7.4394531 L 24 21.878906 L 9.5605469 7.4394531 A 1.50015 1.50015 0 0 0 8.484375 6.984375 A 1.50015 1.50015 0 0 0 7.4394531 9.5605469 L 21.878906 24 L 7.4394531 38.439453 A 1.50015 1.50015 0 1 0 9.5605469 40.560547 L 24 26.121094 L 38.439453 40.560547 A 1.50015 1.50015 0 1 0 40.560547 38.439453 L 26.121094 24 L 40.560547 9.5605469 A 1.50015 1.50015 0 0 0 39.486328 6.9785156 z" />
                         </svg>
                     </button>
+
                 </div>
 
             </div>
         </div>
     </div>
+
 </template>
 
 <style scoped lang="scss">
