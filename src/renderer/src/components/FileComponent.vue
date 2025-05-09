@@ -1,5 +1,7 @@
 <script>
 
+import { settings } from '../lib/settings.js'
+
 export default {
   props:{
     file:{
@@ -30,16 +32,16 @@ export default {
 
       if(format == undefined) format = ''
 
-      if( this.settings.maxNameLength >= (name.length + format.length) ){
+      if( this.settings.fileNameMaxLength >= (name.length + format.length) ){
 
         return name
       }else{
 
-        let lastWord = name.indexOf(' ') > 0 ? name.split(' ')[name.split(' ').length - 1] : name.slice(-1 * this.settings.lengthOfLastWord)
-        if(lastWord.length > this.settings.lengthOfLastWord)
-          lastWord = lastWord.slice( -1 * this.settings.lengthOfLastWord )
+        let lastWord = name.indexOf(' ') > 0 ? name.split(' ')[name.split(' ').length - 1] : name.slice(-1 * this.settings.lengthOfTheLastPartOfTheFileName)
+        if(lastWord.length > this.settings.lengthOfTheLastPartOfTheFileName)
+          lastWord = lastWord.slice( -1 * this.settings.lengthOfTheLastPartOfTheFileName )
 
-        let index = this.settings.maxNameLength - lastWord.length - format.length
+        let index = this.settings.fileNameMaxLength - lastWord.length - format.length
   
         return `${name.slice(0, index)}..${lastWord}`
       }
@@ -49,12 +51,7 @@ export default {
   data(){
     return{
       renamedValue: '',
-      settings:{
-        fileNameRegexp: /[\\\/<>:\"\*\?\|]/g,
-        maxNameLength: 27,
-        lengthOfLastWord: 8,
-        actualSeparator: '/',
-      },
+      settings: settings,
     }
   }
 }
@@ -67,14 +64,19 @@ export default {
   <div v-if="( !filesMethods.isAPicture(file.format) ) && (viewMode != 'imgs')" :class="`${state.files[file.id]}-text`" class="text-file w100">
 
     <div v-if="state.files[file.id] != 'RENAME'" class="on-row">
+
       <span class="item-name t-file-name text-nowrap">{{ shrinkName(file.name, file.format) }}</span>
+
       <span class="format-default">
         <span :class="`format-${file.format}`" class="t-file-format text-nowrap">&nbsp;{{ file.format }}</span>
       </span>
+
     </div>
 
+    <!-- Text file: rename -->
+
     <div v-if="state.files[file.id] == 'RENAME'" class="rename-text w100">
-      <input type="text" placeholder="file name" v-model="renamedValue" :id="`${file.id}`" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(this.settings.fileNameRegexp, '').trim()} )" class="item-name rename-input-text t-file-renaming text-nowrap focus w100"></input>
+      <input type="text" placeholder="file name" v-model="renamedValue" :id="`${file.id}`" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(settings.fileNameRegexp, '').trim()} )" class="item-name rename-input-text t-file-renaming text-nowrap focus w100"></input>
     </div>
 
   </div>
@@ -86,8 +88,10 @@ export default {
     <!-- <img src="../assets/gallery/file (3).png" :style="`height:${pixHeight}px;`" class="img"> -->
     <img :src="`file://C:${file.path}${settings.actualSeparator}${file.name}.${file.format}`" :style="`height:${pixHeight}px;`" :class="`opacity-${state.files[file.id]}-imgs`" class="img">
 
+    <!-- Image file: rename -->
+
     <div v-if="state.files[file.id] == 'RENAME'" class="rename-img on-center h100 w100">
-      <input type="text" placeholder="file name" v-model="renamedValue" :id="`${file.id}`" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(this.settings.fileNameRegexp, '').trim()} )" class="rename-input-imgs t-file-name t-file-renaming text-nowrap focus w100"></input>
+      <input type="text" placeholder="file name" v-model="renamedValue" :id="`${file.id}`" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(settings.fileNameRegexp, '').trim()} )" class="rename-input-imgs t-file-name t-file-renaming text-nowrap focus w100"></input>
     </div>
 
   </div>
@@ -155,8 +159,9 @@ export default {
     z-index: 1;
   }
 
-  .SELECTED-text{
-    background: var(--grad-selected);
+  .COPY-imgs, .CUT-imgs{
+    border: 16px solid var(--grad-select-copy-cut-img-file);
+    margin: 0px;
   }
   .RENAME-imgs{
     border: 16px solid var(--grad-renaming);
@@ -175,12 +180,11 @@ export default {
     // transition: .25s;
   }
 
+  .SELECTED-text{
+    background: var(--grad-selected);
+  }
   .COPY-text, .CUT-text{
     background: var(--grad-select-copy-cut-text-file);
-  }
-
-  .COPY-imgs, .CUT-imgs{
-    // background: var(--grad-select-copy-cut-img-file);
   }
 
   .focus:focus{

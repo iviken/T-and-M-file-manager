@@ -1,7 +1,9 @@
-const settings = {
-    fileImgMask: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'BMP', 'svg', 'SVG', 'ico', 'ICO', 'tiff', 'TIFF', 'webp', 'eps', 'EPS'],
-    fileNameRegexp: /[\\\/<>:\"\*\?\|]/g,
-}
+// const settings = {
+//     fileImgMask: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'BMP', 'svg', 'SVG', 'ico', 'ICO', 'tiff', 'TIFF', 'webp', 'eps', 'EPS'],
+//     fileNameRegexp: /[\\\/<>:\"\*\?\|]/g,
+// }
+
+import { defaults, settings } from './settings.js'
 
 export const filesMethods = {
     localState: null,
@@ -261,90 +263,125 @@ export const filesMethods = {
     },
     
     pasteFiles:function(){
-      //  Для предотсвращения повторного нажатия Ctrl+V
+      //  Для предотвращения повторного нажатия Ctrl+V
       if( !this._allowCopyingOrMovingFiles ) return
       this._allowCopyingOrMovingFiles = false
 
-      this.destFolderID = this.folders[this.localState.activeFolderIndex].id
+      let destFolder = this.folders[this.localState.activeFolderIndex]
 
-      let destFolderPath = this.folders[this.localState.activeFolderIndex].path
-
-      if(this.destFolderID == this.srcFolderID){} //
+      // if(this.destFolderID == this.srcFolderID){} //
 
       for (const fileID in this.stateFiles.files) {
         //   console.log(this.stateFiles.files[fileID])
         
-        this.folders.forEach(folder => {
+        this.folders.forEach(srcFolder => {
           
-          if(folder.id == this.srcFolderID){
-            folder.files.forEach(file => {
+          if(srcFolder.id == this.srcFolderID){
+            srcFolder.files.forEach(file => {
               
               if( file.id == fileID ){
+
+                //  Updating metadata before copying
+                file.meta = window.api.getFileMeta( srcFolder.path, `${file.name}.${file.format}` )
+
+                //  COPY
                 
-                if( this.stateFiles.files[fileID] == 'COPY FILE' )
-                  this._copyFile(folder.path, destFolderPath ,`${file.name}.${file.format}`, fileID)
+                if( this.stateFiles.files[fileID] == 'COPY FILE' ){
+                  //
+                  // this._copyFile(srcFolder.path, destFolder.path, {name: file.name, format: file.format}, fileID)
+                  window.api.copyFile( srcFolder.path, destFolder.path, {name: file.name, format: file.format} )
+                    .then(
+                      result_fileName=>{
+                        // console.log('copied file: ')
+                        // console.log(result_fileName)
+                        if(result_fileName){
+                            
+                          //  copy dat and refresh file id
+
+                          destFolder.files.push(
+                            {
+                              id: 'fileID_' + Math.floor(Math.random()*100000000000000),
+                              name: result_fileName.name,
+                              format: result_fileName.format, 
+                              markID: defaults.unmarkedMarkID,  // reset
+                              isPinned: false,                  // reset
+                              path: srcFolder.path, 
+                              meta: JSON.parse( JSON.stringify(file.meta) ), 
+                            }
+                          )
+
+                          this.stateFiles.files[fileID] = ''
+                        }
+                      }
+                    )
+                }
+
+                //  MOVE
                 
                 if( this.stateFiles.files[fileID] == 'MOVE FILE' )
-                  this._moveFile(folder.path, destFolderPath ,`${file.name}.${file.format}`, fileID)
+                  this._moveFile(srcFolder.path, destFolder.path, {name: file.name, format: file.format}, fileID)
+                  // this._moveFile(folder.path, destFolderPath, `${file.name}.${file.format}`, fileID)
                 }
               })
             }
           })
         
       }
-
-      // this.destFolderID = null
-
-      console.log('PASTE FILES')
     },
 
-    _copyFile:function(pathSrc, pathDest, fileFullname, fileID){
+    // _copyFile:function(pathSrc, pathDest, fileFullname, fileID){
 
-      window.api.copyFile( pathSrc, pathDest, fileFullname )
-        .then(
-          result=>{
-            console.log('copied file: ')
-            console.log(result)
+    //   window.api.copyFile( pathSrc, pathDest, fileFullname )
+    //     .then(
+    //       result=>{
+    //         console.log('copied file: ')
+    //         console.log(result)
 
-            if(result){
+    //         if(result){
                 
-                this.stateFiles.files[fileID] = ''
+    //           //
 
-                //  Coping writed file in db
+    //           this.stateFiles.files[fileID] = ''
+
+    //           // writeFileToDB
+
+    //           //  Coping writed file in db
+
+    //           //  To DO: add unique file id
+              
+    //           // let writedFile = null
+              
+    //           // this.folders.forEach(folder => {
                 
-                // let writedFile = null
+    //           //   if( folder.path == result.pathSrc ){
+
+    //           //     writedFile = folder.files.find( file => `${file.name}.${file.format}` == result.fileFullname )
+    //           //   }
+    //           // })
+
+    //           // this.folders.forEach(folder => {
                 
-                // this.folders.forEach(folder => {
-                  
-                //   if( folder.path == result.pathSrc ){
+    //           //   if( folder.path == result.pathDest ){
 
-                //     writedFile = folder.files.find( file => `${file.name}.${file.format}` == result.fileFullname )
-                //   }
-                // })
+    //           //     if(writedFile){
 
-                // this.folders.forEach(folder => {
-                  
-                //   if( folder.path == result.pathDest ){
+    //           //       folder.files.push( JSON.parse(JSON.stringify(writedFile)) )
 
-                //     if(writedFile){
+    //           //       this.stateFiles.files[writedFile.id] = ''
+    //           //     }
+    //           //   }
+    //           // })
 
-                //       folder.files.push( JSON.parse(JSON.stringify(writedFile)) )
-
-                //       this.stateFiles.files[writedFile.id] = ''
-                //     }
-                //   }
-                // })
-
-            }
-          }
-        )
-    },
+    //         }
+    //       }
+    //     )
+    // },
 
     _moveFile:function(pathSrc, pathDest, fileFullname){
 
       window.api.moveFileTo( pathSrc, pathDest, fileFullname )
         .then(
-          result=>{
+          result_fileFullname => {
             console.log('movied file: ')
             console.log(result_pathDest)
 
@@ -354,21 +391,21 @@ export const filesMethods = {
 
               let writedFile = null
               
-              this.folders.forEach(folder => {
+              this.folders.forEach(srcFolder => {
                 
-                if( folder.path == pathSrc )
-                  writedFile = folder.files.find( file => `${file.name}.${file.format}` == result_fileFullname )  //
+                if( srcFolder.path == pathSrc )
+                  writedFile = srcFolder.files.find( file => `${file.name}.${file.format}` == result_fileFullname )  //
               })
               //
-              this.folders.forEach(folder => {
+              this.folders.forEach(destFolder => {
                 
-                if( folder.path == pathDest ){
+                if( destFolder.path == pathDest ){
                   
                   if(writedFile){
                     
                     writedFile.path = pathDest
                     
-                    folder.files.push( JSON.parse( JSON.stringify(writedFile) ) )
+                    destFolder.files.push( JSON.parse( JSON.stringify(writedFile) ) )
     
                     this.stateFiles.files[writedFile.id] = ''
                   }
@@ -518,6 +555,10 @@ export const filesMethods = {
 
     isAPicture:function(format){
 
-      return settings.fileImgMask.includes(format)
+      if(typeof format == 'string')
+        return settings.fileImgMask.includes(format)
+
+      if(typeof format == 'object')
+        return settings.fileImgMask.includes(format.format)
     },
 }

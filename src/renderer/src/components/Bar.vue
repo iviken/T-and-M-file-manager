@@ -1,4 +1,6 @@
 <script>
+import { settings } from '../lib/settings.js'
+
 export default {
 
   props:{
@@ -29,11 +31,7 @@ export default {
     marks:{
         type: Object,
         required: true
-    },
-    inputSettings:{
-        type: Object,
-        required: true
-    },
+    }
   },
 
   methods: {
@@ -45,36 +43,53 @@ export default {
         //         document.querySelector('._marks-unfolded-block').style.left = document.querySelector('._marks').getBoundingClientRect().left + 'px'
         //     },
     switchPannels:function(){
+
         if(!this.localState.showFilesFromAllFoldersOption){
+
             this.localState.showTreePanel = !this.localState.showTreePanel
             this.localState.showTasksPanel = !this.localState.showTasksPanel
         }
     },
+
     clickOnTab(dat){
+
         //
         this.foldersMethods2.clickOnTab(dat.path)
+
         //
         this.filesMethods.countSelectedFiles()
+
         //  For 'ALL (folders)' tab
         this.localState.showFilesFromAllFoldersOption = false 
     },
+
     shrinkMarkDescription:function(name){
+
         if(name.length > this.settings.MaxLenghtOfMarkName){
             return `${name.split(' ')[0]} ...${name.split(' ')[ name.split(' ').length - 1 ]}`
         }else{
             return name
         }
     },
+
     pressEscOnBar:function(){
+
         this.state.showTextarea = false
     },
+
     convertFileSize:function(num){
+
         let _size = 0
-        if( num < 1000000 ){ _size = Math.floor(Number(num) / 1024) + ' Kb' }
-        if( num >= 1000000 ){ _size = Math.floor(Number(num) / 1024 / 1024) + ' Mb' }
+
+        if( num < 1000000 )
+            _size = Math.floor(Number(num) / 1024) + ' Kb'
+
+        if( num >= 1000000 )
+            _size = Math.floor(Number(num) / 1024 / 1024) + ' Mb'
         
         return _size
     },
+
     filesFromAllFolders:function(){
 
         this.localState.showFilesFromAllFoldersOption = true
@@ -89,17 +104,23 @@ export default {
             this.localState.showTasksPanel = true
         }
     },
+
     deleteMark:function(markID){
+
         //
         this.filesMethods.deleteMark(markID)
+
         //
         this.marksMethods.deleteMark(markID)
     },
+
     newMark:function(dat){
+
         if(dat.state == 'start create new mark'){
             //
             this.state.showTextarea = true
         }
+
         if(dat.state == 'end create new mark'){
             //
             this.state.markNewName = this.state.markNewName.trim()
@@ -111,36 +132,49 @@ export default {
             this.state.selectedColorOnColorPicker = null
         }
     },
+
     setMarkToFiles:function(markID){
-        //
+        
         if( this.marksMethods.checkIfAtLeastOneFileSelected() ){
             // console.log('click to mark: ' + markID)
             if(!this.localState.showFilesFromAllFoldersOption){
+
                 this.marksMethods.setMarkToFiles( this.folders[this.localState.activeFolderIndex].files, markID )
                 //
                 this.filesMethods.resetStateFiles()
             }else{
+
                 let _allFiles = []
+
                 for (const key in this.folders) {
                     _allFiles = _allFiles.concat(this.folders[key].files)
                 }
+
                 this.marksMethods.setMarkToFiles( _allFiles, markID )
                 //
                 this.filesMethods.deselectAllFiles()
             }
         }
     },
+
     abortMarkEdit(){
+
         this.state.showColorPicker = false
-        //
+        
         this.marksMethods.abortMarkEdit()
     },
+
     renameMark(dat){
+
         this.localState.renamigMark = this.marksMethods.renameMark(dat)
+
         //  End rename and hide input
-        if( this.localState.renamigMark ) this.state.showTextarea = false
+        if( this.localState.renamigMark )
+            this.state.showTextarea = false
     },
+
     dblclickOnMarkItem(){},
+
     search(){   //  search files in current folder
 
         this.state.searchValue = this.state.searchValue.trim()
@@ -149,13 +183,16 @@ export default {
 
         if( this.state.searchValue.startsWith('/') ) return // TO DO - search folders
 
-        if( this.state.searchValue.startsWith(this.state.searchFilesByFormatMask) )    //  search by format
+        //  search by format
+        if( this.state.searchValue.startsWith(this.settings.searchFilesByFormatMask) )
             this.filesMethods.selectFilesBy( {params: 'format', value: this.state.searchValue.slice(1)} )
 
-        if( !this.state.searchValue.startsWith(this.state.searchFilesByFormatMask) )
+        //  search by filename
+        if( !this.state.searchValue.startsWith(this.settings.searchFilesByFormatMask) )
             this.filesMethods.selectFilesBy( {params: 'name', value: this.state.searchValue} )
 
     },
+
     searchAll(){
 
         if(this.state.searchValue.trim().length == 0) return
@@ -164,8 +201,8 @@ export default {
     },
   },
 
-  mounted(){
-    this.$nextTick(function () {
+//   mounted(){
+    // this.$nextTick(function () {
         // Проверка ширины элемента после обновления
         // this.setSizeMarksBlock()
         //
@@ -174,19 +211,12 @@ export default {
         //     console.log("WEE")
         //     section.scrollLeft += e.deltaX;
         // })
-    })
-  },
+    // })
+//   },
 
   data(){
     return{
-        settings:{
-            MaxLenghtOfMarkName: 15,
-            maxMarksOnBar: 5,
-            maxFoldersOnBar: 6,
-            availableMarkColors: ['red', 'green', 'yellow', 'ocean', 'blue', 'orange'],
-            rootFolderTabName: 'root C',
-            tabsFolderNameMaxLength: 16,
-        },
+        settings: settings,
         state:{
             marksBoxIsFolded: true,
             markNewName: '',
@@ -194,7 +224,6 @@ export default {
             showColorPicker: false,
             selectedColorOnColorPicker: null,
             searchValue: '',
-            searchFilesByFormatMask: '.'
         },
     }
   },
@@ -232,7 +261,7 @@ export default {
 
         <!-- Bar -->
 
-        <div v-if="localState.metadataIsHidden" class="bar-block on-row h100">
+        <div v-if="localState.metadataIsHidden && !localState.showImageProcessor" class="bar-block on-row h100">
             
             <!-- Marks -->
 
@@ -252,7 +281,7 @@ export default {
                         <img src="../assets/plus.svg" alt="create new mark" class="pix-btn-plus-1">
                     </div>
 
-                    <!-- marks menu: new mark - input -->
+                    <!-- marks menu: marks -->
 
                     <div v-if="!state.showTextarea" class="item-box on-row">
                         <div v-for="(item, value, index) in marks" class="menu h100">
@@ -266,7 +295,7 @@ export default {
                         </div>
                     </div>
 
-                    <!-- marks menu: new mark - pic color -->
+                    <!-- marks menu: new mark - pic color & input -->
 
                     <div v-else class="item-box on-row h100">
                         <!-- arrow -->
@@ -322,7 +351,7 @@ export default {
 
             <!-- Folders -->
 
-            <div class="folders on-row h100">
+            <div v-if="!localState.hideTabs" class="folders on-row h100">
 
                 <!-- Folders: all btn -->
 
@@ -356,20 +385,32 @@ export default {
                 </div>
             </div>
 
+            <!-- search (in min screen) -->
+
+            <div v-if="localState.hideTabs" class="search-2 w100 on-center">
+                <input type="text" placeholder="search" v-model="state.searchValue" @input="search()" @keyup.enter="searchAll()" @click="state.searchValue = ''" id="search" class="search-input t-bar-search on-center focus w100">
+            </div>
+
         </div>
 
         <!-- Metadata -->
 
-        <div v-else class="bar-block on-center h100">
-            <div class="on-row">
+        <div v-if="!localState.metadataIsHidden && !localState.showImageProcessor" class="bar-block meta-block on-center h100">
+            <div class="on-row no-wrap">
                 <span class="meta-item">{{ stateFiles.onFocusFile.name }}</span>
-                <span class="meta-item">Created:&nbsp;</span>
-                <span class="meta-item">{{ stateFiles.onFocusFile.metadata.created.toLocaleString() }}</span>
-                <span class="meta-item">Last edited:&nbsp;</span>
-                <span class="meta-item">{{ stateFiles.onFocusFile.metadata.lastEdited.toLocaleString() }}</span>
-                <span class="meta-item">{{ convertFileSize(stateFiles.onFocusFile.metadata.size) }}</span>
-                <span class="meta-item uppercase">{{ stateFiles.onFocusFile.format }}</span>
+                <span class="meta-item text-nowrap">Created:&nbsp;</span>
+                <span class="meta-item">{{ stateFiles.onFocusFile.metadata.created.toLocaleString().replaceAll(/[,]/g, '') }}</span>
+                <span class="meta-item text-nowrap">Last edited:&nbsp;</span>
+                <span class="meta-item">{{ stateFiles.onFocusFile.metadata.lastEdited.toLocaleString().replaceAll(/[,]/g, '') }}</span>
+                <span class="meta-item text-nowrap">{{ convertFileSize(stateFiles.onFocusFile.metadata.size) }}</span>
+                <span class="meta-item text-nowrap uppercase">{{ stateFiles.onFocusFile.format }}</span>
             </div>
+        </div>
+
+        <!-- image processor -->
+
+        <div v-if="localState.showImageProcessor" class="bar-block on-row h100">
+            image processor...
         </div>
 
         <!-- Search -->
@@ -502,7 +543,7 @@ export default {
         opacity: 1;
     }
 
-    .info, .search{
+    .info, .search, .search-2{
         width: 200px;
         max-width: 200px;
     }
@@ -612,6 +653,10 @@ export default {
     @media screen and (min-width: 1501px) { //  fullscreen
 
         .bar-block{
+            // width: 1000px;
+        }
+
+        .meta-block{
             width: 1000px;
         }
 
@@ -619,12 +664,24 @@ export default {
             left: 230px;
             // right: 1290px;
         }
+
+        .search{
+            visibility: visible;
+        }
+
+        .search-2{
+            visibility: hidden;
+        }
     }
     
     @media screen and (max-width: 1500px) and (min-width: 1001px) {
 
         .bar-block{
-            width: 1000px;
+            // width: 1000px;
+        }
+
+        .meta-block{
+            width: 900px;
         }
 
         ._marks-unfolded-block{
@@ -639,8 +696,23 @@ export default {
             width: auto;
         }
 
+        .meta-block{
+            width: 100%;
+        }
+
         ._marks-unfolded-block{
             left: 0px;
+        }
+    }
+
+    @media screen and (max-width: 1500px) {
+
+        .search{
+            visibility: hidden;
+        }
+
+        .search-2{
+            visibility: visible;
         }
     }
     // .marks-box__item:hover{

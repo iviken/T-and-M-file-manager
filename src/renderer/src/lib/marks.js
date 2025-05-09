@@ -1,8 +1,10 @@
-const defaults = {
-    defaultMarksColor: 'default-color',
-    unmarkedColor: 'unmarked-color',
-    unmarkedMarkID: 'mark_unmarked',
-}
+// const defaults = {
+//     defaultMarksColor: 'default-color',
+//     unmarkedColor: 'unmarked-color',
+//     unmarkedMarkID: 'mark_unmarked',
+// }
+
+import { defaults } from './settings.js'
 
 export const marksMethods = {
 

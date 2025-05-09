@@ -1,18 +1,20 @@
-const settings = {
-    replacedSymbolPath: ' > ',
-    folderNameRegexp: /[\\\/<>:\"\*\?\|]/g,
-    win32separator: '\\',
-    actualSeparator: '/',
-    excludedFolders: ['Recovery', 'System Volume Information', 'PerfLogs', 'Config.Msi', '$SysReset', '$Recycle.Bin', 'OneDriveTemp'],
-    excludedFiles: ['desktop.ini'],
-    maxTabs: 10,    //  maxFoldersOnBar
-    forcedFolderUpdate: false,
-    lengthOfLastWord: 6,
-}
+// const settings = {
+//     replacedSymbolPath: ' > ',
+//     folderNameRegexp: /[\\\/<>:\"\*\?\|]/g,
+//     win32separator: '\\',
+//     actualSeparator: '/',
+//     excludedFolders: ['Recovery', 'System Volume Information', 'PerfLogs', 'Config.Msi', '$SysReset', '$Recycle.Bin', 'OneDriveTemp'],
+//     excludedFiles: ['desktop.ini'],
+//     maxTabs: 10,    //  maxFoldersOnBar
+//     forcedFolderUpdate: false,
+//     lengthOfTheLastPartOfTheFolderName: 6,
+// }
 
-const defaults = {
-    defaulMarkID: 'mark_unmarked',
-}
+// const defaults = {
+//     defaulMarkID: 'mark_unmarked',
+// }
+
+import { defaults, settings } from './settings.js'
 
 const paths = {
 
@@ -160,11 +162,11 @@ const helpers = {
   shrinkName:function(name, maxLength){
 
     if( maxLength == undefined ) return name
-    if( maxLength < (settings.lengthOfLastWord + 3) ) return name
+    if( maxLength < (settings.lengthOfTheLastPartOfTheFolderName + 3) ) return name
 
     if( maxLength >= name.length ) return name
 
-    let lastWord = name.indexOf(' ') > 0 ? name.split(' ')[name.split(' ').length - 1] : name.slice(-1 * settings.lengthOfLastWord)
+    let lastWord = name.indexOf(' ') > 0 ? name.split(' ')[name.split(' ').length - 1] : name.slice(-1 * settings.lengthOfTheLastPartOfTheFolderName)
     let index = maxLength - lastWord.length - 2
 
     return `${name.slice(0, index)}...${lastWord}`
@@ -502,7 +504,10 @@ export const folders = {
     return navigation.subfoldersList
   },
 
-  refreshFiles:function(){},
+  refreshFiles:function(){
+
+    filesCollectionMethods.refreshFilesInActualFolder()
+  },
 
   // getFolderName:function(path){
 
@@ -521,6 +526,11 @@ export const folders = {
 
     return helpers.shrinkName(name, maxLength)
   },
+
+  // recordNewFileInActualFolder:function(file){
+
+  //   filesCollectionMethods.recordNewFileInActualFolder( `${file.name}.${file.format}` )
+  // },
 }
 
 const navigation = {
@@ -1185,7 +1195,17 @@ const filesCollectionMethods = {
       // console.log('readDirResult')
       // console.log(readDirResult)
 
+      //  Оставляет в базе совпадающие с обновленным списком readDirResult файлы
+
       history.actual(folders.folders).files = history.actual(folders.folders).files.filter(file => readDirResult.includes(`${file.name}.${file.format}`))
+
+      //  Update metadata
+
+      history.actual(folders.folders).files.forEach(file => {
+        file.meta = window.api.getFileMeta( history.actual(folders.folders).path, `${file.name}.${file.format}` )
+      })
+
+      //  record new files ib db
 
       readDirResult.forEach(fullname => {
         this.recordNewFileInActualFolder(fullname)
@@ -1203,7 +1223,8 @@ const filesCollectionMethods = {
           id: 'fileID_' + Math.floor(Math.random()*100000000000000),
           name: fullname.slice( 0, fullname.lastIndexOf('.') ),       //      To Do
           format: fullname.slice( fullname.lastIndexOf('.') + 1 ), 
-          markID: defaults.defaulMarkID, 
+          markID: defaults.unmarkedMarkID, 
+          // markID: defaults.defaulMarkID, 
           isPinned: false, 
           path: paths.validate( history.actual(folders.folders).path ), 
           meta: window.api.getFileMeta( history.actual(folders.folders).path, fullname ), 

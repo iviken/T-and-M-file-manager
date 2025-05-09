@@ -1,4 +1,4 @@
-# Tasks and Marks file manager (<img src="/src/renderer/src/assets/electron.svg" width="26px" height="26px" style="background: black" />M&T)
+# Marks and Tasks file manager (<img src="/src/renderer/src/assets/electron.svg" width="26px" height="26px" style="background: black" />M&T)
 
 - About
 - Possibilities
@@ -37,17 +37,16 @@ The session name (in session mode) is displayed in the center.
 
 The panel consists of 5 levels: info, marks (not all)\*, Buttons\*, folder tabs\*, search.
 
-\* In file metadata display mode, the block disappears.
+\* In file metadata display mode, the block disappears. to display the file's metadata, press: Shift
 
 #### Info
 
-Count selected files \*
-\* if at least one file is selected.
+Count selected files, if at least one file is selected.
 
 #### Marks
 
-- <img src="/src/renderer/src/assets/arc dawn.svg" width="16" height="16" style="background: black" />: show mark menu.
-- \+: create new mark.
+- <img src="/src/renderer/src/assets/arc dawn.svg" width="16" height="16" style="background: black" /> show mark menu.
+- \+ create new mark.
 
 Not all markings are displayed.
 If at least one file is selected, you can assign a 'mark' to it.
@@ -60,8 +59,8 @@ All file markings in the open session are displayed here. You can delete existin
 
 - To rename a label, double-click it. Only works if no files are selected.
 
-- <img src="/src/renderer/src/assets/arrow2 left.svg" width="16" height="16" style="background: black" /> / <img src="/src/renderer/src/assets/arrow2.svg" width="16" height="16" style="background: black" />: set mark color. Press Esc or click it to exit.
-- x: delete mark. All seleced files with this mark will become unmarked.
+- <img src="/src/renderer/src/assets/arrow2 left.svg" width="16" height="16" style="background: black" /> / <img src="/src/renderer/src/assets/arrow2.svg" width="16" height="16" style="background: black" /> set mark color. Press Esc or click it to exit.
+- <img src="/src/renderer/src/assets/x.svg" width="16" height="16" style="background: black" /> delete mark. All seleced files with this mark will become unmarked.
 
 ##### Create new mark
 
@@ -69,14 +68,14 @@ Enter a name for the new marking and click the button <img src="/src/renderer/sr
 
 #### Buttons on center
 
-- <img src="/src/renderer/src/assets/tasks.svg" width="16" height="16" style="background: black" />: show task panel.
-- <img src="/src/renderer/src/assets/tree.svg" width="16" height="16" style="background: black" />: show folder tree panel.
+- <img src="/src/renderer/src/assets/tasks.svg" width="16" height="16" style="background: black" /> show task panel.
+- <img src="/src/renderer/src/assets/tree.svg" width="16" height="16" style="background: black" /> show folder tree panel.
 
 #### Folder tabs
 
 You can freely switch between folder tabs, just like in Windows 11.
 
-- \+: Create new folder tab. The parent folder will open. Max folders tabs: 6.
+- <img src="/src/renderer/src/assets/plus.svg" width="16" height="16" style="background: black" /> create new folder tab. The parent folder will open. Max folders tabs: 6.
 
 #### Search (IN DEV)
 
@@ -98,12 +97,12 @@ To cross out a task or subtask, click on the square on the left. An x symbol wil
 
 These buttons appear when the cursor is on a task:
 
-- <img src="/src/renderer/src/assets/pin.svg" width="16" height="16" style="background: black" />: pin / unpin task.
+- <img src="/src/renderer/src/assets/pin.svg" width="16" height="16" style="background: black" /> pin / unpin task.
 <!-- - ![pin or unpin task](/src/renderer/src/assets/pin.svg?raw=true&sanitize=true): pin / unpin task. -->
-- x: delete task.
-- \+: add subtask.
+- <img src="/src/renderer/src/assets/x.svg" width="16" height="16" style="background: black" /> delete task.
+- <img src="/src/renderer/src/assets/plus.svg" width="16" height="16" style="background: black" /> add subtask.
 - &#9723; : If a task has no subtasks, hovering over it will display a square on the left. Clicking on it will complete the task and remove the selection. Clicking again will make the task active again and restore the selection.
-- <img src="/src/renderer/src/assets/arc dawn.svg" width="16" height="16" style="background: black" />: fold / unfold subtasks (if any).
+- <img src="/src/renderer/src/assets/arc dawn.svg" width="16" height="16" style="background: black" /> fold / unfold subtasks (if any).
 <!-- - ![fold subtasks](/src/renderer/src/assets/arc%20dawn.svg?raw=true&sanitize=true): fold / unfold subtasks (if any). -->
 
 You can save your own tasks for each session.
@@ -121,7 +120,7 @@ The panel consists of 4 levels: session folders / pin folders ,address bar, fold
 
 Click on a folder name to go to it.
 
-- <img src="/src/renderer/src/assets/eye opened.svg" width="16" height="16" style="background: black" />: hide system folders and folders whose names begin with a dot.
+- <img src="/src/renderer/src/assets/eye opened.svg" width="16" height="16" style="background: black" /> hide system folders and folders whose names begin with a dot.
 <!-- ![hide system folders](/src/renderer/src/assets/eye%20opened.svg): hide system folders and folders whose names begin with a dot. -->
 
 #### Folder tree:
@@ -130,10 +129,10 @@ The folder tree allows you to navigate through the folders on your computer. The
 
 #### Special folders:
 
-- <img src="/src/renderer/src/assets/list.svg" width="16" height="16" style="background: black" />: my documents.
-- <img src="/src/renderer/src/assets/load.svg" width="16" height="16" style="background: black" />: downloads.
+- <img src="/src/renderer/src/assets/list.svg" width="16" height="16" style="background: black" /> my documents.
+- <img src="/src/renderer/src/assets/load.svg" width="16" height="16" style="background: black" /> downloads.
 
-- <img src="/src/renderer/src/assets/cloud.svg" width="16" height="16" style="background: black" />: clouds... (IN DEV).
+- <img src="/src/renderer/src/assets/cloud.svg" width="16" height="16" style="background: black" /> clouds... (IN DEV).
 
 ### Files panel
 
@@ -148,7 +147,9 @@ Files are grouped by label. Files without groups are placed last among groups.
 ## HotKeys
 
 - Alt: open the comparison window for the selected photos.
+- F3: show / hide search panel (in unmaximize window only).
 - F5: refresh files in opened folder.
+<!-- - F11: maximize / restore window. -->
 - Shift (press): show metadata of the file in focus.
 - \+ / \- / =: increase or decrease the size of image icons.
 

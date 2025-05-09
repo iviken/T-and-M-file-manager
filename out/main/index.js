@@ -9,6 +9,8 @@ function createWindow() {
     // height: 1080,
     width: 1200,
     height: 900,
+    // resizable: true,
+    // fullscreen: true,
     show: false,
     autoHideMenuBar: true,
     frame: false,

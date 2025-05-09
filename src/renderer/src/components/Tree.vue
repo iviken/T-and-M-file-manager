@@ -1,11 +1,10 @@
 <script>
+
+import { settings, defaults } from '../lib/settings.js'
+
 export default {
   props:{
     foldersMethods2:{
-        type: Object,
-        required: true
-    },
-    inputSettings:{
         type: Object,
         required: true
     },
@@ -55,10 +54,11 @@ export default {
 
     sessionFolderDisplayFilter:function(folder){
       // console.log(folder)
-      return folder.files.length > 0 ? !folder.files.every( file => file.markID == this.defaults.defaulMarkID ) : false
+      return folder.files.length > 0 ? !folder.files.every( file => file.markID == defaults.unmarkedMarkID ) : false
+      // return folder.files.length > 0 ? !folder.files.every( file => file.markID == defaults.defaultMarkID ) : false
       
       // return folder.files.length > 0 ? 
-      //   folder.files.every( file => ((file.markID != this.defaults.defaulMarkID) || file.isPinned) ) : 
+      //   folder.files.every( file => ((file.markID != defaults.defaultMarkID) || file.isPinned) ) : 
       //   false
     },
 
@@ -134,15 +134,17 @@ export default {
       renameValue: '',
       isCreatredNewFolder: false,
       newFolderName: '',
-      settings:{
-        replacedSymbolPath: ' > ',
-        folderNameRegexp: /[\\\/<>:\"\*\?\|]/g,
-        folderNameMaxLength: 30,
-        addressBarFolderNameMaxLength: 10,    //  pick up
-      },
-      defaults:{
-        defaulMarkID: 'mark_unmarked',
-      },
+      settings: settings,
+      defaults: defaults,
+      // settings:{
+      //   replacedSymbolPath: ' > ',
+      //   folderNameRegexp: /[\\\/<>:\"\*\?\|]/g,
+      //   folderNameMaxLength: 30,
+      //   addressBarFolderNameMaxLength: 10,    //  pick up
+      // },
+      // defaults:{
+      //   unmarkedMarkID: 'mark_unmarked',
+      // },
     }
   },
 
@@ -178,7 +180,7 @@ export default {
 
         <!-- folders with marked files -->
 
-        <div v-if="inputSettings[ localState.actualSessionType ].showSessionFolders" class="folders block on-row">
+        <div v-if="settings[ localState.actualSessionType ].showSessionFolders" class="folders block on-row">
 
           <div @click="foldSessionFolders()" class="left-field">
             <div :class="{foldersActive: dataSettings.foldersIsFolded}">[]</div>
@@ -196,7 +198,9 @@ export default {
 
         <!-- pin folders block -->
 
-        <div v-if="this.inputSettings[ this.localState.actualSessionType ].showPinFolders" class="pin-block block on-row focus" tabindex="0" >
+        <div v-if="settings[ this.localState.actualSessionType ].showPinFolders" class="pin-block block on-row focus" tabindex="0" >
+
+          <!-- Pin folders block: logo -->
 
           <div @click="foldPin()" class="pin-logo left-field">
             <div :class="{pinActive: dataSettings.pinFoldersIsFolded}">
@@ -204,17 +208,23 @@ export default {
             </div>
           </div>
 
+          <!-- Pin folders block: folders -->
+
           <div v-if="!dataSettings.pinFoldersIsFolded" class="on-col w100">
             <div v-for="folder in folders" class="item w100">
               <div v-if="folder.isPinned" class="w100">
                 <div @click="foldersMethods2.clickToFolder({path: folder.path, folderID: folder.id})" :id="folder.id" :class="{active: markActiveFolder( foldersMethods2.getFolderName( folder.path ) ), opened: markOpenedFolder(folder.path)}" class="list-item on-row w100">
+                  
                   <div>
                     <span class="t-tree-item text-nowrap uppercase">{{ foldersMethods2.getFolderName( folder.path ) }}</span>
                   </div>
+
                   <div class="w100"></div>
+
                   <div @click="foldersMethods2.pinFolder()" class="pin btn-opacity h100 on-center">
                     <img src="../assets/unpin.svg" alt="pin folder" class="pix-btn">
                   </div>
+
                 </div>
               </div>
             </div>
@@ -222,7 +232,7 @@ export default {
 
         </div>
 
-        <!-- adress bar -->
+        <!-- address bar -->
 
         <div class="address-bar on-row w100">
 
@@ -230,12 +240,16 @@ export default {
             <div class="address-block on-row no-wrap w100">
 
               <div v-for="(part, index) of getPathForAddressBar" class="on-row no-wrap">
+
+                <!-- Address bar: folder name -->
   
                 <div @click="clickToAddressBarPart( {path: path.split('/').slice(0, index + 1).join('/')} )" class="address-bar-part">
                   <span class="t-tree-address uppercase text-nowrap">
                     {{ foldersMethods2.shrinkName(part, settings.addressBarFolderNameMaxLength) }}
                   </span>
                 </div>
+
+                <!-- Address bar: separator -->
   
                 <div>
                   <span class="t-tree-address uppercase text-nowrap">
@@ -244,8 +258,8 @@ export default {
                 </div>
   
               </div>
-            </div>
 
+            </div>
           </div>
 
           <div class="w100"></div>
@@ -263,45 +277,62 @@ export default {
 
         <div class="tree-block focus scrollY on-col" tabindex="0">
 
-          <!-- folders -->
+          <!-- Tree: folders -->
 
           <div class="block on-col">
             <div v-for="item in foldersMethods2.getFoldersList()" class="">
+              
               <div v-if="nameOfTheFolderToBeRenamed != item" @dblclick="renameSelectedFolder( {state: 'input-start'} )" @click="foldersMethods2.clickOnTheDirectoryInTheFolderTree( item, 'this level' )" :class="{active: markActiveFolder(item), opened: markOpenedFolder(item), 'item-copy-cut': item == foldersMethods2.copyPastFolder( {state: 'get copy-folder name'} )}" class="list-item item on-row w100">
+                
                 <div>
                   <span class="t-tree-item uppercase text-nowrap">{{ foldersMethods2.shrinkName(item, settings.folderNameMaxLength) }}</span>
                 </div>
+
                 <div class="w100"></div>
+
                 <div @click="createNewFolder( {state: 'input-start'} )"  class="add btn-opacity vertical-center h100">
                   <img src="../assets/plus.svg" alt="create new folder" class="pix-btn">
                 </div>
+
                 <div @click="foldersMethods2.pinFolder()" class="pin btn-opacity vertical-center h100">
                   <img src="../assets/pin.svg" alt="pin folder" class="pix-btn">
                 </div>
+
                 <div @click="foldersMethods2.deleteFolder()" class="delete btn-opacity vertical-center h100">
                   <img src="../assets/x.svg" alt="delete this folder" class="pix-btn">
                 </div>
+
               </div>
+
+              <!-- Tree: rename folder -->
+
               <div v-else class="rename">
                 <input type="text" placeholder="folder name" :v-model="renameValue" @input="event => renameValue = event.target.value.replace(settings.folderNameRegexp, '')" :id="`${item}`" @keyup.esc="isRemaned = false" @keyup.enter="renameSelectedFolder({state: 'input-done'})" class="t-tree-item t-tree-renaming rename-input uppercase focus w100"></input>
               </div>
+
             </div>
           </div>
           
-          <!-- sub folders -->
+          <!-- Tree: sub folders -->
 
           <div class="block on-col">
             <div v-for="item in foldersMethods2.getSubfoldersList()" class="">
               <div class="list-item item on-row w100">
+
                 <div class="vertical-center h100">
                   <img src="../assets/tree-level.svg" class="tree-level-pix">
                 </div>
+
                 <div v-if="nameOfTheFolderToBeRenamed != item" @click="foldersMethods2.clickOnTheDirectoryInTheFolderTree( item, 'child level' )" class="sub-item">
                   <span class="t-tree-item text-nowrap uppercase text-nowrap">{{ foldersMethods2.shrinkName(item, settings.folderNameMaxLength) }}</span>
                 </div>
+
+                <!-- Tree: rename subfolder -->
+
                 <div v-else class="rename">
                   <input type="text" placeholder="folder name" :v-model="renameValue" @input="event => renameValue = event.target.value.replace(settings.folderNameRegexp, '')" :id="`sub_${item}`" @keyup.esc="isRemaned = false" @keyup.enter="renameSelectedFolder({state: 'input-done'})" class="t-tree-renaming rename-input focus w100"></input>
                 </div>
+
               </div>
             </div>
           </div>
@@ -316,7 +347,8 @@ export default {
 
         <!-- sptecial folders -->
 
-        <div v-if="this.inputSettings[ this.localState.actualSessionType ].showSpecialFoldersBtns" class="special-folders block on-col">
+        <div v-if="settings[ this.localState.actualSessionType ].showSpecialFoldersBtns" class="special-folders block on-col">
+
           <div class="on-row item">
             <div class="left-field">
               <img src="../assets/list.svg" alt="my documents" class="pix-btn docs">
@@ -334,12 +366,13 @@ export default {
               <span class="t-tree-item text-nowrap uppercase">downloads</span>
             </div>
           </div>
+
         </div>
 
 
         <!-- clouds -->
 
-        <div v-if="this.inputSettings[ this.localState.actualSessionType ].showCloudsStorageBtns" class="clouds-block block on-col">
+        <div v-if="settings[ this.localState.actualSessionType ].showCloudsStorageBtns" class="clouds-block block on-col">
 
           <div class="on-row item">
             <div class="left-field">

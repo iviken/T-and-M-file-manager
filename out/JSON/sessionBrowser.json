@@ -49,7 +49,7 @@
 				"name": "Browser some task free",
 				"descr": "",
 				"isDone": false,
-				"isSelected": false,
+				"isSelected": true,
 				"isPinned": false,
 				"isFolded": false,
 				"subtasksAvailability": true,
@@ -181,7 +181,7 @@
 				"path": "/Temp/E3/Log",
 				"isOpened": false,
 				"isPinned": true,
-				"displayedOnBar": true,
+				"displayedOnBar": false,
 				"files": [
 					{
 						"id": "fileID_3381558",
@@ -192,7 +192,6 @@
 						"path": "/Temp/E3/Log",
 						"meta": {
 							"created": "2024-06-17T17:43:56.505Z",
-							"createdMS": null,
 							"lastEdited": "2024-06-17T17:43:56.505Z",
 							"lastEditedMS": 1718646236504.6165,
 							"size": 32686,
@@ -208,7 +207,6 @@
 						"path": "/Temp/E3/Log",
 						"meta": {
 							"created": "2024-06-17T17:30:54.065Z",
-							"createdMS": null,
 							"lastEdited": "2024-06-17T17:30:54.065Z",
 							"lastEditedMS": 1718645454064.741,
 							"size": 103,
@@ -224,7 +222,6 @@
 						"path": "/Temp/E3/Log",
 						"meta": {
 							"created": "2024-06-17T17:30:54.064Z",
-							"createdMS": null,
 							"lastEdited": "2024-06-17T17:30:54.064Z",
 							"lastEditedMS": 1718645454063.7546,
 							"size": 0,
@@ -247,7 +244,6 @@
 						"path": "/Temp/E3/Setting",
 						"meta": {
 							"created": "2024-06-17T17:30:54.023Z",
-							"createdMS": null,
 							"lastEdited": "2021-12-20T04:34:05.532Z",
 							"lastEditedMS": 1639974845532.2014,
 							"size": 363637,
@@ -263,7 +259,6 @@
 						"path": "/Temp/E3/Setting",
 						"meta": {
 							"created": "2024-06-17T17:31:03.737Z",
-							"createdMS": null,
 							"lastEdited": "2021-12-20T04:34:05.511Z",
 							"lastEditedMS": 1639974845511.2593,
 							"size": 1226,
@@ -279,7 +274,6 @@
 						"path": "/Temp/E3/Setting",
 						"meta": {
 							"created": "2024-06-17T17:30:58.244Z",
-							"createdMS": null,
 							"lastEdited": "2021-12-20T04:34:05.519Z",
 							"lastEditedMS": 1639974845519.2368,
 							"size": 39113,
@@ -305,7 +299,6 @@
 						"path": "/Temp/E3",
 						"meta": {
 							"created": "2025-03-29T18:36:19.673Z",
-							"createdMS": null,
 							"lastEdited": "2021-12-20T11:04:18.000Z",
 							"lastEditedMS": 1639998258000,
 							"size": 151966608,
@@ -315,12 +308,12 @@
 				],
 				"isOpened": false,
 				"isPinned": false,
-				"displayedOnBar": true,
+				"displayedOnBar": false,
 				"isEmpty": false
 			},
 			{
-				"id": "folder_1102999926726",
-				"path": "/Users/Nike/Downloads",
+				"id": "folder_9732262411636",
+				"path": "/Users/Nike",
 				"files": [],
 				"isOpened": true,
 				"isPinned": false,

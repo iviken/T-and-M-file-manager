@@ -2,18 +2,24 @@
 import TaskItem from './TasksItem.vue'
 
 export default {
+
   components:{
     TaskItem
   },
+
   props:{
     data:{
         type: Object,
         required: true
     }
   },
+
   methods: {
+
     createNewTask:function(){
+
         if(this.newTaskValue.length > 0){
+
             let taskID = 'task_' + Math.floor(Math.random()*10000000)
             
             this.data[taskID] = {
@@ -29,14 +35,21 @@ export default {
             }
         }
     },
+
     moveTask:function(dat){
         console.log('task: ' + dat)
     },
+
     deleteTask(task){
+
         if( Object.hasOwn(this.data, task.id) ){
+
             delete this.data[task.id]
+
         }else{
+
             for (const key in this.data) {
+                
                 if( Object.hasOwn(this.data[key], 'subtasks') ){            
                     if( Object.hasOwn(this.data[key].subtasks, task.id) ){
                         //
@@ -50,8 +63,7 @@ export default {
         }
     }
   },
-  beforeUpdate(){},
-  beforeMount(){},
+
   data(){
     return{
         newTaskValue: 'new task',

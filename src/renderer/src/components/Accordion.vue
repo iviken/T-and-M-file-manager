@@ -1,6 +1,8 @@
 <script>
 import FileComponent from './FileComponent.vue'
 
+import { settings } from '../lib/settings.js'
+
 export default {
   components:{
     FileComponent
@@ -71,7 +73,7 @@ export default {
       //    Sorted files by type: images or others format and marking
       this.files.forEach(file => {
 
-        if( this.fileImgMask.includes(file.format) ){
+        if( this.settings.fileImgMask.includes(file.format) ){
           if(mark.id == file.markID){
             if(!file.isPinned){
               _mark.imgs = true
@@ -79,7 +81,7 @@ export default {
           }
         }
 
-        if( !this.fileImgMask.includes(file.format) ){
+        if( !this.settings.fileImgMask.includes(file.format) ){
           if(mark.id == file.markID){
             if(!file.isPinned){
               _mark.text = true
@@ -111,7 +113,7 @@ export default {
 
     isThereAtLeastOneAttachedFile(){
       return this.files
-        .filter( (file)=>this.viewMode == 'imgs' ? this.fileImgMask.includes(file.format) : !this.fileImgMask.includes(file.format) )
+        .filter( (file)=>this.viewMode == 'imgs' ? this.settings.fileImgMask.includes(file.format) : !this.settings.fileImgMask.includes(file.format) )
         .find( (file)=>file.isPinned == true )
     }
     // countUnpinBlockHeight1:function(){
@@ -121,19 +123,14 @@ export default {
 
   data(){
     return{
+      settings: settings,
       displayedMarks: {text:[], imgs:[]},
-      fileImgMask: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'BMP', 'svg', 'SVG', 'ico', 'ICO', 'tiff', 'TIFF', 'webp', 'eps', 'EPS'],
       singleDisplayMarkMode: {isEnabled: false, mark_id: ''},
-      countFiles: {text: {pin: 0, unpin: 0}, imgs: {pin: 0, unpin: 0}},
       unpinHeightBlock: 600,
     }
   },
 
   beforeUpdate(){
-    //
-    // this.refreshFiles()
-    //
-    // this.getCountFiles()
     //
     // this.unpinHeightBlock = document.querySelector('._component').clientHeight - 50 - this.countFiles[this.viewMode].pin * this.settings.textFileBtnHeight_px - 200
     this.countUnpinBlockHeight()
@@ -150,7 +147,6 @@ export default {
     tabindex="0" 
     @keyup.esc="filesMethods.resetStateFiles()" 
     @keyup.f2="filesMethods.renameFiles( {state: 'start rename'} )" 
-    @keyup.f5="" 
     @keyup.delete="filesMethods.deleteFiles()"
     @keyup.ctrl.c="!localState.showFilesFromAllFoldersOption && filesMethods.copyFiles()"
     @keyup.ctrl.x="!localState.showFilesFromAllFoldersOption && filesMethods.cutFiles()"
@@ -174,7 +170,7 @@ export default {
       <div v-if="!inputSettings.pinFilesIsFolded[viewMode]" class="w100">
         <div :class="`${viewMode}`" class="w100">
           <div v-for="fileItem in files" class="file">
-            <div v-if="fileItem.isPinned" @click="filesMethods.clickToFile(fileItem.id)" @mouseenter.ctrl="filesMethods.readMetadata(fileItem)" @dblclick="filesMethods.openFile(fileItem)" class="">
+            <div v-if="fileItem.isPinned" @click="filesMethods.clickToFile(fileItem.id)" @mouseenter.space="filesMethods.readMetadata(fileItem)" @dblclick="filesMethods.openFile(fileItem)" class="">
               <FileComponent :file="fileItem" :viewMode="viewMode" :state="state" :pixHeight="inputSettings.imagesHeight" :filesMethods="filesMethods" class="file-component" />
             </div>
           </div>
@@ -216,7 +212,7 @@ export default {
                 <div v-if="markItem.isFolded[viewMode]" v-for="fileItem in files" class="file">
 
                   <div v-if="!fileItem.isPinned && (fileItem.markID == markItem.id)" class="">
-                    <div @click="filesMethods.clickToFile(fileItem.id)" @mouseenter.shift="filesMethods.readMetadata(fileItem)" @dblclick="filesMethods.openFile(fileItem)" class="">
+                    <div @click="filesMethods.clickToFile(fileItem.id)" @mouseenter.space="filesMethods.readMetadata(fileItem)" @dblclick="filesMethods.openFile(fileItem)" class="">
                       <FileComponent :file="fileItem" :state="state" :viewMode="viewMode" :pixHeight="inputSettings.imagesHeight" :filesMethods="filesMethods" class="file-component" />
                     </div>
                   </div>

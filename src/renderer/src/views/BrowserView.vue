@@ -8,6 +8,8 @@ import { filesMethods } from '../lib/files.js'
 import { marksMethods } from '../lib/marks.js'
 import { folders } from '../lib/folders.js'
 
+import { settings } from '../lib/settings.js'
+
 export default {
     components: {
         Tree, Tasks, Bar, AccordionFiles
@@ -24,6 +26,7 @@ export default {
         return{
             data: {},
             fullData: {},
+            settings: settings,
             // refreshFilesQueueLOG: {deletedIrrelevant: [], foundAndAdded: []},
             filesMethods: null,
             marksMethods: null,
@@ -34,10 +37,14 @@ export default {
                 pathsOfOpenedFolders: [],   //
                 numberOfSelectedFiles: 0,
                 defaults:{
-                    unmarkedMarkID: 'mark_unmarked'
+                    unmarkedMarkID: 'mark_unmarked' //
                 },
                 onFocusFile:{
-                    metadata: '',               //  metadata hovered file
+                    metadata: {
+                        created: '',
+                        lastEdited: '',
+                        size: '',
+                    },               //  metadata hovered file
                     name: '',
                     format: '',
                 },
@@ -47,44 +54,22 @@ export default {
                 showTasksPanel: true,
                 activeFolderIndex: 0,
                 metadataIsHidden: true,
+                showImageProcessor: false,
                 showFilesFromAllFoldersOption: false,
                 showImageViewer: false,
                 actualSessionType: '',                  //
                 renamigMark: false,
+                hideTabs: false,                        //  Скрывать при нажатии F3 на малых форматах экрана (для отображения строки поиска вместо вкладок)
             },
-            settings:{
-                SESSION:{
-                    // allowClosingFoldersWithMarkedFiles: true,
-                    showPinFolders: true,
-                    showCloudsStorageBtns: true,
-                    showSpecialFoldersBtns: true,
-                    showSessionFolders: false,
-                    openPreviousFolderAfterClosingActiveOne: false,
-                    resettingSelectedFilesAfterSwitchingToAnotherFolder: true,
-                },
-                PROJECTS:{
-                    // allowClosingFoldersWithMarkedFiles: true,
-                    showPinFolders: false,
-                    showCloudsStorageBtns: true,
-                    showSpecialFoldersBtns: true,
-                    showSessionFolders: true,
-                    openPreviousFolderAfterClosingActiveOne: false,
-                    resettingSelectedFilesAfterSwitchingToAnotherFolder: true,
-                },
-                imageZoomStep: 25,
-                minimumImagePreviewSize: 50,
-                maximumImagePreviewSize: 175,
+            imageViewerData:{
+                countImages: 0,
+                imageBoxClassName: null,
             },
+            imageProcessorData:{},          //  show only if image viewer showing
         }
     },
 
     methods: {
-
-        showMeta:function(dat){
-
-            this.localState.metadataIsHidden = dat == 'show meta' ? false : this.localState.metadataIsHidden
-            this.localState.metadataIsHidden = dat == 'hide meta' ? true : this.localState.metadataIsHidden
-        },
 
         getAllFiles(){
 
@@ -111,7 +96,7 @@ export default {
 
                 this.fullData = window.api.getProjectData()
                 
-                this.localState.actualSessionType = 'PROJECTS'       //  browser session
+                this.localState.actualSessionType = 'PROJECTS'       //  project session
             }
             // console.log('session type: ' + this.sessionType)
             // console.log(this.fullData)
@@ -130,27 +115,42 @@ export default {
         },
 
         imageViewer(){
-            //
+            // console.log('view')
+            
             this.stateFiles.imageViewerPullFiles = {}
             
             let filePullIsEmpty = true
+
+            //  reset
+            this.imageViewerData.countImages = 0
             
             this.data.folders.forEach(folder => {
                 folder.files.forEach(file => {
                     for(let key in this.stateFiles.files){
 
-                        if( (file.id == key) && (this.stateFiles.files[key] == 'SELECTED') ){
+                        if( (file.id == key) && (this.stateFiles.files[key] == 'SELECTED') && (filesMethods.isAPicture(file)) ){
 
                             this.stateFiles.imageViewerPullFiles[key] = file
+
+                            this.imageViewerData.countImages++
+
                             filePullIsEmpty = false
                         }
                     }
                 })
             })
             //
-            if(!filePullIsEmpty){
-                this.localState.showImageViewer = !this.localState.showImageViewer
-            }
+            if(!filePullIsEmpty)
+                //
+                this.imageViewerData.imageBoxClassName = this.imageViewerData.countImages < 3 ? this.imageViewerData.countImages : 'MANY'
+
+            // console.log(filePullIsEmpty)
+            // console.log(this.stateFiles.imageViewerPullFiles)
+            // console.log(this.imageViewerData.countImages)
+                
+            return !filePullIsEmpty
+                // this.localState.showImageViewer = !this.localState.showImageViewer
+            // }
         },
 
         resetStateFiles(){
@@ -174,6 +174,44 @@ export default {
             this.marksMethods.stateFiles = this.stateFiles
             this.marksMethods.marks = this.data.marks
         },
+
+        showSearchPanel(){
+
+            if(window.outerWidth != window.screen.width)
+                this.localState.hideTabs = !this.localState.hideTabs
+        },
+
+        spaceKey(cnst, e){
+            
+            if(e.target.nodeName == 'INPUT') return
+
+            if(this.localState.renamigMark) return
+
+            //  reset default events reaction
+            e.preventDefault()
+
+            //      imageViewer
+            if(cnst == 'keyup'){
+
+                let selectedImages = this.imageViewer()
+
+                if(selectedImages > 0)
+                    this.localState.showImageViewer = !this.localState.showImageViewer
+
+                //  show image processor (for single image only)
+                if(selectedImages == 1)
+                    this.localState.showImageProcessor = !this.localState.showImageProcessor
+
+                //  hide metadata file
+                this.localState.metadataIsHidden = true
+            }
+
+            //   show metadata file
+            if(!this.localState.showImageViewer)
+                if(cnst == 'keydown')
+                    if(this.localState.metadataIsHidden)
+                        this.localState.metadataIsHidden = false
+        },
     },
 
     beforeMount() {
@@ -187,17 +225,56 @@ export default {
     mounted(){
         this.$nextTick(function () {
 
+            window.addEventListener('resize', (e) => {
+
+                //  hide folders tabs to show seacrh panel
+                if(window.outerWidth == window.screen.width)
+                    this.localState.hideTabs = false
+            })
+
             window.addEventListener("keydown", e => {
+                
                 //  show metadata file
-                if(e.key == 'Shift'){
-                    if(!this.localState.renamigMark) this.showMeta('show meta') 
-                }
+                // if(e.key == 'Shift')
+
+                //     // if(this.imageViewerData.countImages > 0)
+                //         // this.localState.showImageViewer =
+
+                //     if(!this.localState.showImageViewer)
+                //         if(e.target.nodeName != 'INPUT')
+                //             if(!this.localState.renamigMark){
+                                
+                //                 e.preventDefault()
+                //                 this.showMetadata('show meta')
+                //                 // console.log('space')
+                //             }
+
+                //
+                if(e.key == ' ')
+                    this.spaceKey('keydown', e)
             })
 
             window.addEventListener("keyup", e => {
-                //  show metadata file
-                if(e.key == 'Shift'){ 
-                    if(!this.localState.renamigMark) this.showMeta('hide meta') }
+                // console.log(e.target.nodeName)
+                //  hide metadata file
+                // if(e.key == 'Shift')
+                //     if(!this.localState.showImageViewer){
+                //         if(e.target.nodeName != 'INPUT')
+                //             if(!this.localState.renamigMark){
+
+                //                 e.preventDefault()
+                //                 this.showMetadata('hide meta')
+                //             }
+                //     }else{
+
+                //         e.preventDefault()
+                //         this.imageViewer()
+                //     }
+
+                //
+                if(e.key == ' ')
+                    this.spaceKey('keyup', e)
+
                 //  zoom image preview
                 if( (e.key == '+') || (e.key == '=')){
                     if(this.data.parameters.imagesHeight < (this.settings.maximumImagePreviewSize - this.settings.imageZoomStep) )
@@ -221,7 +298,13 @@ export default {
 
 <template>
 
-    <div class="on-col focus" @keyup.alt.exact="imageViewer()" @keyup.f5="foldersMethods2.refreshFiles()" tabindex="0">
+    <div 
+        @keyup.f5="foldersMethods2.refreshFiles()" 
+        @keyup.f3="showSearchPanel()" 
+        @keyup.ctrl.f="showSearchPanel()" 
+        class="on-col focus" 
+        tabindex="0"
+    >
 
         <!-- <div v-if="sessionType == 'PROJECTS'" class="header-name uppercase">
             <span class="header">{{ data.meta.name }}</span>
@@ -232,7 +315,7 @@ export default {
             {{ data.folders[localState.activeFolderIndex].path.split('/')[ data.folders[localState.activeFolderIndex].path.split('/').length - 1 ] }}
         </div> -->
 
-        <Bar :stateFiles="stateFiles" :localState="localState" :foldersMethods2="foldersMethods2" :marks="data.marks" :marksMethods="marksMethods" :filesMethods="filesMethods" :folders="data.folders" :inputSettings="settings" class="bar-component"/>
+        <Bar :stateFiles="stateFiles" :localState="localState" :foldersMethods2="foldersMethods2" :marks="data.marks" :marksMethods="marksMethods" :filesMethods="filesMethods" :folders="data.folders" class="bar-component"/>
 
         <div :class="`${localState.actualSessionType}-page`">
 
@@ -241,14 +324,20 @@ export default {
                 <div class="left-field w100"></div>
                 
                 <div class="page-block on-row w100">
+
+                    <!-- section left: tasks and folders tree -->
                 
                     <div class="tasks-and-tree">
                         <Tasks v-if="localState.showTasksPanel" :data="data.tasks" class="component tasks" />
 
-                        <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption"  :foldersMethods2="foldersMethods2" :filesMethods="filesMethods" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders" :inputSettings="settings"  :dataSettings="data.parameters" :localState="localState" :projectID="data.id" class="component tree" />
+                        <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption"  :foldersMethods2="foldersMethods2" :filesMethods="filesMethods" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders"  :dataSettings="data.parameters" :localState="localState" :projectID="data.id" class="component tree" />
                     </div>
+
+                    <!-- section right: files -->
                     
                     <div class="section-right h100">
+
+                        <!-- selected (opened) folder -->
                 
                         <div v-if="!localState.showFilesFromAllFoldersOption" class="h100">
                             
@@ -262,6 +351,8 @@ export default {
                             </div>
                 
                         </div>
+
+                        <!-- all folders -->
                 
                         <div v-else class="h100">
                             
@@ -284,11 +375,21 @@ export default {
 
             </div>
 
-            <div v-if="localState.showImageViewer" class="imageViewer">
-                <div class="component imageViewer on-row wrap w100">
-                    <div v-for="pix in stateFiles.imageViewerPullFiles" class="h100">
-                        <img :src="`${pix.path}/${pix.name}.${pix.format}`">
+            <!-- image viewer -->
+
+            <div v-if="localState.showImageViewer" class="component image-viewer on-center">
+                <div :class="`images-block-${imageViewerData.imageBoxClassName}`" class="images-block on-row w100 h100">
+
+                    <div v-for="pix in stateFiles.imageViewerPullFiles" class="image-viewer-box">
+
+                    <!-- <div v-for="pix in stateFiles.imageViewerPullFiles" 
+                        :style="`height: ${ 100/() }%; width: ${}%;`" 
+                        class="image-viewer-box"> -->
+
+                        <img :src="`${pix.path}/${pix.name}.${pix.format}`" class="w100 h100">
+
                     </div>
+
                 </div>
             </div>
 
@@ -389,8 +490,38 @@ export default {
         }
     }
 
-    .imageViewer{
-        color:red;
+    .image-viewer{}
+
+    .images-block-1 > div{
+        height: 100%;
+        width: 100%;
+    }
+
+    .images-block-2 > div{
+        height: auto;
+        width: 50%;
+    }
+
+    .images-block-3 > div, .images-block-4 > div{
+        height: 50%;
+        width: auto;
+        flex-wrap: wrap;
+    }
+
+    .images-block-MANY > div{
+        height: 33%;
+        width: auto;
+        flex-wrap: wrap;
+    }
+    // .images-block-2, .images-block-3, .images-block-4, .images-block-MANY{
+    //     justify-content: space-between;
+    // }
+    .images-block{
+        justify-content: space-between;
+    }
+
+    .image-viewer-box{
+        margin: 20px;
     }
 
     .collapse{

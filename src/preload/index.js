@@ -112,6 +112,14 @@ const api = {
     return path.replaceAll(settings.win32separator, settings.actualSeparator)
   },
 
+  choosingAFileName:(file)=>{
+
+    let postfix = `${settings.dublicateFilePostfix} ${new Date().toLocaleString().replaceAll(/[:.]/g, '-').replaceAll(/[,]/g, '')}`
+    let fileNewName = file.name.slice(0, 255 - 5 - postfix.length - file.format.length)
+
+    return { name: `${fileNewName} ${postfix}`, format: `${file.format}`, fullName: `${fileNewName} ${postfix}.${file.format}` }
+  },
+
   writeFile:(filePath, data)=>{
     
     return fs.writeFile( path.resolve(filePath), data, {encoding: 'utf8'} )
@@ -205,46 +213,52 @@ const api = {
       )
   },
 
-  copyFile:(srcFolderPath, destFolderPath, fileFullname)=>{
+  copyFile:(srcFolderPath, destFolderPath, file)=>{
 
-    let fileNewName = fileFullname
+    let fileSrcFullname = `${file.name}.${file.format}`
 
-    if( srcFolderPath == destFolderPath )
-      fileNewName = fileFullname + ' ' + settings.dublicateFilePostfix
+    let fileNewFullName = api.choosingAFileName(file)
+
+    // let postfix = `${settings.dublicateFilePostfix} ${new Date().toLocaleString().replaceAll(/[:.]/g, '-').replaceAll(/[,]/g, '')}`
+    // let fileNewName = file.name.slice(0, 255 - 5 - postfix.length - file.format.length)
+    // let fileNewFullName = `${fileNewName} ${postfix}.${file.format}`
       
-    while ( fs.existsSync( path.resolve(path.join(destFolderPath, fileNewName)) ) ) 
-      fileNewName = fileFullname + ' ' + settings.dublicateFilePostfix
+    // while ( fs.existsSync( path.resolve(path.join(destFolderPath, fileNewName)) ) ) 
+    //   fileNewName = `${fileNewName.slice()}${settings.dublicateFilePostfix}.${file.format}`
 
-    //
-
-    return fsPromises.copyFile( path.resolve(path.join(srcFolderPath, fileFullname)), path.resolve(path.join(destFolderPath, fileNewName)),  constants.COPYFILE_EXCL )
+    return fsPromises.copyFile( path.resolve(path.join(srcFolderPath, fileSrcFullname)), path.resolve(path.join(destFolderPath, fileNewFullName.fullName)),  fs.constants.COPYFILE_EXCL )
       .then(resolve => {
-          return fileName
+          return fileNewFullName
+          // return {name: `${fileNewName} ${postfix}`, format: file.format}
         }).catch(err => {
           return false
         })
   },
 
-  moveFileTo:(folderPathSrc, folderPathDest, fileFullname)=>{
+  moveFileTo:(folderPathSrc, folderPathDest, file)=>{
 
     if(folderPathSrc == folderPathDest) return false
 
-    api.isFileAsync(folderPathSrc, fileFullname)
-      .then(
-        result_fileFullname=>{
+    // api.isFileAsync(folderPathSrc, fileFullname)
+    //   .then(
+    //     result_fileFullname=>{
 
-          if(result_fileFullname){
+    //       if(result_fileFullname){
 
-            let fileNewName = fileFullname
+            file.fullName = `${file.name}.${file.format}`
+            let fileNewFullname = `${file.name}.${file.format}`
 
-            while ( fs.existsSync( path.resolve(path.join(folderPathDest, fileNewName)) ) ) 
-              fileNewName = fileFullname + ' ' + settings.dublicateFilePostfix
+            if( fs.existsSync( path.resolve(path.join(folderPathDest, file.fullName)) ) )
+              fileNewFullname = api.choosingAFileName(file)
 
-            return fsPromises.rename( path.resolve(path.join(folderPathSrc, fileFullname)), path.resolve(path.join(folderPathDest, fileNewName)) )
+            // while ( fs.existsSync( path.resolve(path.join(folderPathDest, fileNewName)) ) ) 
+            //   fileNewName = fileFullname + ' ' + settings.dublicateFilePostfix
+
+            return fsPromises.rename( path.resolve(path.join(folderPathSrc, file.fullName)), path.resolve(path.join(folderPathDest, fileNewFullname)) )
               .then(
         
                 resolve=>{
-                  return api.validate( fileFullname )
+                  return fileNewFullname
                 }
               ).catch(
         
@@ -252,11 +266,11 @@ const api = {
                   return false
                 }
               )
-          }else{
-            return false
-          }
-        }
-      )
+        //   }else{
+        //     return false
+        //   }
+        // }
+      // )
   },
 
   isFileAsync:function(folderPath, fileFullname){
@@ -458,25 +472,25 @@ const api = {
     if( !result ){
       return api.validate( path )
     }else{
-      return api.validate( path + ' ' + today )
+      return api.validate( path.slice(0, 255 - 3 - today.length) + ' ' + today )
     }
   },
 
   getFileMeta:(InPath, fileFullname)=>{
-    //
+    
     let fileStats = {
-      created: null, 
-      createdMS: null, 
-      lastEdited: null, 
-      lastEditedMS: null, 
-      size: null
+      // created: null, 
+      // createdMS: null, 
+      // lastEdited: null, 
+      // lastEditedMS: null, 
+      // size: null
     }
-    //
+    
     fs.stat( path.resolve( InPath, fileFullname ), (error, stats) => {  
       if (error){
         return
       }else{
-        //
+        
         if(stats.isFile()){
           fileStats.created = stats.atime
           fileStats.createdMs = stats.atimeMs
@@ -484,7 +498,7 @@ const api = {
           fileStats.lastEditedMS = stats.mtimeMs
           fileStats.size = stats.size
         }
-        //
+        
         if(stats.isDirectory()) return
       }
     })

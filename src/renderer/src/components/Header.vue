@@ -12,14 +12,16 @@ export default {
     changeState(stateConst){
 
         switch (stateConst){
+
             case 'CLOSE_PROJ':
+
                 this.state.active = 'BROWSER'
 
                 this.state.atLeastOneProjectOpen = false
 
                 window.api.closeProject()
-                // this.$router.push({name: 'ProjectsList'})
             break
+
             case 'GO_BROWS/PROJ':    
                 //
                 if(this.state.active == 'PROJECTS'){
@@ -40,8 +42,8 @@ export default {
                 this.state.active = this.state.active == 'BROWSER' ? 'PROJECTS' : 'BROWSER'
             break   
         }
-        // console.log(this.$route.name)
     },
+
     closeApp() {
         window.api.close()
     },
@@ -55,11 +57,12 @@ export default {
     },
 
     getActualProjectName(){
+
         for (const key in this.fullData) {
-            if(this.fullData[key].meta.status == 'opened'){
-                // console.log(this.fullData[key].meta.name)
+
+            if(this.fullData[key].meta.status == 'opened')
                 return this.fullData[key].meta.name
-            }
+                // console.log(this.fullData[key].meta.name)
         }
     },
 
@@ -96,16 +99,17 @@ export default {
   },
 
   mounted(){
+    
     this.$nextTick(function () {
+
         window.addEventListener('resize', (e) => {
+
             if(window.outerWidth == window.screen.width){
                 this.state.windowIsMaximized = true
             }else{
                 this.state.windowIsMaximized = false
             }
         })
-
-        // this.projectName = window.api.getProjectName()  //  TO DO
     })
   },
 
@@ -118,7 +122,6 @@ export default {
         fullData: null,
         state: {
             active: null,
-            // active: 'BROWSER',
             windowIsMaximized: true,
             atLeastOneProjectOpen: true,
         },

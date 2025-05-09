@@ -15,10 +15,12 @@ export default {
   methods: {
 
     selectTask:function(id){
+        
         console.log(this.selected)
     },
 
     checkToTask: function(id){
+
         this.task.isDone = !this.task.isDone
         //  Checks all sub-tasks status 'done'. If all sub-tasks are 'done', assign the task status 'done'
         //          TO  DO
@@ -33,6 +35,7 @@ export default {
     },
 
     pinTask:function(){
+
         // console.log('pin!')
         if( Object.hasOwn(this.task, 'subtasks') ){            
             this.task.isPinned = !this.task.isPinned
@@ -40,10 +43,12 @@ export default {
     },
 
     renameTask:function(dat){
+
         if(dat.state == 'input-start') {
             this.isRemaned = true
             this.renamedValue = dat.name
         }
+
         if(dat.state == 'input-done'){
             if(this.renamedValue.length > 0){
                 this.task.name = this.renamedValue
@@ -53,6 +58,7 @@ export default {
     },
 
     addSubTask:function(){
+
         if(this.task.id.indexOf('sub')!=0){
             let subID = 'sub' + Math.floor(Math.random()*10000000)
 
@@ -71,6 +77,7 @@ export default {
     },
 
     foldTask:function(){
+
         if(this.task.id.indexOf('sub') == -1) this.task.isFolded = !this.task.isFolded
     }
   },
@@ -83,6 +90,7 @@ export default {
   },
 
   beforeUpdate(){
+
     this.task.isSelected = this.selected
   },
 }
