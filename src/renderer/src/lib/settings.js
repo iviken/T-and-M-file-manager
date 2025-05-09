@@ -1,5 +1,16 @@
 export const settings = {
 
+    //  backend
+
+    productName: 'T and M file manager',
+
+    sessionProjectsFile: 'sessionProjects.json',
+    sessionBrowserFile: 'sessionBrowser.json',
+    sessionsPath: 'C:/Users/Nike/AppData/Roaming/iviken/TandM file manager',
+    // sessionsPath: `'C:/Users/Nike/AppData/Roaming/'${settings.productName.replace(settings.folderNameRegexp, '')}`,
+
+    dublicateFilePostfix: 'copy',
+
     //  FOLDERS
 
     folderNameRegexp: /[\\\/<>:\"\*\?\|]/g,

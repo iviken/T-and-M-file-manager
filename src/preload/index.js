@@ -1,13 +1,17 @@
 import { ipcRenderer, contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
+import { settings, defaults } from '../renderer/src/lib/settings.js'
+import { sessionProjectsDefaultData } from '../renderer/src/lib/sessionProjects.js'
+import { sessionBrowserDefaultData } from '../renderer/src/lib/sessionBrowser.js'
+
 const { platform } = require('node:process')
 
 const { pathToFileURL } = require('node:url')
 
-const { shell } = require('electron')
-
 let child = require('child_process').execFile
+
+const { shell } = require('electron')
 
 let path = require('path')
 const fs = require('fs')
@@ -16,43 +20,64 @@ const fsPromises = require('fs').promises
 let os = require("os")
 let root = (os.platform() == "win32") ? process.cwd().split(path.sep)[0] : "/"
 
-// const sep = '\\'
-// const win32sep = '/'
+const sessionProjectsFilePath = () => path.resolve( path.join(settings.sessionsPath.slice(2), settings.sessionProjectsFile) )   //  slice
+const sessionBrowserFilePath = () => path.resolve(  path.join(settings.sessionsPath.slice(2), settings.sessionBrowserFile) )  //  slice
 
-const sessionProjectsFilePath = () => path.join(__dirname, '..', 'JSON', settings.sessionProjectsFile)
-const sessionBrowserFilePath = () => path.join(__dirname, '..', 'JSON', settings.sessionBrowserFile)
+// const sessionProjectsFilePath = () => path.join(__dirname, '..', 'JSON', settings.sessionProjectsFile)
+// const sessionBrowserFilePath = () => path.join( __dirname, '..', 'JSON', settings.sessionBrowserFile)
 
 const projectsData = {dataType: 'PROJECT' ,data: {}, state: 'not opened' }
-const browserData = {dataType: 'BROWSER' ,data: {}, state: 'not opened' }
+const browserData =  {dataType: 'BROWSER' ,data: {}, state: 'not opened' }
 
-let sessionProjectClone = null
-let sessionProjectClone_json = null
-let sessionBrowserClone = null
-let sessionBrowserClone_json = null
+let sessionProjectClone       = null
+let sessionProjectClone_json  = null
+let sessionBrowserClone       = null
+let sessionBrowserClone_json  = null
 
-const settings = {
-  fileImgMask: ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'svg'],
-  sessionProjectsFile: 'sessionProjects.json',
-  sessionBrowserFile: 'sessionBrowser.json',
-  win32separator: '\\',
-  actualSeparator: '/',
-  dublicateFilePostfix: 'copy',
-  defaults: {
-    defaulMarkID: 'mark_unmarked',
-  }
-}
+// const settings = {
+//   fileImgMask: ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'svg'],
+//   sessionProjectsFile: 'sessionProjects.json',
+//   sessionBrowserFile: 'sessionBrowser.json',
+//   win32separator: '\\',
+//   actualSeparator: '/',
+//   dublicateFilePostfix: 'copy',
+//   defaults: {
+//     unmarkedMarkID: 'mark_unmarked',
+//   }
+// }
 
 function getActiveData(typeSession){
-  //
+
+  //  check folder is exist (iviken)
+  let parentPath = settings.sessionsPath.slice( 0, settings.sessionsPath.lastIndexOf(settings.actualSeparator) ).slice(2) //  slice
+  if( !api.folderIsExist(parentPath) )
+    fs.mkdirSync( path.resolve(parentPath) )
+
+  //  check folder is exist (product name)
+  if( !api.folderIsExist(settings.sessionsPath.slice(2)) ) //  slice
+    fs.mkdirSync( path.resolve(settings.sessionsPath.slice(2)) )  //  slice
+
+  //  Read project session file
   if(typeSession == 'PROJECT'){
     if(projectsData.state == 'not opened'){
+
+      //  check file is exist and create new JSON project file
+      if( !fs.existsSync( sessionProjectsFilePath() ) )
+        fs.writeFileSync( sessionProjectsFilePath(), JSON.stringify(sessionProjectsDefaultData, null, '\t'), {encoding: 'utf8'} )
+
       projectsData.data = JSON.parse( fs.readFileSync( sessionProjectsFilePath(), 'utf8' ) )
       projectsData.state = 'opened'
     }
   }
-  //
+
+  //  Read browser session file
   if(typeSession == 'BROWSER'){
     if(browserData.state == 'not opened'){
+
+      //  check file is exist and create new JSON project file
+      if( !fs.existsSync( sessionBrowserFilePath() ) )
+        fs.writeFileSync( sessionBrowserFilePath(), JSON.stringify(sessionBrowserDefaultData, null, '\t'), {encoding: 'utf8'} )
+
       browserData.data = JSON.parse( fs.readFileSync( sessionBrowserFilePath(), 'utf8' ) )
       browserData.state = 'opened'
     }
@@ -68,7 +93,7 @@ function compressSession(projects){  //  sessionProjectClone /
     projects[key].folders.forEach((folder) => {
 
       //  Clear unmarks & unpin files
-      folder.files = folder.files.filter( (file) => ( (file.markID != settings.defaults.defaulMarkID) || file.isPinned ) )
+      folder.files = folder.files.filter( (file) => ( (file.markID != defaults.unmarkedMarkID) || file.isPinned ) )
 
       //  Clear empty folder (marking)
       if(folder.files.length == 0){
@@ -280,8 +305,8 @@ const api = {
 
         stats=>{
 
-          console.log('stats: ')
-          console.log(stats)
+          // console.log('stats: ')
+          // console.log(stats)
           if( stats.isFile() )
             return fileFullname
 
@@ -353,9 +378,11 @@ const api = {
   getImgFileFullnames:(folderPath)=>{
 
     return fs.readdirSync(path.resolve(folderPath), (err, files) => {
+
       if (err){
         console.log(err)
         return []
+
       }else {
         // console.log("imgs files: ")
         files.forEach( (file, index) => {
@@ -363,6 +390,7 @@ const api = {
             // console.log(file);
             files.splice(index, 1)
         })
+        
         return files
       }
     })
@@ -568,13 +596,15 @@ const api = {
       try{
         //
         if(sessionProjectClone_json){
-          result1 = await fsPromises.writeFile( path.join(__dirname, '..', 'JSON', settings.sessionProjectsFile), sessionProjectClone_json, {encoding: 'utf8'} )
+          // result1 = await fsPromises.writeFile( path.join(__dirname, '..', 'JSON', settings.sessionProjectsFile), sessionProjectClone_json, {encoding: 'utf8'} )
+          result1 = await fsPromises.writeFile( sessionProjectsFilePath(), sessionProjectClone_json, {encoding: 'utf8'} )
         }else{
           result1 = undefined
         }
         //
         if(sessionBrowserClone_json){
-          result2 = await fsPromises.writeFile( path.join(__dirname, '..', 'JSON', settings.sessionBrowserFile), sessionBrowserClone_json, {encoding: 'utf8'} )
+          // result2 = await fsPromises.writeFile( path.join(__dirname, '..', 'JSON', settings.sessionBrowserFile), sessionBrowserClone_json, {encoding: 'utf8'} )
+          result2 = await fsPromises.writeFile( sessionBrowserFilePath(), sessionBrowserClone_json, {encoding: 'utf8'} )
         }else{
           result2 = undefined
         }

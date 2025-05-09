@@ -31,7 +31,9 @@ const paths = {
 
     if( path == '/' ) return this.errors(params, '/')
     
-    return path.slice( 0, path.lastIndexOf(this.getFolderName(path)) - 1 )
+    let res = path.slice( 0, path.lastIndexOf(this.getFolderName(path)) - 1 )
+
+    return res == '' ? '/' : res
   },
   
   getFolderName:function(path, params){
@@ -208,6 +210,8 @@ export const folders = {
     //  ! .folder-name
     // if( !this.parameters.showFoldersStartingWithDot )
     //   activeFolder = db_foldersCollectionMethods.getOpenedFolder(this.folders, 'exclude dot')
+
+    console.log(activeFolder)
 
     this.clickToFolder( activeFolder.folder )
 
@@ -969,9 +973,9 @@ const foldersCollectionMethods = {
 
     refreshFolders:function(path, cnst, data){
 
-      // console.log('refreshing path: ')
-      // console.log(path)
-      // console.log(cnst)
+      console.log('refreshing path: ')
+      console.log(path)
+      console.log(cnst)
 
       function sublist(path, cnst){
 
@@ -995,7 +999,7 @@ const foldersCollectionMethods = {
         
         //  Filter folders to starting '.' (hide or system folders)
         if(!folders.parameters.showFoldersStartingWithDot)
-          if( !( paths.getFolderName( paths.getParentFolderPath(path) ).startsWith('.') ) )
+          if( !( paths.getFolderName( paths.getParentFolderPath(path, 'safe'), 'safe' ).startsWith('.') ) )
             navigation.foldersList = navigation.foldersList.filter(folderName => ( !folderName.startsWith('.') || (folderName == paths.getFolderName(path)) ) )
 
         // console.log(navigation.foldersList)

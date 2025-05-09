@@ -1,43 +1,178 @@
 "use strict";
 const electron = require("electron");
 const preload = require("@electron-toolkit/preload");
+const settings = {
+  sessionProjectsFile: "sessionProjects.json",
+  sessionBrowserFile: "sessionBrowser.json",
+  sessionsPath: "C:/Users/Nike/AppData/Roaming/iviken/TandM file manager",
+  // sessionsPath: `'C:/Users/Nike/AppData/Roaming/'${settings.productName.replace(settings.folderNameRegexp, '')}`,
+  dublicateFilePostfix: "copy",
+  win32separator: "\\",
+  actualSeparator: "/",
+  //  FILES
+  fileImgMask: ["jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "gif", "GIF", "bmp", "BMP", "svg", "SVG", "ico", "ICO", "tiff", "TIFF", "webp", "eps", "EPS"]
+};
+const defaults = {
+  unmarkedMarkID: "mark_unmarked"
+};
+const sessionProjectsDefaultData = {
+  proj_001: {
+    id: "proj_001",
+    headerPicture: {},
+    parameters: {
+      pinFilesIsFolded: {
+        imgs: false,
+        text: false
+      },
+      imagesHeight: 100,
+      pinFoldersIsFolded: false,
+      foldersIsFolded: true,
+      showFoldersStartingWithDot: false
+    },
+    meta: {
+      name: "project first",
+      created: 1742744761272,
+      lastModified: 1746799698177,
+      lastOpened: 1746799698177,
+      isPinned: false,
+      description: "Descrtiption first of project",
+      status: "closed"
+    },
+    tasks: {
+      task_9636617: {
+        id: "task_9636617",
+        name: "start typing a description of a new task",
+        descr: "",
+        status: "undone",
+        isPinned: false,
+        isFolded: false,
+        subtasksAvailability: false,
+        subtasks: {},
+        isSelected: true,
+        isDone: false
+      }
+    },
+    marks: {
+      mark_unmarked: {
+        id: "mark_unmarked",
+        color: "unmarked-color",
+        descr: "--unmarked--",
+        isFolded: {
+          text: true,
+          imgs: true
+        },
+        show: true
+      }
+    },
+    folders: [
+      {
+        id: "folder_2334256",
+        path: "/Temp",
+        files: [],
+        isOpened: true,
+        isPinned: false,
+        displayedOnBar: true,
+        isEmpty: false
+      }
+    ]
+  }
+};
+const sessionBrowserDefaultData = {
+  proj_default: {
+    id: "proj_default",
+    headerPicture: {},
+    parameters: {
+      pinFilesIsFolded: {
+        imgs: false,
+        text: false
+      },
+      imagesHeight: 75,
+      pinFoldersIsFolded: false,
+      foldersIsFolded: false,
+      showFoldersStartingWithDot: true
+    },
+    meta: {
+      name: "default",
+      created: 1742744761272,
+      lastModified: 1742744761272,
+      lastOpened: 1742744761272,
+      isPinned: false,
+      description: "default",
+      status: "opened"
+    },
+    tasks: {
+      task_001: {
+        id: "task_001",
+        name: "start typing a description of a new task",
+        descr: "Lorem ipsum ... description",
+        isDone: false,
+        isSelected: true,
+        isPinned: false,
+        isFolded: true,
+        subtasksAvailability: false,
+        subtasks: {}
+      }
+    },
+    marks: {
+      mark_unmarked: {
+        id: "mark_unmarked",
+        color: "unmarked-color",
+        descr: "--unmarked--",
+        isFolded: {
+          text: true,
+          imgs: true
+        },
+        show: true
+      }
+    },
+    folders: [
+      {
+        id: "default__fold_001",
+        path: "/Temp",
+        isOpened: true,
+        isPinned: true,
+        displayedOnBar: true,
+        files: [],
+        isEmpty: false
+      }
+    ]
+  }
+};
 const { platform } = require("node:process");
 const { pathToFileURL } = require("node:url");
-const { shell } = require("electron");
 require("child_process").execFile;
+const { shell } = require("electron");
 let path = require("path");
 const fs = require("fs");
 const fsPromises = require("fs").promises;
 let os = require("os");
 os.platform() == "win32" ? process.cwd().split(path.sep)[0] : "/";
-const sessionProjectsFilePath = () => path.join(__dirname, "..", "JSON", settings.sessionProjectsFile);
-const sessionBrowserFilePath = () => path.join(__dirname, "..", "JSON", settings.sessionBrowserFile);
+const sessionProjectsFilePath = () => path.resolve(path.join(settings.sessionsPath.slice(2), settings.sessionProjectsFile));
+const sessionBrowserFilePath = () => path.resolve(path.join(settings.sessionsPath.slice(2), settings.sessionBrowserFile));
 const projectsData = { data: {}, state: "not opened" };
 const browserData = { data: {}, state: "not opened" };
 let sessionProjectClone = null;
 let sessionProjectClone_json = null;
 let sessionBrowserClone = null;
 let sessionBrowserClone_json = null;
-const settings = {
-  fileImgMask: ["jpg", "png", "gif", "bmp", "jpeg", "svg"],
-  sessionProjectsFile: "sessionProjects.json",
-  sessionBrowserFile: "sessionBrowser.json",
-  win32separator: "\\",
-  actualSeparator: "/",
-  dublicateFilePostfix: "copy",
-  defaults: {
-    defaulMarkID: "mark_unmarked"
-  }
-};
 function getActiveData(typeSession) {
+  let parentPath = settings.sessionsPath.slice(0, settings.sessionsPath.lastIndexOf(settings.actualSeparator)).slice(2);
+  if (!api.folderIsExist(parentPath))
+    fs.mkdirSync(path.resolve(parentPath));
+  if (!api.folderIsExist(settings.sessionsPath.slice(2)))
+    fs.mkdirSync(path.resolve(settings.sessionsPath.slice(2)));
   if (typeSession == "PROJECT") {
     if (projectsData.state == "not opened") {
+      if (!fs.existsSync(sessionProjectsFilePath()))
+        fs.writeFileSync(sessionProjectsFilePath(), JSON.stringify(sessionProjectsDefaultData, null, "	"), { encoding: "utf8" });
       projectsData.data = JSON.parse(fs.readFileSync(sessionProjectsFilePath(), "utf8"));
       projectsData.state = "opened";
     }
   }
   if (typeSession == "BROWSER") {
     if (browserData.state == "not opened") {
+      if (!fs.existsSync(sessionBrowserFilePath()))
+        fs.writeFileSync(sessionBrowserFilePath(), JSON.stringify(sessionBrowserDefaultData, null, "	"), { encoding: "utf8" });
       browserData.data = JSON.parse(fs.readFileSync(sessionBrowserFilePath(), "utf8"));
       browserData.state = "opened";
     }
@@ -46,7 +181,7 @@ function getActiveData(typeSession) {
 function compressSession(projects) {
   for (const key in projects) {
     projects[key].folders.forEach((folder) => {
-      folder.files = folder.files.filter((file) => file.markID != settings.defaults.defaulMarkID || file.isPinned);
+      folder.files = folder.files.filter((file) => file.markID != defaults.unmarkedMarkID || file.isPinned);
       if (folder.files.length == 0) {
         if (!folder.isOpened)
           folder.isEmpty = true;
@@ -156,8 +291,6 @@ const api = {
   isFileAsync: function(folderPath, fileFullname) {
     return fsPromises.stat(path.resolve(path.join(folderPath, fileFullname))).then(
       (stats) => {
-        console.log("stats: ");
-        console.log(stats);
         if (stats.isFile())
           return fileFullname;
         if (stats.isDirectory())
@@ -345,12 +478,12 @@ const api = {
     async function by() {
       try {
         if (sessionProjectClone_json) {
-          result1 = await fsPromises.writeFile(path.join(__dirname, "..", "JSON", settings.sessionProjectsFile), sessionProjectClone_json, { encoding: "utf8" });
+          result1 = await fsPromises.writeFile(sessionProjectsFilePath(), sessionProjectClone_json, { encoding: "utf8" });
         } else {
           result1 = void 0;
         }
         if (sessionBrowserClone_json) {
-          result2 = await fsPromises.writeFile(path.join(__dirname, "..", "JSON", settings.sessionBrowserFile), sessionBrowserClone_json, { encoding: "utf8" });
+          result2 = await fsPromises.writeFile(sessionBrowserFilePath(), sessionBrowserClone_json, { encoding: "utf8" });
         } else {
           result2 = void 0;
         }

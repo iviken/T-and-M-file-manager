@@ -19,6 +19,7 @@ File manager with tabs, color tags (marks) and task manager.
 - Marking files with color labels.
 - Separate display of graphic files and others.
 - Supports tabs for folders.
+- Drag'n'Drop doesn't exist. Now you don't have to worry about accidentally dragging files or folders to an unknown location!
 
 ## Interface
 
@@ -146,11 +147,11 @@ Files are grouped by label. Files without groups are placed last among groups.
 
 ## HotKeys
 
-- Alt: open the comparison window for the selected photos.
+- Space: open the comparison window for the selected photos.
+- Space (press): show metadata of the file in focus.
 - F3: show / hide search panel (in unmaximize window only).
 - F5: refresh files in opened folder.
 <!-- - F11: maximize / restore window. -->
-- Shift (press): show metadata of the file in focus.
 - \+ / \- / =: increase or decrease the size of image icons.
 
 Some hotkeys only work when the corresponding component has focus.
