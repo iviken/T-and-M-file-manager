@@ -57,9 +57,13 @@
     fill: var(--head-btn-color);
     stroke: var(--head-btn-color);
 }
-.header__btns-go-brows>svg:hover, .header__btns-close-project>svg:hover{
+.header__btns-go-brows>svg:hover{
     stroke: var(--head-btn-color-hover);
     fill: var(--head-btn-color-hover);
+}
+.header__btns-close-project>svg:hover{
+    stroke: var(--head-btn-close-color-hover);
+    fill: var(--head-btn-close-color-hover);
 }
 .btn-logo{
     color: var(--head-btn-color)

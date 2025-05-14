@@ -142,7 +142,7 @@ export default {
             //
             if(!filePullIsEmpty)
                 //
-                this.imageViewerData.imageBoxClassName = this.imageViewerData.countImages < 3 ? this.imageViewerData.countImages : 'MANY'
+                this.imageViewerData.imageBoxClassName = this.imageViewerData.countImages < 5 ? this.imageViewerData.countImages : 'MANY'
 
             // console.log(filePullIsEmpty)
             // console.log(this.stateFiles.imageViewerPullFiles)
@@ -212,6 +212,11 @@ export default {
                     if(this.localState.metadataIsHidden)
                         this.localState.metadataIsHidden = false
         },
+
+        getUlrFromPath(path){
+
+            return window.api.convertPathToUrl(path).href
+        }
     },
 
     beforeMount() {
@@ -328,7 +333,7 @@ export default {
                     <!-- section left: tasks and folders tree -->
                 
                     <div class="tasks-and-tree">
-                        <Tasks v-if="localState.showTasksPanel" :data="data.tasks" class="component tasks" />
+                        <Tasks v-if="localState.showTasksPanel" :tasks="data.tasks" class="component tasks" />
 
                         <Tree v-if="localState.showTreePanel && !localState.showFilesFromAllFoldersOption"  :foldersMethods2="foldersMethods2" :filesMethods="filesMethods" :path="data.folders[localState.activeFolderIndex].path" :folders="data.folders"  :dataSettings="data.parameters" :localState="localState" :projectID="data.id" class="component tree" />
                     </div>
@@ -378,7 +383,7 @@ export default {
             <!-- image viewer -->
 
             <div v-if="localState.showImageViewer" class="component image-viewer on-center">
-                <div :class="`images-block-${imageViewerData.imageBoxClassName}`" class="images-block on-row w100 h100">
+                <div :class="`images-block-${imageViewerData.imageBoxClassName}`" class="images-block on-center">
 
                     <div v-for="pix in stateFiles.imageViewerPullFiles" class="image-viewer-box">
 
@@ -386,7 +391,9 @@ export default {
                         :style="`height: ${ 100/() }%; width: ${}%;`" 
                         class="image-viewer-box"> -->
 
-                        <img :src="`${pix.path}/${pix.name}.${pix.format}`" class="w100 h100">
+                        <img :src="getUlrFromPath(`${pix.path}${settings.actualSeparator}${pix.name}.${pix.format}`)" class="img">
+                        <!-- <img :src="`file://C:${pix.path}${settings.actualSeparator}${pix.name}.${pix.format}`" class="img"> -->
+                        <!-- <img src="./screen app.jpg" class="img"> -->
 
                     </div>
 
@@ -465,8 +472,12 @@ export default {
             width: 280px;
         }
         .image-files-component{
-            width: 700px;
-            max-width: 700px;
+            width: 100%;
+            // width: 700px;
+            // max-width: 700px;
+        }
+        .left-field, .right-fiels{
+            width: 40px;
         }
     }
     
@@ -486,42 +497,59 @@ export default {
             // max-width: 700px;
         }
         .left-field, .right-fiels{
-            width: 0px;
+            width: 10px;
         }
     }
 
-    .image-viewer{}
-
-    .images-block-1 > div{
-        height: 100%;
-        width: 100%;
+    .image-viewer{
+        padding-top: var(--content-indent);
     }
 
-    .images-block-2 > div{
-        height: auto;
-        width: 50%;
+    .images-block-1 .img{
+        max-width: 80vw;
+        max-height: 75vh;
     }
-
-    .images-block-3 > div, .images-block-4 > div{
-        height: 50%;
-        width: auto;
+    .images-block-2 .img{
+        max-width: 40vw;
+        max-height: 75vh;
+    }
+    .images-block-3 .img, .images-block-4 .img{
+        max-width: 45vw;
+        height: 35vh;
+    }
+    .images-block-MANY .img{
+        max-width: 30vw;
+        height: 20vh;
+    }
+    
+    .images-block-2{
+        display: flex;
+        flex-direction: row;
         flex-wrap: wrap;
     }
-
-    .images-block-MANY > div{
-        height: 33%;
-        width: auto;
-        flex-wrap: wrap;
+    .images-block-3, .images-block-4{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+    .images-block-MANY{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
     }
     // .images-block-2, .images-block-3, .images-block-4, .images-block-MANY{
     //     justify-content: space-between;
     // }
     .images-block{
-        justify-content: space-between;
+        margin: auto;
     }
-
+    
     .image-viewer-box{
         margin: 20px;
+    }
+    
+    .img{
+        aspect-ratio: auto;
     }
 
     .collapse{

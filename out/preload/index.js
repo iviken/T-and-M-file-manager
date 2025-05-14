@@ -2,18 +2,23 @@
 const electron = require("electron");
 const preload = require("@electron-toolkit/preload");
 const settings = {
+  sessionsPath: "C:/Users/Nike/AppData/Roaming/iviken/MandT file manager",
   sessionProjectsFile: "sessionProjects.json",
   sessionBrowserFile: "sessionBrowser.json",
-  sessionsPath: "C:/Users/Nike/AppData/Roaming/iviken/TandM file manager",
   // sessionsPath: `'C:/Users/Nike/AppData/Roaming/'${settings.productName.replace(settings.folderNameRegexp, '')}`,
   dublicateFilePostfix: "copy",
+  //  filename after copy / move: SrcName [dublicateFilePostfix] [today]
+  //  defaut sessions
+  initPath: "/Temp",
+  //  First opened folder during initialization (first starting app)
   win32separator: "\\",
   actualSeparator: "/",
   //  FILES
-  fileImgMask: ["jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "gif", "GIF", "bmp", "BMP", "svg", "SVG", "ico", "ICO", "tiff", "TIFF", "webp", "eps", "EPS"]
+  fileImgMask: ["jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "gif", "GIF", "bmp", "BMP", "ico", "ICO", "tiff", "TIFF", "webp", "WEBP", "eps", "EPS"]
 };
 const defaults = {
   unmarkedMarkID: "mark_unmarked"
+  //  id ~
 };
 const sessionProjectsDefaultData = {
   proj_001: {
@@ -67,7 +72,7 @@ const sessionProjectsDefaultData = {
     folders: [
       {
         id: "folder_2334256",
-        path: "/Temp",
+        path: settings.initPath,
         files: [],
         isOpened: true,
         isPinned: false,
@@ -128,7 +133,7 @@ const sessionBrowserDefaultData = {
     folders: [
       {
         id: "default__fold_001",
-        path: "/Temp",
+        path: settings.initPath,
         isOpened: true,
         isPinned: true,
         displayedOnBar: true,
@@ -185,6 +190,8 @@ function compressSession(projects) {
       if (folder.files.length == 0) {
         if (!folder.isOpened)
           folder.isEmpty = true;
+        if (folder.displayedOnBar)
+          folder.isEmpty = false;
       } else {
         folder.isEmpty = false;
       }
@@ -305,6 +312,7 @@ const api = {
     );
   },
   convertPathToUrl: (path2) => {
+    console.log(pathToFileURL(path2, { windows: true }).href);
     return pathToFileURL(path2, { windows: true });
   },
   getFolderNames: (folderPath, cnst) => {
@@ -365,12 +373,14 @@ const api = {
     }
   },
   deleteFolder: (folderPath) => {
+    console.log(`${folderPath} is deleting`);
     return fsPromises.rmdir(path.resolve(folderPath), { recursive: true, force: true }).then(
       (resolve) => {
         return api.validate(folderPath);
       }
     ).catch(
       (error) => {
+        console.log(error);
         return false;
       }
     );
@@ -439,7 +449,7 @@ const api = {
     console.log(InPath);
     shell.openPath(path.resolve(path.join(InPath, fileFullname)));
   },
-  // someRun:()=>{
+  // openInWindowsFileManager:()=>{
   //   shell.showItemInFolder(somePath)
   // },
   getProjectData: () => {

@@ -8,13 +8,13 @@ export default {
   },
 
   props:{
-    data:{
+    tasks:{
         type: Object,
         required: true
     }
   },
 
-  methods: {
+  methods:{
 
     createNewTask:function(){
 
@@ -22,7 +22,7 @@ export default {
 
             let taskID = 'task_' + Math.floor(Math.random()*10000000)
             
-            this.data[taskID] = {
+            this.tasks[taskID] = {
                 id: taskID,
                 name: this.newTaskValue,
                 descr: '',
@@ -42,26 +42,34 @@ export default {
 
     deleteTask(task){
 
-        if( Object.hasOwn(this.data, task.id) ){
+        if( Object.hasOwn(this.tasks, task.id) ){
 
-            delete this.data[task.id]
-
+            delete this.tasks[task.id]
         }else{
 
-            for (const key in this.data) {
+            for (const key in this.tasks) {
                 
-                if( Object.hasOwn(this.data[key], 'subtasks') ){            
-                    if( Object.hasOwn(this.data[key].subtasks, task.id) ){
+                if( Object.hasOwn(this.tasks[key], 'subtasks') ){            
+                    if( Object.hasOwn(this.tasks[key].subtasks, task.id) ){
                         //
-                        if( Object.keys(this.data[key].subtasks).length == 1)
-                            this.data[key].subtasksAvailability = false
+                        if( Object.keys(this.tasks[key].subtasks).length == 1)
+                            this.tasks[key].subtasksAvailability = false
                         //
-                        delete this.data[key].subtasks[task.id]
+                        delete this.tasks[key].subtasks[task.id]
                     }
                 }
             }
         }
-    }
+    },
+},
+
+computed:{
+    
+    isThereAtLeastOneAttachedTask(){
+
+        return Object.values(this.tasks)
+            .find(task=>task.isPinned == true)
+    },
   },
 
   data(){
@@ -82,7 +90,7 @@ export default {
         
             <!-- pin block -->
 
-            <div class="pin-block on-row">
+            <div v-if="isThereAtLeastOneAttachedTask" class="pin-block on-row">
 
                 <!-- left field -->
 
@@ -92,13 +100,13 @@ export default {
 
                 <div class="scrollY on-col w100">
 
-                    <label v-for="task in data" :key="task.id">
+                    <label v-for="task in tasks" :key="task.id">
                         <div v-if="task.isPinned">
     
                             <!-- tasks -->
 
                             <div class="on-row">
-                                <input type="radio" v-model="selectedTaskId" :value="task.id" class="hide">
+                                <input type="radio" v-model="selectedTaskId" :value="task.id" class="hide radio">
                 
                                 <TaskItem :task="task" :selected="task.id == selectedTaskId" :class="{selected: (!task.isDone && task.isSelected)}" @deleteTask="deleteTask"/>
                             </div>
@@ -128,7 +136,7 @@ export default {
             
                 <div class="scrollY on-col w100">
                     
-                    <label v-for="task in data" :key="task.id">
+                    <label v-for="task in tasks" :key="task.id">
                         
                         <div v-if="!task.isPinned" class="on-col">
 
@@ -176,14 +184,12 @@ export default {
     .task-component{
         padding-top: var(--content-indent);
     }
-
-    // @media screen and (min-height: 100vh) {
     .section{
         // height: calc( 100vh - var(--header-heigth) - var(--content-indent) - var(--pin-indent-bottom) + 10px );
     }
 
     .left-field{
-        width: 20px;
+        width: 10px;
     }
 
     .pix-btn{
@@ -198,9 +204,11 @@ export default {
     .empty2{
         height: 200px;
     }
-    // }
     .pin-block, .block{
         max-height: 30vh;
+    }
+    .radio{
+        padding-right: 5px;
     }
     .sub{
         margin-left: 20px;

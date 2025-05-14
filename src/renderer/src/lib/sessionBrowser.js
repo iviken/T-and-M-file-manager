@@ -1,3 +1,5 @@
+import { settings } from "./settings";
+
 export const sessionBrowserDefaultData = {
 	
 	proj_default: {
@@ -50,7 +52,7 @@ export const sessionBrowserDefaultData = {
 		folders: [
 			{
 				id: "default__fold_001",
-				path: "/Temp",
+				path: settings.initPath,
 				isOpened: true,
 				isPinned: true,
 				displayedOnBar: true,

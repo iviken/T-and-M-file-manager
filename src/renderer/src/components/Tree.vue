@@ -182,9 +182,15 @@ export default {
 
         <div v-if="settings[ localState.actualSessionType ].showSessionFolders" class="folders block on-row">
 
+          <!-- ~ logo -->
+
           <div @click="foldSessionFolders()" class="left-field">
-            <div :class="{foldersActive: dataSettings.foldersIsFolded}">[]</div>
+            <div :class="{foldersActive: dataSettings.foldersIsFolded}">
+              <img src="../assets/favorite-folder.svg" alt="" class="left-field-logo">
+            </div>
           </div>
+
+          <!-- ~ folders -->
 
           <div v-if="dataSettings.foldersIsFolded" class="folders-item on-col w100">
             <div v-for="folder in folders" class="item w100 on-row">
@@ -202,9 +208,9 @@ export default {
 
           <!-- Pin folders block: logo -->
 
-          <div @click="foldPin()" class="pin-logo left-field">
+          <div @click="foldPin()" class="left-field">
             <div :class="{pinActive: dataSettings.pinFoldersIsFolded}">
-              <img src="../assets/pin.svg" alt="" class="pix-btn pin">
+              <img src="../assets/pin.svg" alt="" class="left-field-logo">
             </div>
           </div>
 
@@ -284,19 +290,27 @@ export default {
               
               <div v-if="nameOfTheFolderToBeRenamed != item" @dblclick="renameSelectedFolder( {state: 'input-start'} )" @click="foldersMethods2.clickOnTheDirectoryInTheFolderTree( item, 'this level' )" :class="{active: markActiveFolder(item), opened: markOpenedFolder(item), 'item-copy-cut': item == foldersMethods2.copyPastFolder( {state: 'get copy-folder name'} )}" class="list-item item on-row w100">
                 
+                <!-- folder name -->
+
                 <div>
                   <span class="t-tree-item uppercase text-nowrap">{{ foldersMethods2.shrinkName(item, settings.folderNameMaxLength) }}</span>
                 </div>
 
                 <div class="w100"></div>
 
+                <!-- + -->
+
                 <div @click="createNewFolder( {state: 'input-start'} )"  class="add btn-opacity vertical-center h100">
                   <img src="../assets/plus.svg" alt="create new folder" class="pix-btn">
                 </div>
 
+                <!-- pin folder -->
+
                 <div @click="foldersMethods2.pinFolder()" class="pin btn-opacity vertical-center h100">
                   <img src="../assets/pin.svg" alt="pin folder" class="pix-btn">
                 </div>
+
+                <!-- x -->
 
                 <div @click="foldersMethods2.deleteFolder()" class="delete btn-opacity vertical-center h100">
                   <img src="../assets/x.svg" alt="delete this folder" class="pix-btn">
@@ -319,9 +333,13 @@ export default {
             <div v-for="item in foldersMethods2.getSubfoldersList()" class="">
               <div class="list-item item on-row w100">
 
+                <!-- subfolder logo -->
+
                 <div class="vertical-center h100">
                   <img src="../assets/tree-level.svg" class="tree-level-pix">
                 </div>
+
+                <!-- subfolder name -->
 
                 <div v-if="nameOfTheFolderToBeRenamed != item" @click="foldersMethods2.clickOnTheDirectoryInTheFolderTree( item, 'child level' )" class="sub-item">
                   <span class="t-tree-item text-nowrap uppercase text-nowrap">{{ foldersMethods2.shrinkName(item, settings.folderNameMaxLength) }}</span>
@@ -418,10 +436,18 @@ export default {
   }
 
   .pinActive, .foldersActive{
-    color:aquamarine;   //
+    opacity: .5;
   }
   .left-field{
     width: $left-field;
+  }
+  .left-field-logo{
+    opacity: .7;
+    width: 10px;
+    height: 10px;
+  }
+  .left-field-logo:hover{
+    opacity: 1;
   }
   .item{
     // color: var(--text);

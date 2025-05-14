@@ -1,19 +1,3 @@
-// const settings = {
-//     replacedSymbolPath: ' > ',
-//     folderNameRegexp: /[\\\/<>:\"\*\?\|]/g,
-//     win32separator: '\\',
-//     actualSeparator: '/',
-//     excludedFolders: ['Recovery', 'System Volume Information', 'PerfLogs', 'Config.Msi', '$SysReset', '$Recycle.Bin', 'OneDriveTemp'],
-//     excludedFiles: ['desktop.ini'],
-//     maxTabs: 10,    //  maxFoldersOnBar
-//     forcedFolderUpdate: false,
-//     lengthOfTheLastPartOfTheFolderName: 6,
-// }
-
-// const defaults = {
-//     defaulMarkID: 'mark_unmarked',
-// }
-
 import { defaults, settings } from './settings.js'
 
 const paths = {
@@ -143,6 +127,11 @@ const paths = {
     // if(params = 'safe')
     //   return path.
   },
+  
+  isRoot(path){
+
+    return (path == '/') || (path == '')
+  }
 }
 
 const helpers = {
@@ -311,8 +300,9 @@ export const folders = {
 
   },
 
-  deleteFolder:function(path){
+  deleteFolder:function(){
 
+    let path = history.actual(this.folders).path
     //
     if( paths.folderIsSystem(path, 'soft') ) return
 
@@ -440,7 +430,7 @@ export const folders = {
 
     this.deletingQueue.forEach(deletingPath => {
   
-      if( paths.AisNestedInB(history.actual(this.folders), deletingPath) ) return true
+      if( paths.AisNestedInB(history.actual(this.folders).path, deletingPath) ) return true
     })
 
     return false
@@ -529,6 +519,11 @@ export const folders = {
   shrinkName:function(name, maxLength){
 
     return helpers.shrinkName(name, maxLength)
+  },
+
+  pathIsRoot:function(path){
+
+    return paths.isRoot(path)
   },
 
   // recordNewFileInActualFolder:function(file){

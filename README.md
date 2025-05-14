@@ -1,4 +1,4 @@
-# Marks and Tasks file manager (<img src="/src/renderer/src/assets/electron.svg" width="26px" height="26px" style="background: black" />M&T)
+# Marks and Tasks file manager ( <img src="/src/renderer/src/assets/electron.svg" width="30px" height="30px" style="background: black" /> M&T)
 
 - About
 - Possibilities
@@ -11,7 +11,8 @@
 
 File manager with tabs, color tags (marks) and task manager.
 
-<!-- <img src="/src/renderer/src/assets/pin.svg" width="100%" style="background: black" /> -->
+<img src="/md/screen app.jpg" width="100%" />
+<img src="/md/screen app2.jpg" width="100%" />
 
 ## Possibilities
 
@@ -27,8 +28,8 @@ Buttons in lists appear when you hover over an element.
 
 ### Header
 
-- LOGO: switch between free browser session and opened session (or sessions list).
-- Close session: exit active session and show sessions list.
+- LOGO: switch between last session and saved session (or sessions list).
+- Close session: exit active (saved) session and show sessions list.
 - F1: show help.
 - Unsplash: open the window for choosing a background image for the application title.
 
@@ -47,23 +48,27 @@ Count selected files, if at least one file is selected.
 #### Marks
 
 - <img src="/src/renderer/src/assets/arc dawn.svg" width="16" height="16" style="background: black" /> show mark menu.
-- \+ create new mark.
+- <img src="/src/renderer/src/assets/plus.svg" width="16" height="16" style="background: black" /> create new mark.
 
 Not all markings are displayed.
 If at least one file is selected, you can assign a 'mark' to it.
 
 ##### Mark menu
 
+<img src="/md/mark menu.jpg" width="" height="" />
+
 All file markings in the open session are displayed here. You can delete existing ones, create new ones, rename them, or change the color. Marking for unmarked files are not deleted.
 
 - &#9724;: If there is such a square to the left of the label name, then files with such a label are displayed in folders. Click on it to turn the display on or off.
 
-- To rename a label, double-click it. Only works if no files are selected.
-
 - <img src="/src/renderer/src/assets/arrow2 left.svg" width="16" height="16" style="background: black" /> / <img src="/src/renderer/src/assets/arrow2.svg" width="16" height="16" style="background: black" /> set mark color. Press Esc or click it to exit.
 - <img src="/src/renderer/src/assets/x.svg" width="16" height="16" style="background: black" /> delete mark. All seleced files with this mark will become unmarked.
 
+- To rename a label, double-click it. Only works if no files are selected.
+
 ##### Create new mark
+
+<img src="/md/bar - create new mark.jpg" width="" height="" />
 
 Enter a name for the new marking and click the button <img src="/src/renderer/src/assets/arrow2.svg" width="16" height="16" style="background: black" /> if you want to set the color.
 
@@ -102,8 +107,8 @@ These buttons appear when the cursor is on a task:
 <!-- - ![pin or unpin task](/src/renderer/src/assets/pin.svg?raw=true&sanitize=true): pin / unpin task. -->
 - <img src="/src/renderer/src/assets/x.svg" width="16" height="16" style="background: black" /> delete task.
 - <img src="/src/renderer/src/assets/plus.svg" width="16" height="16" style="background: black" /> add subtask.
-- &#9723; : If a task has no subtasks, hovering over it will display a square on the left. Clicking on it will complete the task and remove the selection. Clicking again will make the task active again and restore the selection.
 - <img src="/src/renderer/src/assets/arc dawn.svg" width="16" height="16" style="background: black" /> fold / unfold subtasks (if any).
+- &#9723; : If a task has no subtasks, hovering over it will display a square on the left. Clicking on it will complete the task and remove the selection. Clicking again will make the task active again and restore the selection.
 <!-- - ![fold subtasks](/src/renderer/src/assets/arc%20dawn.svg?raw=true&sanitize=true): fold / unfold subtasks (if any). -->
 
 You can save your own tasks for each session.
@@ -114,8 +119,8 @@ The panel consists of 4 levels: session folders / pin folders ,address bar, fold
 
 #### Session folders / pin folders
 
-- Session folders list: displayed in free file browsing mode.
-- Pin folders list: displayed in session mode.
+- <img src="/src/renderer/src/assets/favorite-folder.svg" width="16" height="16" style="background: black" /> Session folders list: displayed in free file browsing mode.
+- <img src="/src/renderer/src/assets/pin.svg" width="16" height="16" style="background: black" /> Pin folders list: displayed in session mode.
 
 #### Address bar:
 

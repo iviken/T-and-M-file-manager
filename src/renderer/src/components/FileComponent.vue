@@ -46,6 +46,11 @@ export default {
         return `${name.slice(0, index)}..${lastWord}`
       }
     },
+
+    getUlrFromPath(path){
+
+      return window.api.convertPathToUrl(path).href
+    }
   },
 
   data(){
@@ -85,13 +90,14 @@ export default {
 
   <div v-if="( filesMethods.isAPicture(file.format) ) && (viewMode == 'imgs')" :class="`${state.files[file.id]}-imgs`" class="img-box shadow on-center">
     
-    <!-- <img src="../assets/gallery/file (3).png" :style="`height:${pixHeight}px;`" class="img"> -->
-    <img :src="`file://C:${file.path}${settings.actualSeparator}${file.name}.${file.format}`" :style="`height:${pixHeight}px;`" :class="`opacity-${state.files[file.id]}-imgs`" class="img">
+    <!-- <img src="../../../../md/screen app.jpg" :style="`height:${pixHeight}px;`" :class="`opacity-${state.files[file.id]}-imgs`" class="img"> -->
+    <!-- <img :src="`file://C:${file.path}${settings.actualSeparator}${file.name}.${file.format}`" :style="`height:${pixHeight}px;`" :class="`opacity-${state.files[file.id]}-imgs`" class="img"> -->
+    <img :src="getUlrFromPath(`${file.path}${settings.actualSeparator}${file.name}.${file.format}`)" :style="`height:${pixHeight}px;`" :class="`opacity-${state.files[file.id]}-imgs`" class="img">
 
     <!-- Image file: rename -->
 
     <div v-if="state.files[file.id] == 'RENAME'" class="rename-img on-center h100 w100">
-      <input type="text" placeholder="file name" v-model="renamedValue" :id="`${file.id}`" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(settings.fileNameRegexp, '').trim()} )" class="rename-input-imgs t-file-name t-file-renaming text-nowrap focus w100"></input>
+      <input type="text" placeholder="file name" v-model="renamedValue" :id="`${file.id}`" @keyup.enter="filesMethods.renameFiles( {state: 'input done', newName: renamedValue.replace(settings.fileNameRegexp, '').trim()} )" class="rename-input-imgs t-file-name t-file-renaming text-center text-nowrap focus w100"></input>
     </div>
 
   </div>

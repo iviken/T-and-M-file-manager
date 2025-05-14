@@ -196,8 +196,7 @@ export default {
                         <span v-if="state.active == 'BROWSER'" class="t-header uppercase text-nowrap">
                             BROWSE
                         </span>
-                        <!-- <input type="text" value="dfds" class="text-center header__name-input"> -->
-                        <!-- <input type="text" v-model="projectName" class="text-center header__name-input"> -->
+
                     </div>
                 </div>
 

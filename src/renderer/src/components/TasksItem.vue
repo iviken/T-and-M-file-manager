@@ -100,11 +100,15 @@ export default {
 
         <div v-if="!isRemaned" @keyup.ctrl.d="pinTask(task.id)" class="task-block list-item w100 on-row focus" tabindex="0">
 
-            <!-- done -->
+            <!-- checkbox -->
 
-            <div v-if="!task.subtasksAvailability" @click="checkToTask(task.id)" class="btn check-box"><div class="check"></div></div>
+            <div v-if="!task.subtasksAvailability" @click="checkToTask(task.id)" class="btn checkbox check-box">
+                <div class="check">
+                    <div v-if="task.isDone" class="check-done w100 h100"></div>
+                </div>
+            </div>
 
-            <!-- fold / unfold -->
+            <!-- fold / unfold button -->
 
             <div v-if="task.subtasksAvailability" @click="foldTask()" class="btn fold-box on-center">
                 <div>
@@ -129,14 +133,16 @@ export default {
 
                 <!-- x -->
 
-                <div v-if="task.isDone" @click="this.$emit('deleteTask', this.task)" class="delete btn-opacity">
-                    <span class="btn">x</span>
+                <div v-if="task.isDone" @click="this.$emit('deleteTask', this.task)" class="delete btn-opacity on-center">
+                    <img src="../assets/x.svg" alt="delete task / subtasks" class="btn pix-btn">
                 </div>
 
                 <!-- + -->
 
-                <div v-if="task.id.indexOf('sub')!=0" class="btn-opacity">
-                    <div v-if="!task.isDone" @click="addSubTask()" class="btn add">+</div>
+                <div v-if="task.id.indexOf('sub')!=0" class="add btn-opacity on-center">
+                    <div v-if="!task.isDone">
+                        <img src="../assets/plus.svg" @click="addSubTask()" alt="new subtask" class="btn pix-btn">
+                    </div>
                 </div>
                 
             </div>
@@ -152,23 +158,24 @@ export default {
 </template>
 
 <style scoped lang="scss">
+
     .list-item{
         padding-top: 2px;
         padding-bottom: 2px;
     }
     .pix-btn{
-        width: 12px;
-        height: 12px;
+        width: 10px;
+        height: 10px;
     }
     .pix-btn:hover{
         opacity: .8;
     }
     .btn{
-        opacity: 0;
-        color: var(--text);
+        // opacity: 0;
+        visibility: hidden;
         width: 20px;
     }
-    .delete, .pin, .add{
+    .delete, .pin, .add, .checkbox, .fold-box{
         padding-left: 6px;
         padding-right: 6px;
     }
@@ -180,19 +187,28 @@ export default {
     }
 
     .check-box:hover .check{
-        border: solid 2px var(--pure-white);
+        border: solid 2px var(--cold-white);
     }
     .check{
-        width: 10px;
-        height: 10px;
-        margin: 3px;
-        border: solid 2px var(--text);
+        width: 8px;
+        height: 8px;
+        // margin: 3px;
+        padding: 2px;
+        border: solid 2px var(--cold-pale);
     }
+    .check-done{
+        background-color: var(--cold-pale);
+    }
+    .check-box:hover .check-done{
+        background-color: var(--cold-white);
+    }
+
     .task{
         margin-right: 20px;
     }
     .task-block:hover .btn{
-        opacity: 1;
+        // opacity: 1;
+        visibility: visible;
     }
 
     // .active{

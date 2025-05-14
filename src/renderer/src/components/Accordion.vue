@@ -143,7 +143,7 @@ export default {
 <template>
 
   <div 
-    class="h100 focus _component accordion" 
+    class="_component accordion h100 focus" 
     tabindex="0" 
     @keyup.esc="filesMethods.resetStateFiles()" 
     @keyup.f2="filesMethods.renameFiles( {state: 'start rename'} )" 
@@ -157,6 +157,8 @@ export default {
     <!-- pin block -->
 
     <div class="on-row w100">
+
+      <!-- pin logo -->
 
       <div @click="foldPin()" class="left-field _left-field on-row">
         <div class="w100"></div>
@@ -304,6 +306,7 @@ export default {
 
   .mark-name{
     opacity: .7;
+    margin-bottom: 10px;
   }
   .mark-name:hover{
     opacity: 1;

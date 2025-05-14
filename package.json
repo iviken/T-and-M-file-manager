@@ -1,10 +1,12 @@
 {
-  "name": "fm3",
+  "name": "mandt-file-manager",
   "version": "0.0.1",
-  "description": "An Electron application with Vue",
+  "description": "Marks & Tasks (M&T) file manager (for Windows)",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": "iviken",
+  "homepage": "https://github.com/iviken/T-and-M-file-manager",
+  "copyright": "iviken",
+  "buildVersion": "0.0.1a",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
@@ -21,7 +23,6 @@
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^4.0.0",
     "fs": "^0.0.1-security",
-    "router-view": "^1.1.7",
     "sass": "^1.85.1",
     "vue-router": "^4.5.0"
   },

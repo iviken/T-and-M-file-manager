@@ -1,5 +1,10 @@
 appId: com.electron.app
-productName: fm3
+productName: MandTfileManager
+copyright: iviken
+# buildVersion: 0.0.1
+# author: iviken
+# description: 'Marks and Tasks (M&T) file manager (for Windows)'
+# name: 'M&T file manager'
 directories:
   buildResources: build
 files:
@@ -11,7 +16,8 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: fm3
+  executableName: MandTfileManager
+  icon: '/resources/icon.ico'
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

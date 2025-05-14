@@ -1,6 +1,8 @@
 import { ipcRenderer, contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
+// import trash from "trash"
+
 import { settings, defaults } from '../renderer/src/lib/settings.js'
 import { sessionProjectsDefaultData } from '../renderer/src/lib/sessionProjects.js'
 import { sessionBrowserDefaultData } from '../renderer/src/lib/sessionBrowser.js'
@@ -33,18 +35,6 @@ let sessionProjectClone       = null
 let sessionProjectClone_json  = null
 let sessionBrowserClone       = null
 let sessionBrowserClone_json  = null
-
-// const settings = {
-//   fileImgMask: ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'svg'],
-//   sessionProjectsFile: 'sessionProjects.json',
-//   sessionBrowserFile: 'sessionBrowser.json',
-//   win32separator: '\\',
-//   actualSeparator: '/',
-//   dublicateFilePostfix: 'copy',
-//   defaults: {
-//     unmarkedMarkID: 'mark_unmarked',
-//   }
-// }
 
 function getActiveData(typeSession){
 
@@ -98,11 +88,16 @@ function compressSession(projects){  //  sessionProjectClone /
       //  Clear empty folder (marking)
       if(folder.files.length == 0){
 
-        //  Save open folder to open it next time on startup. Erase others.
-        if( !folder.isOpened )
+        //  Save open folder to open it next time on startup.
+        if(!folder.isOpened)
           folder.isEmpty = true
+
+        //  Save opened tab to showing on folders tab bar
+        if(folder.displayedOnBar)
+          folder.isEmpty = false
       }else{
 
+        //  Erase others.
         folder.isEmpty = false
       }
     })
@@ -122,12 +117,6 @@ function compressSession(projects){  //  sessionProjectClone /
   // console.log(projects)
   return JSON.stringify(projects, null, '\t')
 }
-
-// function writeSession(data){
-//   // return api.writeFile( sessionProjectsFilePath, data )
-//   // return fs.writeFile( sessionProjectsFilePath(), data, {encoding: 'utf8'} )
-//   return fs.writeFile( path.join(__dirname, '..', 'JSON', 'sessionProjects.json'), data, {encoding: 'utf8'} )
-// }
 
 // Custom APIs for renderer
 const api = {
@@ -215,12 +204,15 @@ const api = {
           
           if(stats.isFile())
             return fsPromises.unlink( path.resolve( path.join(folderPath, fileFullname) ) )
+            // return trash( [path.resolve( path.join(folderPath, fileFullname) )] )
+            // return shell.trashItem( path.resolve( path.join(folderPath, fileFullname) ) )
               .then(
                 resolve=>{
                   return fileFullname
                 }
               ).catch(
                 error=>{
+                  // alert(error)
                   return false
                 }
               )
@@ -325,6 +317,7 @@ const api = {
 
   convertPathToUrl:(path)=>{
 
+    console.log( pathToFileURL(path, {windows: true}).href )
     return pathToFileURL(path, {windows: true})
   },
 
@@ -434,8 +427,9 @@ const api = {
   },
 
   deleteFolder:(folderPath)=>{
-    // console.log(`${folderPath} is deleted!`)
+    console.log(`${folderPath} is deleting`)
 
+    // return shell.trashItem( path.resolve(folderPath) )
     return fsPromises.rmdir(path.resolve(folderPath), { recursive: true, force: true })
       .then(
 
@@ -445,6 +439,8 @@ const api = {
       ).catch(
 
         error=>{
+          console.log(error)
+          
           return false
         }
       )
@@ -539,7 +535,7 @@ const api = {
     shell.openPath( path.resolve( path.join(InPath, fileFullname)) )
   },
 
-  // someRun:()=>{
+  // openInWindowsFileManager:()=>{
   //   shell.showItemInFolder(somePath)
   // },
 
@@ -596,14 +592,12 @@ const api = {
       try{
         //
         if(sessionProjectClone_json){
-          // result1 = await fsPromises.writeFile( path.join(__dirname, '..', 'JSON', settings.sessionProjectsFile), sessionProjectClone_json, {encoding: 'utf8'} )
           result1 = await fsPromises.writeFile( sessionProjectsFilePath(), sessionProjectClone_json, {encoding: 'utf8'} )
         }else{
           result1 = undefined
         }
         //
         if(sessionBrowserClone_json){
-          // result2 = await fsPromises.writeFile( path.join(__dirname, '..', 'JSON', settings.sessionBrowserFile), sessionBrowserClone_json, {encoding: 'utf8'} )
           result2 = await fsPromises.writeFile( sessionBrowserFilePath(), sessionBrowserClone_json, {encoding: 'utf8'} )
         }else{
           result2 = undefined

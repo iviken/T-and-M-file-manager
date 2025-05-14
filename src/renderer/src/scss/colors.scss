@@ -34,7 +34,12 @@
     --rar: rgb(255, 238, 0);
     --zip: rgb(255, 238, 0);
 
-    // --red-mark-legend: #e55ce0ff;   //
+    --mov: rgb(165, 163, 129);
+    --mp4: rgb(165, 163, 129);
+    --mpeg4: rgb(165, 163, 129);
+    --mpg: rgb(165, 163, 129);
+    --avi: rgb(165, 163, 129);
+    --wmv: rgb(165, 163, 129);
     
     --head-btn-bgcolor-close-hover: red;
     // --head-btn-bgcolor-close-hover: rgba(34,34,41,1);
@@ -43,16 +48,17 @@
     --head-btn-color2: rgba(255,255,255,.5);
     --head-btn-color-hover: black;
     --head-btn-color-hover2: white;
+    --head-btn-close-color-hover: red;
 
     --shadow: 0 -15px 21px 0 #000;
-    --shadow-image-file: 0px 0px 30px 0px rgba(0, 0, 0, 1);
+    --shadow-image-file: 0px 0px 30px 0px rgba(0, 0, 0, .7);
     --shadow-bar-menu: 5px 0 30px 0 #000;
 
-    --grad-fieldset-red: linear-gradient(90deg, rgba(37, 44, 58, 0) 0%, rgba(212, 37, 179, 0) 4.99%, #d425b30c 45.53%, rgba(0, 0, 0, 0) 100%);
+    // --grad-fieldset-red: linear-gradient(90deg, rgba(37, 44, 58, 0) 0%, rgba(212, 37, 179, 0) 4.99%, #d425b30c 45.53%, rgba(0, 0, 0, 0) 100%);
     
-    --grad-border-fieldset-green: linear-gradient(90deg, rgba(49,173,49,1) 0%, rgba(49,173,49,0) 12%, rgba(49,173,49,0) 100%);
+    // --grad-border-fieldset-green: linear-gradient(90deg, rgba(49,173,49,1) 0%, rgba(49,173,49,0) 12%, rgba(49,173,49,0) 100%);
 
-    //  Common
+    //  COMMON
 
     --grad-renaming: rgba(146, 192, 255, 0.38);
     --grad-selected: linear-gradient(90deg, rgba(146, 192, 255, 0) 0%, rgba(146, 192, 255, 0.18) 49.29%, rgba(146, 192, 255, 0.15) 100%);
@@ -81,8 +87,8 @@
 
     --grad-left-field: linear-gradient(90deg, rgba(97, 134, 197, 0.08) 0%, rgba(116, 146, 188, 0) 89.57%);
     
-    --grad-tasks-and-tree-2: linear-gradient(92deg, rgba(118, 163, 188, 0) 95.95%, rgba(126, 202, 255, 0.03) 100%);
-    --grad-tasks-and-tree-3: linear-gradient(-92deg, rgba(138, 187, 255, 0.03) 0%, rgba(145, 173, 255, 0) 51.88%);
+    --grad-tasks-and-tree-2: linear-gradient(92deg, rgba(118, 163, 188, 0) 93.95%, rgba(126, 202, 255, 0.03) 100%);
+    --grad-tasks-and-tree-3: linear-gradient(-91deg, rgba(138, 187, 255, 0.03) 0%, rgba(145, 173, 255, 0) 51.88%);
 
     //  <Bar>
     
@@ -94,7 +100,7 @@
 
     --grad-bar-search: rgba(146, 191, 255, 0.114);
     
-    //  Mark menu
+    //      Mark menu
     
     --grad-mark-menu-SESSION-1: linear-gradient(90deg, #1e1e22 0%, #343b42 29.51%, #3c3f46 54.17%, #131313 100%);
     --grad-mark-menu-PROJECTS-1: linear-gradient(90deg, #2c2c33 0%, #25252c 100%);
@@ -108,7 +114,7 @@
     --grad-text-files-1: linear-gradient(88deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0) 14.24%);
     --grad-text-files-2: linear-gradient(154deg, rgba(22, 22, 22, 0) 13.42%, rgba(70, 72, 93, 0.09) 26.37%, rgba(10, 10, 15, 0.43) 99.75%);
 
-    --grad-images-files-1: linear-gradient(-92deg, rgba(0, 0, 0, 0) 95.95%, rgba(0, 0, 0, 0.21) 100%);
+    --grad-images-files-1: linear-gradient(-91deg, rgba(0, 0, 0, 0) 95.95%, rgba(0, 0, 0, 0.21) 100%);
 
     //  <Tasks>
     
@@ -131,7 +137,6 @@
     // --grad-select-renaming-img-file: linear-gradient(90deg, #1b1b21 0%, #2a2e39 100%);
     // --grad-select-renaming-img-file-input: rgba(146, 192, 255, 0.38);
     --grad-select-copy-cut-img-file: gray;
-    //  ---
 
     --grad-red: linear-gradient(90deg, rgba(215,75,186,.53) 0%, rgba(215,75,186,0.2) 100%);
     --grad-green: linear-gradient(90deg, rgba(62,133,47,.53) 0%, rgba(62,133,47,0.2) 100%);
@@ -139,21 +144,19 @@
     --grad-ocean: linear-gradient(90deg, rgba(115,208,212,.53) 0%, rgba(115,208,212,0.2) 100%);
     --grad-blue: linear-gradient(90deg, rgba(46,51,200,.53) 0%, rgba(46,51,200,0.2) 100%);
     --grad-orange: linear-gradient(90deg, rgba(205,133,40,.53) 0%, rgba(205,133,40,0.2) 100%);
+    --grad-default: linear-gradient(90deg, #b6d7ff87 0%, #b6d7ff33 100%);
     
-    --grad-field-red: linear-gradient(-90deg, rgba(215,75,186,.34) 0%, rgba(215,75,186,0) 100%);
-    --grad-field-green: linear-gradient(-90deg, rgba(62,133,47,.34) 0%, rgba(62,133,47,0) 100%);
-    --grad-field-yellow: linear-gradient(-90deg, rgba(175,168,62,.34) 0%, rgba(175,168,62,0) 100%);
+    // --grad-field-red: linear-gradient(-90deg, rgba(215,75,186,.34) 0%, rgba(215,75,186,0) 100%);
+    // --grad-field-green: linear-gradient(-90deg, rgba(62,133,47,.34) 0%, rgba(62,133,47,0) 100%);
+    // --grad-field-yellow: linear-gradient(-90deg, rgba(175,168,62,.34) 0%, rgba(175,168,62,0) 100%);
 
-    --grad-field-red--close: linear-gradient(-90deg, rgba(215,75,186,.54) 0%, rgba(215,75,186,0) 10%);
-    --grad-field-green--close: linear-gradient(-90deg, rgba(62,133,47,.54) 0%, rgba(62,133,47,0) 10%);
-    --grad-field-yellow--close: linear-gradient(-90deg, rgba(175,168,62,.54) 0%, rgba(175,168,62,0) 10%);
-
-    // --font-color--file-name: rgba(255,255,255,.43);
-    // --font-color--file-format--green: rgba(150,222,171,1);
+    // --grad-field-red--close: linear-gradient(-90deg, rgba(215,75,186,.54) 0%, rgba(215,75,186,0) 10%);
+    // --grad-field-green--close: linear-gradient(-90deg, rgba(62,133,47,.54) 0%, rgba(62,133,47,0) 10%);
+    // --grad-field-yellow--close: linear-gradient(-90deg, rgba(175,168,62,.54) 0%, rgba(175,168,62,0) 10%);
 }
-/* #### */
 
 /* BORDER */
+
 .white-border-2{
     border: solid 2px var(--white);
 }
@@ -177,6 +180,7 @@
 }
 
 /* BACKGROUND */
+
 .white-back{
     background-color: var(--white);
 }
@@ -201,7 +205,7 @@
 .transparent-back{
     background-color: transparent;
 }
-.default-color-back{
+.default-back{
     background-color: var(--cold-white);
 }
 .unmarked-color-back{
@@ -231,6 +235,7 @@
 }
 
 /* BACKGROUND HOVER */
+
 .white-back-hover:hover{
     background-color: white;
 }
@@ -253,11 +258,12 @@
     background-color: var(--orange);
 }
 
-.red-fielfset{
-    background: var( --grad-fieldset-red);
-}
+// .red-fielfset{
+//     background: var( --grad-fieldset-red);
+// }
 
 /* TEXT */
+
 .red-text{
     color: var(--red);
 }
@@ -282,7 +288,7 @@
 .transparent-text{
     color: var(--white);
 }
-.default-color-text{
+.default-text{
     color: var(--cold-white);
 }
 .unmarked-color-text{
@@ -300,6 +306,7 @@
 }
 
 /* CONTENT > LEFT FIELD */
+
 .field--red{
     background: var(--grad-field-red--close);
 }
@@ -341,7 +348,9 @@
     background: var(--grad-field-yellow);
     transform: rotate(180deg);
 }
+
 //  BAR PIC COLOR BTNS
+
 .color-pic-red{
     background: var(--grad-red);
 }
@@ -360,24 +369,30 @@
 .color-pic-orange{
     background: var(--grad-orange);
 }
+.color-pic-default{
+    background: var(--grad-default);
+}
 
 /* FAKE SELECTED */
-.-fake-mark--red{
-    background: var(--grad-red);
-}
-.-fake-mark--green{
-    background: var(--grad-green);
-}
-.-fake-mark--yellow{
-    background: var(--grad-yellow);
-}
+
+// .-fake-mark--red{
+//     background: var(--grad-red);
+// }
+// .-fake-mark--green{
+//     background: var(--grad-green);
+// }
+// .-fake-mark--yellow{
+//     background: var(--grad-yellow);
+// }
 
 /* FONTS */
-.file-name{
-    color: var(--font-color--file-name);
-}
+
+// .file-name{
+//     color: var(--font-color--file-name);
+// }
 
 // FORMATS
+
 .format-ini{
     color: var(--ini);
 }
@@ -418,6 +433,22 @@
 }
 .format-torrent{
     color: var(--torrent);
+}
+
+.format-avi{
+    color: var(--avi);
+}
+.format-mov{
+    color: var(--mov);
+}
+.format-mpeg4{
+    color: var(--mpeg4);
+}
+.format-mpg{
+    color: var(--mpg);
+}
+.format-wmv{
+    color: var(--wmv);
 }
 
 .format-default{

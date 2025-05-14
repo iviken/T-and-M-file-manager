@@ -1,14 +1,9 @@
-// const settings = {
-//     fileImgMask: ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'BMP', 'svg', 'SVG', 'ico', 'ICO', 'tiff', 'TIFF', 'webp', 'eps', 'EPS'],
-//     fileNameRegexp: /[\\\/<>:\"\*\?\|]/g,
-// }
-
 import { defaults, settings } from './settings.js'
 
 export const filesMethods = {
     localState: null,
     stateFiles: null,
-    files: null,  //
+    files: null,  //  ?
     folders: null,
 
     destFolderID: null,

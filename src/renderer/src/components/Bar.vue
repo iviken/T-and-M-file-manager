@@ -251,7 +251,7 @@ export default {
 
         <!-- Info -->
 
-        <div class="info h100 on-center">
+        <div class="info h100 on-center w100">
             <div v-if="stateFiles.numberOfSelectedFiles > 0" class="on-row">
                 <span class="info-text">{{ stateFiles.numberOfSelectedFiles }}</span>
                 <span v-if="stateFiles.numberOfSelectedFiles == 1" class="info-text">&nbsp;file selected</span>
@@ -365,7 +365,8 @@ export default {
 
                     <div v-if="item.displayedOnBar" @click="clickOnTab({id: item.id, index: index, path: item.path})" @dblclick="foldersMethods2.closeTab()" class="item on-center h100">
 
-                        <span v-if="item.path != ''" :class="{tActiveTab: item.isOpened}" class="menu-item uppercase t-bar-folders text-nowrap">
+                        <!-- <span v-if="item.path != ''" :class="{tActiveTab: item.isOpened}" class="menu-item uppercase t-bar-folders text-nowrap"> -->
+                        <span v-if="!foldersMethods2.pathIsRoot(item.path)" :class="{tActiveTab: item.isOpened}" class="menu-item uppercase t-bar-folders text-nowrap">
                             {{ foldersMethods2.shrinkName( foldersMethods2.getFolderName(item.path), settings.tabsFolderNameMaxLength ) }}
                         </span>
 
@@ -415,7 +416,7 @@ export default {
 
         <!-- Search -->
 
-        <div class="search on-center">
+        <div class="search on-center w100">
             <input type="text" placeholder="search" v-model="state.searchValue" @input="search()" @keyup.enter="searchAll()" @click="state.searchValue = ''" id="search" class="search-input t-bar-search on-center focus w100">
         </div>
 
@@ -428,6 +429,8 @@ export default {
         <div :class="`${localState.actualSessionType}-menu-back`" class="marks-menu-box h100 w100">
 
             <div v-for="item in marks" class="marks-box__item menu on-row w100">
+
+                <!-- marks menu: checkbox -->
     
                 <div class="vertical-center checkbox-block menu-item h100">
                     <input type="checkbox" v-model="item.show" class="checkbox-mark-item">
@@ -447,9 +450,11 @@ export default {
                     </div>
                 </div>
     
-                <div class="on-row h100 marks-menu-clr-pic">
+                <!-- marks menu: color picker -->
 
-                    <!-- marks menu: color picker -->
+                <div class="marks-menu-clr-pic on-row h100">
+
+                    <!-- marks menu: color-picker: colors -->
 
                     <div v-if="state.showColorPicker && (marksMethods.state.markRenameID == item.id)" @click="state.showColorPicker = false" class="color-pic on-row">
                         <div v-for="clr in settings.availableMarkColors" @click="marksMethods.state.markRenameID = null" class="h100">
@@ -457,7 +462,7 @@ export default {
                         </div>
                     </div>
 
-                    <!-- marks menu: arrow -->
+                    <!-- marks menu: color-picker: arrow -->
 
                     <div v-if="item.id != stateFiles.defaults.unmarkedMarkID" class="on-row">
                         <input type="checkbox" v-model="state.showColorPicker" id="picker" name="picker" class="checkbox">
@@ -576,10 +581,10 @@ export default {
         opacity: 1;
     }
 
-    .show-tree, .pin-this{
-        padding-left: 8px;
-        padding-right: 8px;
-    }
+    // .show-tree, .pin-this{
+    //     padding-left: 8px;
+    //     padding-right: 8px;
+    // }
     //  BARS ACCORDION
     .set-color-btn{
         padding-left: 10px;
@@ -587,8 +592,8 @@ export default {
     }
 
     .arrow-1{
-        width: 10px;
-        height: 10px;
+        width: 14px;
+        height: 14px;
     }
     .marks-menu-arrow, .marks-menu-x{
         width: 8px;
@@ -601,7 +606,7 @@ export default {
     }
 
     .marks-menu-clr-pic{
-        margin-left: 20px;
+        // margin-left: 20px;
     }
     .checkbox{
         visibility: hidden;
@@ -638,10 +643,10 @@ export default {
         padding-bottom: 14px;
     }
     .SESSION-menu-back{
-        background: var(--grad-mark-menu-SESSION-1), var(--grad-mark-menu-2);
+        background: var(--grad-mark-menu-2), var(--grad-mark-menu-SESSION-1);
     }
     .PROJECTS-menu-back{
-        background: var(--grad-mark-menu-PROJECTS-1), var(--grad-mark-menu-2);
+        background: var(--grad-mark-menu-2), var(--grad-mark-menu-PROJECTS-1);
     }
     .marks-box-rename{
         height: 26px;

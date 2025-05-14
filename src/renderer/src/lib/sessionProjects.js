@@ -1,3 +1,5 @@
+import { settings } from "./settings"
+
 export const sessionProjectsDefaultData = {
 
 	proj_001: {
@@ -51,7 +53,7 @@ export const sessionProjectsDefaultData = {
 		folders: [
 			{
 				id: "folder_2334256",
-				path: "/Temp",
+				path: settings.initPath,
 				files: [],
 				isOpened: true,
 				isPinned: false,
