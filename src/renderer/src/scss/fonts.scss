@@ -2,6 +2,8 @@
     --font-family: "Calibri", sans-serif;
     --second-family: "Corbel", sans-serif;
     --third-family: "Carlito", sans-serif;
+
+    --keys-font: "Source Code Pro", monospace;
 }
 body{
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -25,6 +27,10 @@ body{
     color: var(--cold-pale);
 }
 
+.t-bar-img-processor{
+    color: var(--cold-pale);
+}
+
 .t-bar-search{
     color: var(--pale-white2);
 }
@@ -40,7 +46,16 @@ body{
     color: var(--pure-white);
 }
 
-//      -----
+//      <Help View>
+
+.t-help{
+    color: var(--cold-pale);
+}
+.t-key{
+    color: var(--cold-white);
+}
+
+//   STYLE
 
 //      <Project list>
 
@@ -53,14 +68,14 @@ body{
 
 //      <BrowserView>
 
-//  <Header>
+//          <Header>
 
 .t-header{
     font-weight: bold;
     font-size: 18px;
 }
 
-//  <Accordion>
+//          <Accordion>
 
 .t-files-mark{
     letter-spacing: 0.88px;
@@ -73,7 +88,7 @@ body{
     font-size: 14px;
 }
 
-//  <Tree> <Tasks>
+//          <Tree> <Tasks>
 
 .t-tree-item, .t-task{
     letter-spacing: 2.67px;
@@ -86,9 +101,9 @@ body{
     font-size: 14px;
 }
 
-//  <Bar>
+//          <Bar>
 
-.t-bar-folders, .t-bar-marks, .tActiveTab{
+.t-bar-folders, .t-bar-marks, .tActiveTab, .t-bar-img-processor{
     letter-spacing: 1.88px;
     font-weight: 400;
     font-size: 16px;
@@ -107,4 +122,28 @@ body{
     opacity: .8;
     letter-spacing: 2.67px;
     font-size: 14px;
+}
+
+//      <Help View>
+
+.t-help{
+    font-size: 15px;
+}
+.t-about{
+    font-weight: 600;
+    font-size: 16px;
+}
+.t-block-name{
+    font-weight: 600;
+    font-size: 15px;
+    opacity: .7;
+}
+.t-key{
+    font-family: var(--keys-font);
+    font-size: 16px;
+    font-style: normal;
+}
+.t-click{
+    font-size: 16px;
+    opacity: .7;
 }

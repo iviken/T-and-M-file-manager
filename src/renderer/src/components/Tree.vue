@@ -242,14 +242,17 @@ export default {
 
         <div class="address-bar on-row w100">
 
-          <div class="address-box">
+          <!-- show if folder isn't root -->
+
+          <div v-if="!foldersMethods2.openedFolderIsRoot()" class="address-box">
             <div class="address-block on-row no-wrap w100">
 
               <div v-for="(part, index) of getPathForAddressBar" class="on-row no-wrap">
 
                 <!-- Address bar: folder name -->
   
-                <div @click="clickToAddressBarPart( {path: path.split('/').slice(0, index + 1).join('/')} )" class="address-bar-part">
+                <div @click="clickToAddressBarPart( {path: path.split(settings.actualSeparator).slice(0, index + 1).join(settings.actualSeparator)} )" class="address-bar-part">
+                <!-- <div @click="clickToAddressBarPart( {path: path.split('/').slice(0, index + 1).join('/')} )" class="address-bar-part"> -->
                   <span class="t-tree-address uppercase text-nowrap">
                     {{ foldersMethods2.shrinkName(part, settings.addressBarFolderNameMaxLength) }}
                   </span>
@@ -266,6 +269,20 @@ export default {
               </div>
 
             </div>
+          </div>
+
+          <!-- show if root folder is opened -->
+
+          <div v-if="foldersMethods2.openedFolderIsRoot()" class="address-box">
+
+            <!-- Address bar: separator -->
+  
+              <div>
+                <span class="t-tree-address uppercase text-nowrap">
+                  {{ settings.replacedSymbolPath }}
+                </span>
+              </div>
+
           </div>
 
           <div class="w100"></div>
@@ -312,7 +329,7 @@ export default {
 
                 <!-- x -->
 
-                <div @click="foldersMethods2.deleteFolder()" class="delete btn-opacity vertical-center h100">
+                <div v-if="foldersMethods2.isProtected()" @click="foldersMethods2.deleteFolder()" class="delete btn-opacity vertical-center h100">
                   <img src="../assets/x.svg" alt="delete this folder" class="pix-btn">
                 </div>
 
@@ -357,13 +374,22 @@ export default {
 
           <!-- create new folder -->
 
-          <div class="new-folder rename w100">
-            <input type="text" placeholder="new folder name" v-if="isCreatredNewFolder" :v-model="newFolderName" @input="event => newFolderName = event.target.value.replace(settings.folderNameRegexp, '')" id="newFolderInput" @keyup.esc="isCreatredNewFolder = false" @keyup.enter="createNewFolder({state: 'input-done'})" class="t-tree-item t-tree-renaming rename-input uppercase focus w100"></input>
+          <div v-if="isCreatredNewFolder" class="block list-item item new-folder rename on-row w100">
+
+            <!-- subfolder logo -->
+
+            <div class="vertical-center h100">
+              <img src="../assets/tree-level.svg" class="tree-level-pix">
+            </div>
+
+            <!-- input -->
+
+            <input type="text" placeholder="new folder name" :v-model="newFolderName" @input="event => newFolderName = event.target.value.replace(settings.folderNameRegexp, '')" id="newFolderInput" @keyup.esc="isCreatredNewFolder = false" @keyup.enter="createNewFolder({state: 'input-done'})" class="sub-item t-tree-item t-tree-renaming rename-input uppercase focus w100"></input>
           </div>
 
         </div>
 
-        <!-- sptecial folders -->
+        <!-- special folders -->
 
         <div v-if="settings[ this.localState.actualSessionType ].showSpecialFoldersBtns" class="special-folders block on-col">
 
@@ -371,7 +397,7 @@ export default {
             <div class="left-field">
               <img src="../assets/list.svg" alt="my documents" class="pix-btn docs">
             </div>
-            <div @click="foldersMethods2.clickToSpecialFolder( 'Documents' )" class="list-item">
+            <div @click="foldersMethods2.clickToSpecialFolder( settings.specialFolders.docs )" class="list-item">
               <span class="t-tree-item text-nowrap uppercase">my docs</span>
             </div>
           </div>
@@ -380,7 +406,7 @@ export default {
             <div class="left-field">
               <img src="../assets/load.svg" alt="downloads" class="pix-btn loads">
             </div>
-            <div @click="foldersMethods2.clickToSpecialFolder( 'Downloads' )" class="list-item">
+            <div @click="foldersMethods2.clickToSpecialFolder( settings.specialFolders.loads )" class="list-item">
               <span class="t-tree-item text-nowrap uppercase">downloads</span>
             </div>
           </div>

@@ -223,14 +223,37 @@ export const filesMethods = {
         }
     },
 
-    setFilesState:function(STATEfrom, STATEto){
+    setFilesState:function(STATEfrom, STATEto, params, cnst){
+
+      //  in opened folder only
 
       this.folders[this.localState.activeFolderIndex].files.forEach(file => {
           
         if( this.stateFiles.files.hasOwnProperty(file.id) )
-          if (this.stateFiles.files[file.id] == STATEfrom )
-            this.stateFiles.files[file.id] = STATEto
+          if (this.stateFiles.files[file.id] == STATEfrom ){
+
+            if( (params == undefined) || (params == 'all formats'))
+              this.stateFiles.files[file.id] = STATEto
+
+            if( params == 'imgs')
+              if(this.isAPicture(file))
+                this.stateFiles.files[file.id] = STATEto
+          }
       })
+
+      //  in all folders in opened session
+
+      if(cnst == 'in all folders')
+        this.folders.forEach(folder => {
+          folder.files.forEach(file => {
+            if (this.stateFiles.files[file.id] == STATEfrom ){
+
+            if( params == 'imgs')
+              if( this.isAPicture(file) )
+                this.stateFiles.files[file.id] = STATEto
+            }
+          })
+        })
     },
 
     copyFiles:function(){
@@ -555,5 +578,12 @@ export const filesMethods = {
 
       if(typeof format == 'object')
         return settings.fileImgMask.includes(format.format)
+    },
+
+    unselectAllImageFiles:function(){
+
+      this.setFilesState('SELECTED', '', 'imgs', 'in all folders')
+
+      this.countSelectedFiles()
     },
 }

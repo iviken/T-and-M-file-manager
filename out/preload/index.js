@@ -6,7 +6,7 @@ const settings = {
   sessionProjectsFile: "sessionProjects.json",
   sessionBrowserFile: "sessionBrowser.json",
   // sessionsPath: `'C:/Users/Nike/AppData/Roaming/'${settings.productName.replace(settings.folderNameRegexp, '')}`,
-  dublicateFilePostfix: "copy",
+  dublicateFilePostfix: "is copied",
   //  filename after copy / move: SrcName [dublicateFilePostfix] [today]
   //  defaut sessions
   initPath: "/Temp",

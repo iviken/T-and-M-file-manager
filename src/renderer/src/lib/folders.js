@@ -107,19 +107,27 @@ const paths = {
     // return path
   },
 
-  folderIsSystem(path, cnst){
+  folderIsSystem:function(path, cnst){
+
+    if( this.isRoot(path) )
+      return true
 
     if( cnst == undefined)
       return this.getFolderName(path).startsWith('.')
 
     if( cnst == 'soft')
       return settings.excludedFolders.includes( this.getFolderName(path) )
+
+    if( cnst == 'root')
+      if(!this.isRootsChild(path)) return false
+      return settings.rootSystemFolder.includes( paths.getFolderName(path).toUpperCase() )
   },
 
-  pathIsSystem(path, params){   //  params = 'safe' mode serch nearest non-sys folder
+  pathIsSystem:function(path, params){   //  params = 'safe' mode serch nearest non-sys folder
 
     path = this.validate(path)
 
+    //  checks path for folders whose names begins with a dot (/fold-1/.fold-2/...)
     if(params == undefined)
       return path.split(settings.actualSeparator).some(folderName => folderName.startsWith('.'))
 
@@ -128,10 +136,24 @@ const paths = {
     //   return path.
   },
   
-  isRoot(path){
+  isRoot:function(path){
 
-    return (path == '/') || (path == '')
-  }
+    return (path == settings.actualSeparator) || (path == '')
+  },
+
+  isRootsChild:function(path){
+
+    return path.split(settings.actualSeparator).length == 2   //  TO DO ('/' => 'C:/')
+  },
+
+  folderIsSpecial:function(path){
+
+    let specialFoldersPath = window.api.getPathSpecialFolder()
+
+    specialFoldersPath = paths.validate(specialFoldersPath)
+
+    return Object.values( settings.specialFolders ).some(specFolder => `${specialFoldersPath}${settings.actualSeparator}${specFolder}` == path)
+  },
 }
 
 const helpers = {
@@ -214,12 +236,18 @@ export const folders = {
     // console.log(folderName)
     // console.log(LEVEL)
     // console.log(history.actual(this.folders).path)
+    if(folderName != settings.ROOT_C){
 
-    if(LEVEL == 'child level')
-      this.clickToFolder( {path: `${history.actual(this.folders).path}${settings.actualSeparator}${folderName}`} )
+      if(LEVEL == 'child level')
+        this.clickToFolder( {path: `${history.actual(this.folders).path}${settings.actualSeparator}${folderName}`} )
 
-    if(LEVEL == 'this level')
-      this.clickToFolder( {path: `${paths.getParentFolderPath( history.actual(this.folders).path )}${settings.actualSeparator}${folderName}`} )
+        if(LEVEL == 'this level')
+          this.clickToFolder( {path: `${paths.getParentFolderPath( history.actual(this.folders).path )}${settings.actualSeparator}${folderName}`} )
+    }else{
+
+      //  slick on root folder
+      this.clickToFolder( {path: settings.actualSeparator} )
+    }
   },
 
   clickToFolder:function(folder, cnst){
@@ -328,7 +356,7 @@ export const folders = {
           //  Check active folders path. if the active folder path is nested in the deleted one, go to nearest parent path 
           if( paths.AisNestedInB(history.actual(this.folders).path, deletingPath) ){
 
-            console.log('nested: ')
+            console.log('path is nested: ')
             console.log(deletingPath)
 
             this.clickToFolder( {path: foldersCollectionMethods.getNearestParentFolder( this.folders, deletingPath ).folder.path}, 'forced' )
@@ -524,6 +552,33 @@ export const folders = {
   pathIsRoot:function(path){
 
     return paths.isRoot(path)
+  },
+
+  isProtected:function(){
+
+    //
+    if(!settings.protectSpecialFolders) return true
+
+    //
+    if(!settings.protectRootSystemFolders) return true
+
+    let path = history.actual(this.folders).path
+
+    //
+    if(paths.folderIsSystem(path, 'soft')) return false
+
+    //
+    if(paths.folderIsSystem(path, 'root')) return false
+
+    //
+    if(paths.folderIsSpecial(path)) return false
+
+    return true
+  },
+
+  openedFolderIsRoot:function(){
+
+    return this.pathIsRoot( history.actual(this.folders).path )
   },
 
   // recordNewFileInActualFolder:function(file){
@@ -979,13 +1034,18 @@ const foldersCollectionMethods = {
 
         //  Filter folders to starting '.' (hide or system folders)
         if(!folders.parameters.showFoldersStartingWithDot)
-          if( !paths.getFolderName(path).startsWith('.') )
+          if( !paths.getFolderName(path, 'safe').startsWith('.') )
             navigation.subfoldersList = navigation.subfoldersList.filter(folderName => !folderName.startsWith('.'))
 
         // console.log(navigation.subfoldersList)
       }
       
       function list(path, cnst){
+
+        if(paths.isRoot(path)){
+          navigation.foldersList = [settings.ROOT_C]    //  TO DO (C:/, D:/ ...)
+          return
+        }
 
         navigation.foldersList =  window.api.getFolderNames( paths.getParentFolderPath(path), cnst ) || []
         //  exclude hidden (system) folders

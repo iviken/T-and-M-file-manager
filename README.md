@@ -9,7 +9,7 @@
 
 ## About
 
-File manager with tabs, color tags (marks) and task manager.
+It is free app file manager with tabs, color tags (marks) and task manager for Windows.
 
 <img src="/md/screen app.jpg" width="100%" />
 <img src="/md/screen app2.jpg" width="100%" />
@@ -21,6 +21,7 @@ File manager with tabs, color tags (marks) and task manager.
 - Separate display of graphic files and others.
 - Supports tabs for folders.
 - Drag'n'Drop doesn't exist. Now you don't have to worry about accidentally dragging files or folders to an unknown location!
+- Allows you to display multiple photos for comparison.
 
 ## Interface
 
@@ -39,7 +40,7 @@ The session name (in session mode) is displayed in the center.
 
 The panel consists of 5 levels: info, marks (not all)\*, Buttons\*, folder tabs\*, search.
 
-\* In file metadata display mode, the block disappears. to display the file's metadata, press: Shift
+\* In file metadata display mode, the block disappears. to display the file's metadata, press: <ins>Space</ins>.
 
 #### Info
 
@@ -59,9 +60,9 @@ If at least one file is selected, you can assign a 'mark' to it.
 
 All file markings in the open session are displayed here. You can delete existing ones, create new ones, rename them, or change the color. Marking for unmarked files are not deleted.
 
-- &#9724;: If there is such a square to the left of the label name, then files with such a label are displayed in folders. Click on it to turn the display on or off.
+- &#9724; If there is such a square to the left of the label name, then files with such a label are displayed in folders. Click on it to turn the display on or off.
 
-- <img src="/src/renderer/src/assets/arrow2 left.svg" width="16" height="16" style="background: black" /> / <img src="/src/renderer/src/assets/arrow2.svg" width="16" height="16" style="background: black" /> set mark color. Press Esc or click it to exit.
+- <img src="/src/renderer/src/assets/arrow2 left.svg" width="16" height="16" style="background: black" /> / <img src="/src/renderer/src/assets/arrow2.svg" width="16" height="16" style="background: black" /> set mark color. Press <ins>Esc</ins> or click it to exit.
 - <img src="/src/renderer/src/assets/x.svg" width="16" height="16" style="background: black" /> delete mark. All seleced files with this mark will become unmarked.
 
 - To rename a label, double-click it. Only works if no files are selected.
@@ -108,7 +109,7 @@ These buttons appear when the cursor is on a task:
 - <img src="/src/renderer/src/assets/x.svg" width="16" height="16" style="background: black" /> delete task.
 - <img src="/src/renderer/src/assets/plus.svg" width="16" height="16" style="background: black" /> add subtask.
 - <img src="/src/renderer/src/assets/arc dawn.svg" width="16" height="16" style="background: black" /> fold / unfold subtasks (if any).
-- &#9723; : If a task has no subtasks, hovering over it will display a square on the left. Clicking on it will complete the task and remove the selection. Clicking again will make the task active again and restore the selection.
+- &#9723; If a task has no subtasks, hovering over it will display a square on the left. Clicking on it will complete the task and remove the selection. Clicking again will make the task active again and restore the selection.
 <!-- - ![fold subtasks](/src/renderer/src/assets/arc%20dawn.svg?raw=true&sanitize=true): fold / unfold subtasks (if any). -->
 
 You can save your own tasks for each session.
@@ -148,63 +149,63 @@ Files are grouped by label. Files without groups are placed last among groups.
 
 - To collapse / expand a group / pin of files, click on the label name or on the field on the left.
 - To display only one group of files, double-click the label name.
-- To select a file, click its icon. To deselect it, click it again. To deselect all files in an open folder, press Esc. To quickly select all files with the same 'mark', select at least one and press Ctrl + A.
+- To select a file, click its icon. To deselect it, click it again. To deselect all files in an open folder, press <ins>Esc</ins>. To quickly select all files with the same 'mark', select at least one and press <ins>Ctrl + A</ins>.
 
 ## HotKeys
 
-- Space: open the comparison window for the selected photos.
-- Space (press): show metadata of the file in focus.
-- F3: show / hide search panel (in unmaximize window only).
-- F5: refresh files in opened folder.
+- <ins>Space</ins>: open the comparison window for the selected photos.
+- <ins>Space</ins> (press): show metadata of the file in focus.
+- <ins>F3</ins>: show / hide search panel (in unmaximize window only).
+- <ins>F5</ins>: refresh files in opened folder.
 <!-- - F11: maximize / restore window. -->
-- \+ / \- / =: increase or decrease the size of image icons.
+- <ins>\+</ins>  <ins>\-</ins>  <ins>=</ins>: increase or decrease the size of image icons.
 
 Some hotkeys only work when the corresponding component has focus.
 
 ### Bar panel:
 
-- Ctrl + T: open last closed tab folder.
-- Esc: hide the input line for the name of the created 'mark'.
+- <ins>Ctrl + T</ins>: open last closed tab folder.
+- <ins>Esc</ins>: hide the input line for the name of the created 'mark'.
 
 ### Tasks panel:
 
-- Arrow Up and Down (IN DEV): move a task up or down in the list.
+- <ins>Arrow Up</ins> and <ins>Arrow Down</ins> (IN DEV): move a task up or down in the list.
 
-- Single click: select task.
-- Double click: edit task description.
+Single click: select task.
+Double click: edit task description.
 
 ### Folder tree panel:
 
-- F2: rename folder.
-- F5: refresh folders.
-- Esc: cancel renaming / copy / cut folder.
-- Ctrl + D: pin / unpin folder.*
-- Ctrl + Shift + N / Ctrl + N: Create new sub-folder.
-- Ctrl + C: start copying folder.
-- Ctrl + X: start moving folder.
-- Ctrl + V: paste folder.
-- Arrow Up: move to next folder (up).
-- Arrow Down: move to next folder (down).
-- Arrow Left: move to parent folder.
-- Ctrl + Arrow Left: move to previous folder.
-- Arrow Right: move to first child folder.
+- <ins>F2</ins>: rename folder.
+- <ins>F5</ins>: refresh folders.
+- <ins>Esc</ins>: cancel renaming / copy / cut folder.
+- <ins>Ctrl + D</ins>: pin / unpin folder.*
+- <ins>Ctrl + Shift + N</ins> / <ins>Ctrl + N</ins>: Create new sub-folder.
+- <ins>Ctrl + C</ins>: start copying folder.
+- <ins>Ctrl + X</ins>: start moving folder.
+- <ins>Ctrl + V</ins>: paste folder.
+- <ins>Arrow Up</ins>: move to next folder (up).
+- <ins>Arrow Down</ins>: move to next folder (down).
+- <ins>Arrow Left</ins>: move to parent folder.
+- <ins>Ctrl + Arrow Left</ins>: move to previous folder.
+- <ins>Arrow Right</ins>: move to first child folder.
 
-- Single click: move to folder.
+Single click: move to folder.
 
 ### Files panel
 
-- F2: rename files.
-- F5: refresh files in opened folder.
-- Esc: cancel selected / renaming / copy / cut files.
-- Ctrl + D: pin / unpin files.
-- Ctrl + C: start copying files.
-- Ctrl + X: start moving files.
-- Ctrl + V: paste files.
+- <ins>F2</ins>: rename files.
+- <ins>F5</ins>: refresh files in opened folder.
+- <ins>Esc</ins>: cancel selected / renaming / copy / cut files.
+- <ins>Ctrl + D</ins>: pin / unpin files.
+- <ins>Ctrl + C</ins>: start copying files.
+- <ins>Ctrl + X</ins>: start moving files.
+- <ins>Ctrl + V</ins>: paste files.
 
-- Ctrl + A: select all files in mark block. If you click on the block of 'marked' files.
+- <ins>Ctrl + A</ins>: select all files in mark block. If you click on the block of 'marked' files.
 
-- Single click: select / unselect file.
-- Double click: open file.
+Single click: select / unselect file.
+Double click: open file.
 
 ## Peculiarities
 

@@ -18,6 +18,8 @@
 
     --transparent: rgba(0,0,0,0);
 
+    //  file format colors
+
     --ini: rgba(62,133,47,1);
     --vue: rgb(0, 160, 99);
     --js: rgba(175,168,62,1);
@@ -25,7 +27,7 @@
     --scss: rgb(175, 62, 90);
     --css: rgb(213, 118, 142);
     --md: rgb(118, 109, 244);
-    --bat: rgb(255, 255, 255);
+    --bat: rgb(167, 167, 167);
 
     --pdf: rgb(183, 41, 41);
     --torrent: rgb(17, 103, 0);
@@ -40,6 +42,8 @@
     --mpg: rgb(165, 163, 129);
     --avi: rgb(165, 163, 129);
     --wmv: rgb(165, 163, 129);
+
+    //  <Header>
     
     --head-btn-bgcolor-close-hover: red;
     // --head-btn-bgcolor-close-hover: rgba(34,34,41,1);
@@ -50,13 +54,11 @@
     --head-btn-color-hover2: white;
     --head-btn-close-color-hover: red;
 
-    --shadow: 0 -15px 21px 0 #000;
+    //  SHADOWS
+
+    --shadow: 0 -15px 21px 0 #0000006d;
     --shadow-image-file: 0px 0px 30px 0px rgba(0, 0, 0, .7);
     --shadow-bar-menu: 5px 0 30px 0 #000;
-
-    // --grad-fieldset-red: linear-gradient(90deg, rgba(37, 44, 58, 0) 0%, rgba(212, 37, 179, 0) 4.99%, #d425b30c 45.53%, rgba(0, 0, 0, 0) 100%);
-    
-    // --grad-border-fieldset-green: linear-gradient(90deg, rgba(49,173,49,1) 0%, rgba(49,173,49,0) 12%, rgba(49,173,49,0) 100%);
 
     //  COMMON
 

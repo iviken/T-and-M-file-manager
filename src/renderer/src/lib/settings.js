@@ -8,7 +8,7 @@ export const settings = {
     sessionProjectsFile: 'sessionProjects.json',
     sessionBrowserFile: 'sessionBrowser.json',
     // sessionsPath: `'C:/Users/Nike/AppData/Roaming/'${settings.productName.replace(settings.folderNameRegexp, '')}`,
-    dublicateFilePostfix: 'copy',               //  filename after copy / move: SrcName [dublicateFilePostfix] [today]
+    dublicateFilePostfix: 'is copied',               //  filename after copy / move: SrcName [dublicateFilePostfix] [today]
 
     //  defaut sessions
 
@@ -30,6 +30,15 @@ export const settings = {
     replacedSymbolPath: ' > ',                  //  Separator in address bar (in folders tree)
     folderNameMaxLength: 30,                    //
     addressBarFolderNameMaxLength: 10,          //  Folder name max length in tab
+    //List of folders protected from delition
+    rootSystemFolder: ['WINDOWS','USERS', 'TEMP', 'PROGRAMDATA', 'PROGRAM FILES', 'PROGRAM FILES (X86)'],
+    //
+    specialFolders: {docs: 'Documents', imgs: '', loads: 'Downloads'},
+
+    protectSpecialFolders: true,                //  Protect folders from delition
+    protectRootSystemFolders: true,             //  Protect folders from delition
+
+    ROOT_C: 'root_C:',
 
     //  FILES
 

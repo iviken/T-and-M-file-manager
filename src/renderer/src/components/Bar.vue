@@ -199,6 +199,15 @@ export default {
 
         if(this.state.searchValue.trim().startsWith('/')) return // TO DO - search folders
     },
+
+    unselectAllImageFiles(){
+
+        this.localState.showImageProcessor = false
+
+        this.localState.showImageViewer = false
+
+        this.filesMethods.unselectAllImageFiles()
+    },
   },
 
 //   mounted(){
@@ -247,7 +256,7 @@ export default {
 
 <template>
 
-    <div @keyup.esc="pressEscOnBar()" @keyup.ctrl.t="foldersMethods2.openClosedTab()" tabindex="0" class="bar on-center focus">
+    <div @keyup.esc="pressEscOnBar()" @keyup.ctrl.t="foldersMethods2.openClosedTab()" tabindex="0" class="bar on-row focus">
 
         <!-- Info -->
 
@@ -410,7 +419,13 @@ export default {
 
         <!-- image processor -->
 
-        <div v-if="localState.showImageProcessor" class="bar-block on-row h100">
+        <div v-if="localState.showImageProcessor" class="bar-block on-row h100 w100">
+            <div class="menu">
+                <div @click="unselectAllImageFiles()" class="menu-item item uppercase t-bar-img-processor text-nowrap">
+                    <span>unselect all</span>
+                </div>
+            </div>
+            
             image processor...
         </div>
 
@@ -520,6 +535,11 @@ export default {
         height: $bar-height;
         position: relative;
         background: var(--grad-bar);
+
+        // display: flex;
+        // flex-direction: row;
+        justify-content: space-evenly;
+        flex-wrap: nowrap;
     }
 
     .bar-block{
@@ -527,6 +547,8 @@ export default {
     }
 
     .marks-block{
+        width: 50%;
+        overflow: hidden;
     }
     .input-text-box{
         margin-left: 10px;
@@ -555,6 +577,10 @@ export default {
     .search-input{
         background: var(--grad-bar-search);
         border: solid 1px var(--cold-pale);
+        opacity: .5;
+    }
+    .search-input:focus{
+        opacity: 1;
     }
     .info-text{
         color: var(--cold-pale);
@@ -682,7 +708,7 @@ export default {
     @media screen and (max-width: 1500px) and (min-width: 1001px) {
 
         .bar-block{
-            // width: 1000px;
+            max-width: 1000px;
         }
 
         .meta-block{

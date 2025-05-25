@@ -113,7 +113,7 @@ computed:{
 
                             <!-- subtasks -->
             
-                            <div v-for="subtask in task.subtasks" class="sub" v-if="!task.isFolded">
+                            <div v-if="!task.isFolded" v-for="subtask in task.subtasks" class="sub on-col">
                                 <TaskItem :task="subtask" :selected="subtask.id == selectedSubTaskId" :class="{selected: (!subtask.isDone && subtask.isSelected)}" @deleteTask="deleteTask"/>
                             </div>
             
@@ -137,26 +137,24 @@ computed:{
                 <div class="scrollY on-col w100">
                     
                     <label v-for="task in tasks" :key="task.id">
-                        
                         <div v-if="!task.isPinned" class="on-col">
 
                             <!-- tasks -->
     
                             <div class="on-row">
                                 <!-- &#9724; &#9723;s -->
-                                <input type="radio" v-model="selectedTaskId" :value="task.id" class="hide">
+                                <input type="radio" v-model="selectedTaskId" :value="task.id" class="hide radio">
                                 
                                 <TaskItem :task="task" :selected="task.id == selectedTaskId" :class="{selected: (!task.isDone && task.isSelected)}" @deleteTask="deleteTask"/>
                             </div>
 
                             <!-- sub-tasks -->
                             
-                            <div v-if="!task.isFolded" v-for="subtask in task.subtasks" class="sub">
+                            <div v-if="!task.isFolded" v-for="subtask in task.subtasks" class="sub on-col">
                                 <TaskItem :task="subtask" :selected="subtask.id == selectedSubTaskId" :class="{selected: (!subtask.isDone && subtask.isSelected)}" @deleteTask="deleteTask"/>
                             </div>
                             
                         </div>
-
                     </label>
                     
                 </div>

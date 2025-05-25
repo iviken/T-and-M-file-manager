@@ -17,7 +17,9 @@ function createWindow() {
     show: false,
     autoHideMenuBar: true,
     frame: false,
-    ...process.platform === "linux" ? { icon } : {},
+    // icon: '../../resources/ico.png',
+    // icon: join(__dirname, '../../resources/ico.png'),
+    ...process.platform === "linux" ? { icon } : { icon },
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(__dirname, "../preload/index.js"),

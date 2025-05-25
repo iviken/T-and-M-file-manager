@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Tray } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -8,6 +8,9 @@ app.setAboutPanelOptions({
 })
 
 function createWindow() {
+  //
+  // const tray = new Tray('../../resources/ico.png')
+  // const tray = new Tray( join(__dirname, '../../resources/ico.png') )
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     // width: 1920,
@@ -19,7 +22,9 @@ function createWindow() {
     show: false,
     autoHideMenuBar: true,
     frame: false,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    // icon: '../../resources/ico.png',
+    // icon: join(__dirname, '../../resources/ico.png'),
+    ...(process.platform === 'linux' ? { icon } : { icon }),
     webPreferences: {
       nodeIntegration: true,
       preload: join(__dirname, '../preload/index.js'),

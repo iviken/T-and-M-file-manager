@@ -42,7 +42,7 @@ export default {
         }
     },
 
-    renameTask:function(dat){
+    editTask:function(dat){
 
         if(dat.state == 'input-start') {
             this.isRemaned = true
@@ -51,7 +51,10 @@ export default {
 
         if(dat.state == 'input-done'){
             if(this.renamedValue.length > 0){
-                this.task.name = this.renamedValue
+                // this.task.name = this.renamedValue   //  for input type='text'
+                
+                this.task.name = document.querySelector(`#${dat.taskID} span`).innerText
+
                 this.isRemaned = false
             }
         }
@@ -98,7 +101,7 @@ export default {
 
 <template>
 
-        <div v-if="!isRemaned" @keyup.ctrl.d="pinTask(task.id)" class="task-block list-item w100 on-row focus" tabindex="0">
+        <div v-if="!isRemaned" @keyup.ctrl.d="pinTask(task.id)" @keyup="editTask({state: 'input-start', name: task.name})" class="task-block list-item w100 on-row focus" tabindex="0">
 
             <!-- checkbox -->
 
@@ -120,7 +123,7 @@ export default {
 
                 <!-- task text -->
                 
-                <div @click="selectTask(task.id)" @dblclick="renameTask({state: 'input-start', name: task.name})" class="task">
+                <div @click="selectTask(task.id)" @dblclick="editTask({state: 'input-start', name: task.name})" class="task">
                     <span :class="{done: task.isDone}" class="uppercase t-task">{{ task.name }}</span>
                 </div>
 
@@ -151,8 +154,12 @@ export default {
 
         <!-- rename -->
 
-        <div v-else class="list-item rename-box w100">
-            <input type="text" placeholder="task description" v-model="renamedValue" :id="`${task.id}`" @keyup.esc="isRemaned = false" @keyup.enter="renameTask({state: 'input-done'})" class="rename-input t-task t-task-renaming uppercase focus w100"></input>
+        <div v-else id='INPUT' class="list-item rename-box w100">
+            <div contenteditable="true" :id="`${task.id}`" @keyup.esc="isRemaned = false" @keyup.enter="editTask({state: 'input-done', taskID: task.id})" class="rename-input t-task t-task-renaming uppercase focus w100">
+                <span>{{ renamedValue }}</span>
+            </div>
+            <!-- <textarea v-model="renamedValue" :id="`${task.id}`" @keyup.esc="isRemaned = false" @keyup.enter="editTask({state: 'input-done'})" class="rename-input t-task t-task-renaming uppercase focus w100"></textarea> -->
+            <!-- <input type="text" placeholder="task description" v-model="renamedValue" :id="`${task.id}`" @keyup.esc="isRemaned = false" @keyup.enter="editTask({state: 'input-done'})" class="rename-input t-task t-task-renaming uppercase focus w100"></input> -->
         </div>
 
 </template>
@@ -204,7 +211,7 @@ export default {
     }
 
     .task{
-        margin-right: 20px;
+        // margin-right: 20px;
     }
     .task-block:hover .btn{
         // opacity: 1;

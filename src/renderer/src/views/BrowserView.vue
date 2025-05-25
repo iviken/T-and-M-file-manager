@@ -182,6 +182,10 @@ export default {
         },
 
         spaceKey(cnst, e){
+
+            if(e.target.id == 'INPUT') return
+            
+            if(e.target.parentElement.id == 'INPUT') return
             
             if(e.target.nodeName == 'INPUT') return
 
@@ -238,21 +242,9 @@ export default {
             })
 
             window.addEventListener("keydown", e => {
-                
-                //  show metadata file
-                // if(e.key == 'Shift')
 
-                //     // if(this.imageViewerData.countImages > 0)
-                //         // this.localState.showImageViewer =
-
-                //     if(!this.localState.showImageViewer)
-                //         if(e.target.nodeName != 'INPUT')
-                //             if(!this.localState.renamigMark){
-                                
-                //                 e.preventDefault()
-                //                 this.showMetadata('show meta')
-                //                 // console.log('space')
-                //             }
+                if(e.key == 'Tab')
+                    e.preventDefault()
 
                 //
                 if(e.key == ' ')
@@ -260,22 +252,10 @@ export default {
             })
 
             window.addEventListener("keyup", e => {
-                // console.log(e.target.nodeName)
-                //  hide metadata file
-                // if(e.key == 'Shift')
-                //     if(!this.localState.showImageViewer){
-                //         if(e.target.nodeName != 'INPUT')
-                //             if(!this.localState.renamigMark){
 
-                //                 e.preventDefault()
-                //                 this.showMetadata('hide meta')
-                //             }
-                //     }else{
-
-                //         e.preventDefault()
-                //         this.imageViewer()
-                //     }
-
+                if(e.key == 'Tab')
+                    e.preventDefault()
+                
                 //
                 if(e.key == ' ')
                     this.spaceKey('keyup', e)
