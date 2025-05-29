@@ -6,7 +6,7 @@
   "author": "iviken",
   "homepage": "https://github.com/iviken/T-and-M-file-manager",
   "copyright": "iviken",
-  "buildVersion": "0.0.1a",
+  "buildVersion": "0.0.1b",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",

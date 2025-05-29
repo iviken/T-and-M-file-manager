@@ -2,10 +2,11 @@
 const electron = require("electron");
 const preload = require("@electron-toolkit/preload");
 const settings = {
-  sessionsPath: "C:/Users/Nike/AppData/Roaming/iviken/MandT file manager",
+  //  backend
+  productName: "M and T file manager",
+  developer: "iviken",
   sessionProjectsFile: "sessionProjects.json",
   sessionBrowserFile: "sessionBrowser.json",
-  // sessionsPath: `'C:/Users/Nike/AppData/Roaming/'${settings.productName.replace(settings.folderNameRegexp, '')}`,
   dublicateFilePostfix: "is copied",
   //  filename after copy / move: SrcName [dublicateFilePostfix] [today]
   //  defaut sessions
@@ -152,8 +153,10 @@ const fs = require("fs");
 const fsPromises = require("fs").promises;
 let os = require("os");
 os.platform() == "win32" ? process.cwd().split(path.sep)[0] : "/";
-const sessionProjectsFilePath = () => path.resolve(path.join(settings.sessionsPath.slice(2), settings.sessionProjectsFile));
-const sessionBrowserFilePath = () => path.resolve(path.join(settings.sessionsPath.slice(2), settings.sessionBrowserFile));
+let userFolder = process.env.USERPROFILE.replaceAll(settings.win32separator, settings.actualSeparator);
+let appsSettingsFolder = path.join(userFolder, "AppData", "Roaming");
+const sessionProjectsFilePath = () => path.resolve(path.join(appsSettingsFolder, settings.developer, settings.productName, settings.sessionProjectsFile));
+const sessionBrowserFilePath = () => path.resolve(path.join(appsSettingsFolder, settings.developer, settings.productName, settings.sessionBrowserFile));
 const projectsData = { data: {}, state: "not opened" };
 const browserData = { data: {}, state: "not opened" };
 let sessionProjectClone = null;
@@ -161,11 +164,12 @@ let sessionProjectClone_json = null;
 let sessionBrowserClone = null;
 let sessionBrowserClone_json = null;
 function getActiveData(typeSession) {
-  let parentPath = settings.sessionsPath.slice(0, settings.sessionsPath.lastIndexOf(settings.actualSeparator)).slice(2);
+  let parentPath = path.join(appsSettingsFolder, settings.developer);
   if (!api.folderIsExist(parentPath))
     fs.mkdirSync(path.resolve(parentPath));
-  if (!api.folderIsExist(settings.sessionsPath.slice(2)))
-    fs.mkdirSync(path.resolve(settings.sessionsPath.slice(2)));
+  let libPath = path.join(appsSettingsFolder, settings.developer, settings.productName);
+  if (!api.folderIsExist(libPath))
+    fs.mkdirSync(path.resolve(libPath));
   if (typeSession == "PROJECT") {
     if (projectsData.state == "not opened") {
       if (!fs.existsSync(sessionProjectsFilePath()))

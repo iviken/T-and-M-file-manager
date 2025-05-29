@@ -22,11 +22,11 @@ const fsPromises = require('fs').promises
 let os = require("os")
 let root = (os.platform() == "win32") ? process.cwd().split(path.sep)[0] : "/"
 
-const sessionProjectsFilePath = () => path.resolve( path.join(settings.sessionsPath.slice(2), settings.sessionProjectsFile) )   //  slice
-const sessionBrowserFilePath = () => path.resolve(  path.join(settings.sessionsPath.slice(2), settings.sessionBrowserFile) )  //  slice
+let userFolder = process.env.USERPROFILE.replaceAll(settings.win32separator, settings.actualSeparator)
+let appsSettingsFolder = path.join( userFolder, 'AppData', 'Roaming' )
 
-// const sessionProjectsFilePath = () => path.join(__dirname, '..', 'JSON', settings.sessionProjectsFile)
-// const sessionBrowserFilePath = () => path.join( __dirname, '..', 'JSON', settings.sessionBrowserFile)
+const sessionProjectsFilePath = () => path.resolve( path.join(appsSettingsFolder, settings.developer, settings.productName, settings.sessionProjectsFile) )
+const sessionBrowserFilePath = () => path.resolve(  path.join(appsSettingsFolder, settings.developer, settings.productName, settings.sessionBrowserFile) )
 
 const projectsData = {dataType: 'PROJECT' ,data: {}, state: 'not opened' }
 const browserData =  {dataType: 'BROWSER' ,data: {}, state: 'not opened' }
@@ -39,13 +39,14 @@ let sessionBrowserClone_json  = null
 function getActiveData(typeSession){
 
   //  check folder is exist (iviken)
-  let parentPath = settings.sessionsPath.slice( 0, settings.sessionsPath.lastIndexOf(settings.actualSeparator) ).slice(2) //  slice
-  if( !api.folderIsExist(parentPath) )
+  let parentPath = path.join( appsSettingsFolder, settings.developer )
+  if( !api.folderIsExist( parentPath ) )
     fs.mkdirSync( path.resolve(parentPath) )
 
   //  check folder is exist (product name)
-  if( !api.folderIsExist(settings.sessionsPath.slice(2)) ) //  slice
-    fs.mkdirSync( path.resolve(settings.sessionsPath.slice(2)) )  //  slice
+  let libPath = path.join( appsSettingsFolder, settings.developer, settings.productName )
+  if( !api.folderIsExist(libPath) )
+    fs.mkdirSync( path.resolve(libPath) )
 
   //  Read project session file
   if(typeSession == 'PROJECT'){

@@ -3,11 +3,10 @@ export const settings = {
     //  backend
 
     productName: 'M and T file manager',
+    developer: 'iviken',
 
-    sessionsPath: 'C:/Users/Nike/AppData/Roaming/iviken/MandT file manager',
     sessionProjectsFile: 'sessionProjects.json',
     sessionBrowserFile: 'sessionBrowser.json',
-    // sessionsPath: `'C:/Users/Nike/AppData/Roaming/'${settings.productName.replace(settings.folderNameRegexp, '')}`,
     dublicateFilePostfix: 'is copied',               //  filename after copy / move: SrcName [dublicateFilePostfix] [today]
 
     //  defaut sessions

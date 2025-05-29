@@ -20,8 +20,10 @@ It is free app file manager with tabs, color tags (marks) and task manager for W
 - Marking files with color labels.
 - Separate display of graphic files and others.
 - Supports tabs for folders.
-- Drag'n'Drop doesn't exist. Now you don't have to worry about accidentally dragging files or folders to an unknown location!
 - Allows you to display multiple photos for comparison.
+- Keep multiple to-do lists.
+- Save multiple sets of open folders, tasks, and different file labels.
+- Drag'n'Drop doesn't exist. Now you don't have to worry about accidentally dragging files or folders to an unknown location!
 
 ## Interface
 
